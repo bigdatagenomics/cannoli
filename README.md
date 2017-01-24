@@ -45,5 +45,9 @@ Choose one of the following commands:
 ...
 
 CANNOLI
+              bowtie : ADAM Pipe API wrapper for Bowtie.
+             bowtie2 : ADAM Pipe API wrapper for Bowtie2.
              example : Example.
+           freebayes : ADAM Pipe API wrapper for Freebayes.
+              snpEff : ADAM Pipe API wrapper for SnpEff.
 ```
