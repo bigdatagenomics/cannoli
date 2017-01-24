@@ -25,7 +25,7 @@ import org.bdgenomics.adam.cli.ADAMMain.defaultCommandGroups
  */
 object Cannoli {
   def main(args: Array[String]) {
-    val commandGroup = List(CommandGroup("CANNOLI", List(Bowtie, Example, SnpEff)))
+    val commandGroup = List(CommandGroup("CANNOLI", List(Bowtie, Bowtie2, Example, Freebayes, SnpEff)))
     new ADAMMain(defaultCommandGroups.union(commandGroup))(args)
   }
 }
