@@ -46,7 +46,7 @@ class BowtieArgs extends Args4jBase with ADAMSaveAnyArgs with ParquetArgs {
   @Argument(required = true, metaVar = "OUTPUT", usage = "Location to pipe to", index = 1)
   var outputPath: String = null
 
-  @Args4jOption(required = true, name = "-bowtie-index", usage = "Basename of the bowtie index to be searched, e.g. <ebwt> in bowtie [options]* <ebwt> ...")
+  @Args4jOption(required = true, name = "-bowtie_index", usage = "Basename of the bowtie index to be searched, e.g. <ebwt> in bowtie [options]* <ebwt> ...")
   var indexPath: String = null
 
   @Args4jOption(required = false, name = "-single", usage = "Saves OUTPUT as single file")
