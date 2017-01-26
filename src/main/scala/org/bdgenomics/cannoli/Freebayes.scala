@@ -21,7 +21,7 @@ import htsjdk.samtools.ValidationStringency
 import org.apache.spark.SparkContext
 import org.apache.spark.SparkContext._
 import org.apache.spark.rdd.RDD
-import org.bdgenomics.adam.converters.SupportedHeaderLines
+import org.bdgenomics.adam.converters.DefaultHeaderLines
 import org.bdgenomics.adam.models.VariantContext
 import org.bdgenomics.adam.rdd.ADAMContext._
 import org.bdgenomics.adam.rdd.ADAMSaveAnyArgs
