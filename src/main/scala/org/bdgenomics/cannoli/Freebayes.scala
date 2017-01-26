@@ -74,8 +74,7 @@ class Freebayes(protected val args: FreebayesArgs) extends BDGSparkCommand[Freeb
     val input: AlignmentRecordRDD = sc.loadAlignments(args.inputPath, stringency = stringency)
 
     implicit val tFormatter = BAMInFormatter
-    //implicit val uFormatter = new VCFOutFormatter(SupportedHeaderLines.allHeaderLines))
-    implicit val uFormatter = new VCFOutFormatter(Seq.empty)
+    implicit val uFormatter = new VCFOutFormatter(DefaultHeaderLines.allHeaderLines)
 
     val freebayesCommand = "freebayes --fasta-reference " + args.referencePath + " --stdin"
     val output: VariantContextRDD = input.pipe[VariantContext, VariantContextRDD, BAMInFormatter](freebayesCommand)
