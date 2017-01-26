@@ -75,8 +75,8 @@ class Bowtie2(protected val args: Bowtie2Args) extends BDGSparkCommand[Bowtie2Ar
     implicit val tFormatter = InterleavedFASTQInFormatter
     implicit val uFormatter = new AnySAMOutFormatter
 
-    // --12 argument for interleaved FASTQ is not present in bowtie2
     // currently using -U for unpaired reads, results will suffer accordingly
+    // fix is to use --tab5/6, see https://github.com/bigdatagenomics/adam/issues/1377
     val bowtie2Command = "bowtie2 -x " + args.indexPath + " -U -"
     val output: AlignmentRecordRDD = input.pipe[AlignmentRecord, AlignmentRecordRDD, InterleavedFASTQInFormatter](bowtie2Command)
       .transform(_.cache())
