@@ -1,7 +1,7 @@
 # cannoli
 Big Data Genomics ADAM Pipe API wrappers for bioinformatics tools.  Apache 2 licensed.
 
-###Hacking cannoli
+### Hacking cannoli
 
 Install
 
@@ -13,7 +13,7 @@ To build
     $ mvn install
 
 
-###Running cannoli using ```adam-submit```
+### Running cannoli using ```adam-submit```
 
 To run the commands in this repository via the ADAM command line, specify ```ADAM_MAIN``` and add the cannoli jar
 to the classpath with the Spark ```--jars``` argument.
