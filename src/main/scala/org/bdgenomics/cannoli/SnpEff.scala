@@ -43,19 +43,31 @@ object SnpEff extends BDGCommandCompanion {
 }
 
 class SnpEffArgs extends Args4jBase with ADAMSaveAnyArgs with ParquetArgs {
-  @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe from", index = 0)
+  @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe from.", index = 0)
   var inputPath: String = null
 
-  @Argument(required = true, metaVar = "OUTPUT", usage = "Location to pipe to", index = 1)
+  @Argument(required = true, metaVar = "OUTPUT", usage = "Location to pipe to.", index = 1)
   var outputPath: String = null
 
-  @Args4jOption(required = false, name = "-single", usage = "Saves OUTPUT as single file")
+  @Args4jOption(required = true, name = "-database", usage = "SnpEff database name. Defaults to GRCh38.82.")
+  var snpEffDatabase: String = "GRCh38.82"
+
+  @Args4jOption(required = false, name = "-snpeff_path", usage = "Path to the SnpEff executable. Defaults to snpeff.")
+  var snpEffPath: String = "snpeff"
+
+  @Args4jOption(required = false, name = "-docker_image", usage = "Docker image to use. Defaults to heuermh/snpeff.")
+  var dockerImage: String = "heuermh/snpeff"
+
+  @Args4jOption(required = false, name = "-use_docker", usage = "If true, uses Docker to launch SnpEff. If false, uses the SnpEff executable path.")
+  var useDocker: Boolean = false
+
+  @Args4jOption(required = false, name = "-single", usage = "Saves OUTPUT as single file.")
   var asSingleFile: Boolean = false
 
-  @Args4jOption(required = false, name = "-defer_merging", usage = "Defers merging single file output")
+  @Args4jOption(required = false, name = "-defer_merging", usage = "Defers merging single file output.")
   var deferMerging: Boolean = false
 
-  @Args4jOption(required = false, name = "-stringency", usage = "Stringency level for various checks; can be SILENT, LENIENT, or STRICT. Defaults to STRICT")
+  @Args4jOption(required = false, name = "-stringency", usage = "Stringency level for various checks; can be SILENT, LENIENT, or STRICT. Defaults to STRICT.")
   var stringency: String = "STRICT"
 
   // must be defined due to ADAMSaveAnyArgs, but unused here
@@ -75,7 +87,19 @@ class SnpEff(protected val args: SnpEffArgs) extends BDGSparkCommand[SnpEffArgs]
     implicit val tFormatter = VCFInFormatter
     implicit val uFormatter = new VCFOutFormatter(input.headerLines)
 
-    val snpEffCommand = "snpEff -download GRCh38.82"
+    val snpEffCommand = if (args.useDocker) {
+      Seq("docker",
+        "run",
+        args.dockerImage,
+        "snpeff",
+        "-download",
+        args.snpEffDatabase).mkString(" ")
+    } else {
+      Seq(args.snpEffPath,
+        "-download",
+        args.snpEffDatabase).mkString(" ")
+    }
+
     val output: VariantContextRDD = input.pipe[VariantContext, VariantContextRDD, VCFInFormatter](snpEffCommand)
       .transform(_.cache())
 

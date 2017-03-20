@@ -40,22 +40,22 @@ object Bowtie2 extends BDGCommandCompanion {
 }
 
 class Bowtie2Args extends Args4jBase with ADAMSaveAnyArgs with ParquetArgs {
-  @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe from, in interleaved FASTQ format", index = 0)
+  @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe from, in interleaved FASTQ format.", index = 0)
   var inputPath: String = null
 
-  @Argument(required = true, metaVar = "OUTPUT", usage = "Location to pipe to", index = 1)
+  @Argument(required = true, metaVar = "OUTPUT", usage = "Location to pipe to.", index = 1)
   var outputPath: String = null
 
-  @Args4jOption(required = true, name = "-bowtie2_index", usage = "Basename of the index for the reference genome, e.g. <bt2-idx> in bowtie2 [options]* -x <bt2-idx>")
+  @Args4jOption(required = true, name = "-bowtie2_index", usage = "Basename of the index for the reference genome, e.g. <bt2-idx> in bowtie2 [options]* -x <bt2-idx>.")
   var indexPath: String = null
 
-  @Args4jOption(required = false, name = "-single", usage = "Saves OUTPUT as single file")
+  @Args4jOption(required = false, name = "-single", usage = "Saves OUTPUT as single file.")
   var asSingleFile: Boolean = false
 
-  @Args4jOption(required = false, name = "-defer_merging", usage = "Defers merging single file output")
+  @Args4jOption(required = false, name = "-defer_merging", usage = "Defers merging single file output.")
   var deferMerging: Boolean = false
 
-  @Args4jOption(required = false, name = "-stringency", usage = "Stringency level for various checks; can be SILENT, LENIENT, or STRICT. Defaults to STRICT")
+  @Args4jOption(required = false, name = "-stringency", usage = "Stringency level for various checks; can be SILENT, LENIENT, or STRICT. Defaults to STRICT.")
   var stringency: String = "STRICT"
 
   // must be defined due to ADAMSaveAnyArgs, but unused here
