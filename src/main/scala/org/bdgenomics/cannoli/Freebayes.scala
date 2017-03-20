@@ -41,22 +41,31 @@ object Freebayes extends BDGCommandCompanion {
 }
 
 class FreebayesArgs extends Args4jBase with ADAMSaveAnyArgs with ParquetArgs {
-  @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe from", index = 0)
+  @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe from.", index = 0)
   var inputPath: String = null
 
-  @Argument(required = true, metaVar = "OUTPUT", usage = "Location to pipe to", index = 1)
+  @Argument(required = true, metaVar = "OUTPUT", usage = "Location to pipe to.", index = 1)
   var outputPath: String = null
+
+  @Args4jOption(required = false, name = "-freebayes_path", usage = "Path to the Freebayes executable. Defaults to freebayes.")
+  var freebayesPath: String = "freebayes"
 
   @Args4jOption(required = true, name = "-freebayes_reference", usage = "Reference sequence for analysis. An index file (.fai) will be created if none exists.")
   var referencePath: String = null
 
-  @Args4jOption(required = false, name = "-single", usage = "Saves OUTPUT as single file")
+  @Args4jOption(required = false, name = "-docker_image", usage = "Docker image to use. Defaults to heuermh/freebayes.")
+  var dockerImage: String = "heuermh/freebayes"
+
+  @Args4jOption(required = false, name = "-use_docker", usage = "If true, uses Docker to launch Freebayes. If false, uses the Freebayes executable path.")
+  var useDocker: Boolean = false
+
+  @Args4jOption(required = false, name = "-single", usage = "Saves OUTPUT as single file.")
   var asSingleFile: Boolean = false
 
-  @Args4jOption(required = false, name = "-defer_merging", usage = "Defers merging single file output")
+  @Args4jOption(required = false, name = "-defer_merging", usage = "Defers merging single file output.")
   var deferMerging: Boolean = false
 
-  @Args4jOption(required = false, name = "-stringency", usage = "Stringency level for various checks; can be SILENT, LENIENT, or STRICT. Defaults to STRICT")
+  @Args4jOption(required = false, name = "-stringency", usage = "Stringency level for various checks; can be SILENT, LENIENT, or STRICT. Defaults to STRICT.")
   var stringency: String = "STRICT"
 
   // must be defined due to ADAMSaveAnyArgs, but unused here
@@ -76,7 +85,21 @@ class Freebayes(protected val args: FreebayesArgs) extends BDGSparkCommand[Freeb
     implicit val tFormatter = BAMInFormatter
     implicit val uFormatter = new VCFOutFormatter(DefaultHeaderLines.allHeaderLines)
 
-    val freebayesCommand = "freebayes --fasta-reference " + args.referencePath + " --stdin"
+    val freebayesCommand = if (args.useDocker) {
+      Seq("docker",
+        "run",
+        args.dockerImage,
+        "freebayes",
+        "--fasta-reference",
+        args.referencePath,
+        "--stdin").mkString(" ")
+    } else {
+      Seq(args.freebayesPath,
+        "--fasta-reference",
+        args.referencePath,
+        "--stdin").mkString(" ")
+    }
+
     val output: VariantContextRDD = input.pipe[VariantContext, VariantContextRDD, BAMInFormatter](freebayesCommand)
       .transform(_.cache())
 

@@ -32,7 +32,7 @@ import org.kohsuke.args4j.{ Argument, Option => Args4jOption }
 
 object Bwa extends BDGCommandCompanion {
   val commandName = "bwa"
-  val commandDescription = "ADAM Pipe API wrapper for Bwa."
+  val commandDescription = "ADAM Pipe API wrapper for BWA."
 
   def apply(cmdLine: Array[String]) = {
     new Bwa(Args4j[BwaArgs](cmdLine))
@@ -40,32 +40,32 @@ object Bwa extends BDGCommandCompanion {
 }
 
 class BwaArgs extends Args4jBase with ADAMSaveAnyArgs with ParquetArgs {
-  @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe from, in interleaved FASTQ format", index = 0)
+  @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe from, in interleaved FASTQ format.", index = 0)
   var inputPath: String = null
 
-  @Argument(required = true, metaVar = "OUTPUT", usage = "Location to pipe to", index = 1)
+  @Argument(required = true, metaVar = "OUTPUT", usage = "Location to pipe to.", index = 1)
   var outputPath: String = null
 
-  @Argument(required = true, metaVar = "SAMPLE", usage = "Sample ID", index = 2)
+  @Argument(required = true, metaVar = "SAMPLE", usage = "Sample ID.", index = 2)
   var sample: String = null
 
   @Args4jOption(required = true, name = "-index", usage = "Path to the bwa index to be searched, e.g. <ebwt> in bwa [options]* <ebwt> ...")
   var indexPath: String = null
 
-  @Args4jOption(required = false, name = "-single", usage = "Saves OUTPUT as single file")
+  @Args4jOption(required = false, name = "-single", usage = "Saves OUTPUT as single file.")
   var asSingleFile: Boolean = false
 
-  @Args4jOption(required = false, name = "-defer_merging", usage = "Defers merging single file output")
+  @Args4jOption(required = false, name = "-defer_merging", usage = "Defers merging single file output.")
   var deferMerging: Boolean = false
 
-  @Args4jOption(required = false, name = "-bwa_path", usage = "Path to the BWA executable.")
-  var bwaPath: String = _
+  @Args4jOption(required = false, name = "-bwa_path", usage = "Path to the BWA executable. Defaults to bwa.")
+  var bwaPath: String = "bwa"
 
-  @Args4jOption(required = false, name = "-docker_image", usage = "Docker image to use. Defaults to quay.io/ucsc_cgl/bwa:0.7.12--256539928ea162949d8a65ca5c79a72ef557ce7c..")
+  @Args4jOption(required = false, name = "-docker_image", usage = "Docker image to use. Defaults to quay.io/ucsc_cgl/bwa:0.7.12--256539928ea162949d8a65ca5c79a72ef557ce7c.")
   var dockerImage: String = "quay.io/ucsc_cgl/bwa:0.7.12--256539928ea162949d8a65ca5c79a72ef557ce7c"
 
   @Args4jOption(required = false, name = "-use_docker", usage = "If true, uses Docker to launch BWA. If false, uses the BWA executable path.")
-  var useDocker: Boolean = _
+  var useDocker: Boolean = false
 
   // must be defined due to ADAMSaveAnyArgs, but unused here
   var sortFastqOutput: Boolean = false
@@ -96,8 +96,6 @@ class Bwa(protected val args: BwaArgs) extends BDGSparkCommand[BwaArgs] with Log
         args.indexPath,
         "-").mkString(" ")
     } else {
-      require(args.bwaPath != null,
-        "-bwaPath must be defined if not using Docker.")
       Seq(args.bwaPath,
         "mem",
         "-t", "1",

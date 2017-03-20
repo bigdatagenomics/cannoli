@@ -32,33 +32,37 @@ import org.bdgenomics.utils.cli._
 import org.bdgenomics.utils.misc.Logging
 import org.kohsuke.args4j.{ Argument, Option => Args4jOption }
 
-object Example extends BDGCommandCompanion {
-  val commandName = "example"
-  val commandDescription = "Example."
+object Tee extends BDGCommandCompanion {
+  val commandName = "tee"
+  val commandDescription = "Tee alignment records."
 
   def apply(cmdLine: Array[String]) = {
-    new Example(Args4j[ExampleArgs](cmdLine))
+    new Tee(Args4j[TeeArgs](cmdLine))
   }
 }
 
-class ExampleArgs extends Args4jBase with ADAMSaveAnyArgs with ParquetArgs {
-  @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe from", index = 0)
+class TeeArgs extends Args4jBase with ADAMSaveAnyArgs with ParquetArgs {
+  @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe from.", index = 0)
   var inputPath: String = null
-  @Argument(required = true, metaVar = "OUTPUT", usage = "Location to pipe to", index = 1)
+
+  @Argument(required = true, metaVar = "OUTPUT", usage = "Location to pipe to.", index = 1)
   var outputPath: String = null
-  @Args4jOption(required = false, name = "-single", usage = "Saves OUTPUT as single file")
+
+  @Args4jOption(required = false, name = "-single", usage = "Saves OUTPUT as single file.")
   var asSingleFile: Boolean = false
-  @Args4jOption(required = false, name = "-defer_merging", usage = "Defers merging single file output")
+
+  @Args4jOption(required = false, name = "-defer_merging", usage = "Defers merging single file output.")
   var deferMerging: Boolean = false
+
   // must be defined due to ADAMSaveAnyArgs, but unused here
   var sortFastqOutput: Boolean = false
 }
 
 /**
- * Example.
+ * Tee.
  */
-class Example(protected val args: ExampleArgs) extends BDGSparkCommand[ExampleArgs] with Logging {
-  val companion = Example
+class Tee(protected val args: TeeArgs) extends BDGSparkCommand[TeeArgs] with Logging {
+  val companion = Tee
 
   def run(sc: SparkContext) {
     var alignments: AlignmentRecordRDD = sc.loadAlignments(args.inputPath)
