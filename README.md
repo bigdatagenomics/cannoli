@@ -64,21 +64,20 @@ $ ADAM_MAIN=org.bdgenomics.cannoli.Cannoli \
 Using ADAM_MAIN=org.bdgenomics.cannoli.Cannoli
 Using SPARK_SUBMIT=/usr/local/bin/spark-submit
 
- INPUT                                                           : Location to pipe from, in interleaved FASTQ format.
- OUTPUT                                                          : Location to pipe to.
- SAMPLE                                                          : Sample ID.
- -bwa_path VAL                                                   : Path to the BWA executable. Defaults to bwa.
- -defer_merging                                                  : Defers merging single file output.
- -docker_image VAL                                               : Docker image to use. Defaults to quay.io/ucsc_cgl/bwa:0.7.12--256539928ea162949d8a6
-                                                                   5ca5c79a72ef557ce7c.
- -h (-help, --help, -?)                                          : Print help
- -index VAL                                                      : Path to the bwa index to be searched, e.g. <ebwt> in bwa [options]* <ebwt> ...
- -parquet_block_size N                                           : Parquet block size (default = 128mb)
- -parquet_compression_codec [UNCOMPRESSED | SNAPPY | GZIP | LZO] : Parquet compression codec
- -parquet_disable_dictionary                                     : Disable dictionary encoding
- -parquet_logging_level VAL                                      : Parquet logging level (default = severe)
- -parquet_page_size N                                            : Parquet page size (default = 1mb)
- -print_metrics                                                  : Print metrics to the log on completion
- -single                                                         : Saves OUTPUT as single file.
- -use_docker                                                     : If true, uses Docker to launch BWA. If false, uses the BWA executable path.
+ INPUT                        : Location to pipe from, in interleaved FASTQ format.
+ OUTPUT                       : Location to pipe to.
+ SAMPLE                       : Sample ID.
+ -bwa_path VAL                : Path to the BWA executable. Defaults to bwa.
+ -defer_merging               : Defers merging single file output.
+ -docker_image VAL            : Docker image to use. Defaults to quay.io/ucsc_cgl/bwa:0.7.12--256539928ea162949d8a65ca5c79a72ef557ce7c.
+ -h (-help, --help, -?)       : Print help
+ -index VAL                   : Path to the bwa index to be searched, e.g. <ebwt> in bwa [options]* <ebwt> ...
+ -parquet_block_size N        : Parquet block size (default = 128mb)
+ -parquet_compression_codec   : Parquet compression codec
+ -parquet_disable_dictionary  : Disable dictionary encoding
+ -parquet_logging_level VAL   : Parquet logging level (default = severe)
+ -parquet_page_size N         : Parquet page size (default = 1mb)
+ -print_metrics               : Print metrics to the log on completion
+ -single                      : Saves OUTPUT as single file.
+ -use_docker                  : If true, uses Docker to launch BWA. If false, uses the BWA executable path.
 ```
