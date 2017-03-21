@@ -25,6 +25,7 @@ import org.bdgenomics.adam.rdd.ADAMContext._
 import org.bdgenomics.adam.rdd.ADAMSaveAnyArgs
 import org.bdgenomics.adam.rdd.fragment.{ FragmentRDD, InterleavedFASTQInFormatter }
 import org.bdgenomics.adam.rdd.read.{ AlignmentRecordRDD, AnySAMOutFormatter }
+import org.bdgenomics.cannoli.util.QuerynameGrouper
 import org.bdgenomics.formats.avro.AlignmentRecord
 import org.bdgenomics.utils.cli._
 import org.bdgenomics.utils.misc.Logging
@@ -52,8 +53,11 @@ class BwaArgs extends Args4jBase with ADAMSaveAnyArgs with ParquetArgs {
   @Args4jOption(required = true, name = "-index", usage = "Path to the bwa index to be searched, e.g. <ebwt> in bwa [options]* <ebwt> ...")
   var indexPath: String = null
 
-  @Args4jOption(required = false, name = "-single", usage = "Saves OUTPUT as single file.")
+  @Args4jOption(required = false, name = "-single", usage = "Saves OUTPUT as single file. Exclusive of -fragments.")
   var asSingleFile: Boolean = false
+
+  @Args4jOption(required = false, name = "-fragments", usage = "Saves OUTPUT as Fragments in Parquet. Exclusive of -single.")
+  var asFragments: Boolean = false
 
   @Args4jOption(required = false, name = "-defer_merging", usage = "Defers merging single file output.")
   var deferMerging: Boolean = false
@@ -78,6 +82,9 @@ class Bwa(protected val args: BwaArgs) extends BDGSparkCommand[BwaArgs] with Log
   val companion = Bwa
 
   def run(sc: SparkContext) {
+    require(!(args.asSingleFile && args.asFragments),
+      "-single and -fragments are mutually exclusive.")
+
     val input: FragmentRDD = sc.loadFragments(args.inputPath)
 
     implicit val tFormatter = InterleavedFASTQInFormatter
@@ -107,6 +114,12 @@ class Bwa(protected val args: BwaArgs) extends BDGSparkCommand[BwaArgs] with Log
 
     val output: AlignmentRecordRDD = input.pipe[AlignmentRecord, AlignmentRecordRDD, InterleavedFASTQInFormatter](bwaCommand)
 
-    output.save(args)
+    if (!args.asFragments) {
+      output.save(args)
+    } else {
+      log.info("Converting to fragments.")
+      QuerynameGrouper(output)
+        .saveAsParquet(args)
+    }
   }
 }
