@@ -87,7 +87,8 @@ class Bedtools(protected val args: BedtoolsArgs) extends BDGSparkCommand[Bedtool
 
     val optA = Option(args.a)
     val optB = Option(args.b)
-    assert(optA.size + optB.size == 1, "Strictly one of {-a,-b} should be left unspecified to accept piped input.")
+    require(optA.size + optB.size == 1,
+      "Strictly one of {-a,-b} should be left unspecified to accept piped input.")
 
     val bedtoolsCommand = if (args.useDocker) {
       Seq("docker",
