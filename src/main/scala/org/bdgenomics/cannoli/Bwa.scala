@@ -106,7 +106,7 @@ class Bwa(protected val args: BwaArgs) extends BDGSparkCommand[BwaArgs] with Log
       Seq(args.bwaPath,
         "mem",
         "-t", "1",
-        "-R", s"@RG\tID:${sample}\tLB:${sample}\tPL:ILLUMINA\tPU:0\tSM:${sample}",
+        "-R", s"@RG\\tID:${sample}\\tLB:${sample}\\tPL:ILLUMINA\\tPU:0\\tSM:${sample}",
         "-p",
         args.indexPath,
         "-").mkString(" ")
