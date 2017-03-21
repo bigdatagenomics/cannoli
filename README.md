@@ -45,6 +45,7 @@ Choose one of the following commands:
 ...
 
 CANNOLI
+            bedtools : ADAM Pipe API wrapper for Bedtools intersect.
               bowtie : ADAM Pipe API wrapper for Bowtie.
              bowtie2 : ADAM Pipe API wrapper for Bowtie2.
                  bwa : ADAM Pipe API wrapper for BWA.
