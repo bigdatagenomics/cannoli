@@ -21,11 +21,18 @@ import htsjdk.samtools.ValidationStringency
 import org.apache.spark.SparkContext
 import org.apache.spark.SparkContext._
 import org.apache.spark.rdd.RDD
+import org.bdgenomics.adam.models.{
+  RecordGroup,
+  RecordGroupDictionary
+}
 import org.bdgenomics.adam.rdd.ADAMContext._
 import org.bdgenomics.adam.rdd.ADAMSaveAnyArgs
 import org.bdgenomics.adam.rdd.fragment.{ FragmentRDD, InterleavedFASTQInFormatter }
 import org.bdgenomics.adam.rdd.read.{ AlignmentRecordRDD, AnySAMOutFormatter }
-import org.bdgenomics.cannoli.util.QuerynameGrouper
+import org.bdgenomics.cannoli.util.{
+  QuerynameGrouper,
+  SequenceDictionaryReader
+}
 import org.bdgenomics.formats.avro.AlignmentRecord
 import org.bdgenomics.utils.cli._
 import org.bdgenomics.utils.misc.Logging
@@ -64,6 +71,9 @@ class BwaArgs extends Args4jBase with ADAMSaveAnyArgs with ParquetArgs {
 
   @Args4jOption(required = false, name = "-bwa_path", usage = "Path to the BWA executable. Defaults to bwa.")
   var bwaPath: String = "bwa"
+
+  @Args4jOption(required = false, name = "-sequence_dictionary", usage = "Path to the sequence dictionary.")
+  var sequenceDictionary: String = _
 
   @Args4jOption(required = false, name = "-docker_image", usage = "Docker image to use. Defaults to quay.io/ucsc_cgl/bwa:0.7.12--256539928ea162949d8a65ca5c79a72ef557ce7c.")
   var dockerImage: String = "quay.io/ucsc_cgl/bwa:0.7.12--256539928ea162949d8a65ca5c79a72ef557ce7c"
@@ -113,12 +123,18 @@ class Bwa(protected val args: BwaArgs) extends BDGSparkCommand[BwaArgs] with Log
     }
 
     val output: AlignmentRecordRDD = input.pipe[AlignmentRecord, AlignmentRecordRDD, InterleavedFASTQInFormatter](bwaCommand)
+      .copy(recordGroups = RecordGroupDictionary(Seq(RecordGroup(sample, sample))))
+
+    val outputMaybeWithSequences = Option(args.sequenceDictionary).fold(output)(sdPath => {
+      val sequences = SequenceDictionaryReader(sdPath, sc)
+      output.copy(sequences = sequences)
+    })
 
     if (!args.asFragments) {
-      output.save(args)
+      outputMaybeWithSequences.save(args)
     } else {
       log.info("Converting to fragments.")
-      QuerynameGrouper(output)
+      QuerynameGrouper(outputMaybeWithSequences)
         .saveAsParquet(args)
     }
   }
