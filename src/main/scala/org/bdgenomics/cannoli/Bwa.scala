@@ -81,6 +81,12 @@ class BwaArgs extends Args4jBase with ADAMSaveAnyArgs with ParquetArgs {
   @Args4jOption(required = false, name = "-use_docker", usage = "If true, uses Docker to launch BWA. If false, uses the BWA executable path.")
   var useDocker: Boolean = false
 
+  @Args4jOption(required = false, name = "-force_load_ifastq", usage = "Forces loading using interleaved FASTQ.")
+  var forceLoadIfastq: Boolean = false
+
+  @Args4jOption(required = false, name = "-force_load_parquet", usage = "Forces loading using Parquet.")
+  var forceLoadParquet: Boolean = false
+
   // must be defined due to ADAMSaveAnyArgs, but unused here
   var sortFastqOutput: Boolean = false
 }
@@ -94,8 +100,15 @@ class Bwa(protected val args: BwaArgs) extends BDGSparkCommand[BwaArgs] with Log
   def run(sc: SparkContext) {
     require(!(args.asSingleFile && args.asFragments),
       "-single and -fragments are mutually exclusive.")
-
-    val input: FragmentRDD = sc.loadFragments(args.inputPath)
+    require(!(args.forceLoadIfastq && args.forceLoadParquet),
+      "-force_load_ifastq and -force_load_parquet are mutually exclusive.")
+    val input: FragmentRDD = if (args.forceLoadIfastq) {
+      sc.loadInterleavedFastqAsFragments(args.inputPath)
+    } else if (args.forceLoadParquet) {
+      sc.loadParquetFragments(args.inputPath)
+    } else {
+      sc.loadFragments(args.inputPath)
+    }
 
     implicit val tFormatter = InterleavedFASTQInFormatter
     implicit val uFormatter = new AnySAMOutFormatter
