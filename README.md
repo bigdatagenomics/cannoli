@@ -1,6 +1,8 @@
 # cannoli
 Big Data Genomics ADAM Pipe API wrappers for bioinformatics tools.  Apache 2 licensed.
 
+![cannoli project logo](https://github.com/heuermh/cannoli/raw/master/images/cannoli-shells.jpg)
+
 ### Hacking cannoli
 
 Install
