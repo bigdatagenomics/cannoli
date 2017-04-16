@@ -13,18 +13,18 @@
 
   <name>cannoli ${scala.version.prefix}</name>
   <description>Big Data Genomics ADAM Pipe API wrappers for bioinformatics tools.</description>
-  <url>https://github.com/heuermh/cannoli</url>
+  <url>https://github.com/bigdatagenomics/cannoli</url>
   <inceptionYear>2017</inceptionYear>
   <scm>
-    <connection>scm:git:https://github.com/heuermh/cannoli</connection>
-    <developerConnection>scm:git:https://github.com/heuermh/cannoli</developerConnection>
-    <url>https://github.com/heuermh/cannoli.git</url>
+    <connection>scm:git:https://github.com/bigdatagenomics/cannoli</connection>
+    <developerConnection>scm:git:https://github.com/bigdatagenomics/cannoli</developerConnection>
+    <url>https://github.com/bigdatagenomics/cannoli.git</url>
     <tag>HEAD</tag>
   </scm>
   <licenses>
     <license>
       <name>Apache License</name>
-      <url>https://github.com/heuermh/cannoli/master/LICENSE.txt</url>
+      <url>https://github.com/bigdatagenomics/cannoli/master/LICENSE.txt</url>
       <distribution>repo</distribution>
     </license>
   </licenses>
