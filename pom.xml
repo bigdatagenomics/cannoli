@@ -45,6 +45,7 @@
     <maven.enforcer.jdk-version>[1.8,)</maven.enforcer.jdk-version>
     <maven.compile.source>1.8</maven.compile.source>
     <maven.compile.target>1.8</maven.compile.target>
+    <scoverage.plugin.version>1.1.1</scoverage.plugin.version>
   </properties>
   <build>
     <outputDirectory>target/scala-${scala.version}/classes</outputDirectory>
@@ -386,6 +387,41 @@
                 </goals>
               </execution>
             </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>coverage</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.scoverage</groupId>
+            <artifactId>scoverage-maven-plugin</artifactId>
+            <version>${scoverage.plugin.version}</version>
+            <configuration>
+              <scalaVersion>2.10.6</scalaVersion>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>coveralls</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.eluder.coveralls</groupId>
+            <artifactId>coveralls-maven-plugin</artifactId>
+            <version>3.0.1</version>
+            <configuration>
+              <coberturaReports>
+                <param>${project.build.directory}/cobertura.xml</param>
+              </coberturaReports>
+              <sourceDirectories>
+                <param>src/main/scala</param>
+              </sourceDirectories>
+            </configuration>
           </plugin>
         </plugins>
       </build>
