@@ -13,18 +13,18 @@
 
   <name>cannoli ${scala.version.prefix}</name>
   <description>Big Data Genomics ADAM Pipe API wrappers for bioinformatics tools.</description>
-  <url>https://github.com/heuermh/cannoli</url>
+  <url>https://github.com/bigdatagenomics/cannoli</url>
   <inceptionYear>2017</inceptionYear>
   <scm>
-    <connection>scm:git:https://github.com/heuermh/cannoli</connection>
-    <developerConnection>scm:git:https://github.com/heuermh/cannoli</developerConnection>
-    <url>https://github.com/heuermh/cannoli.git</url>
+    <connection>scm:git:https://github.com/bigdatagenomics/cannoli</connection>
+    <developerConnection>scm:git:https://github.com/bigdatagenomics/cannoli</developerConnection>
+    <url>https://github.com/bigdatagenomics/cannoli.git</url>
     <tag>HEAD</tag>
   </scm>
   <licenses>
     <license>
       <name>Apache License</name>
-      <url>https://github.com/heuermh/cannoli/master/LICENSE.txt</url>
+      <url>https://github.com/bigdatagenomics/cannoli/master/LICENSE.txt</url>
       <distribution>repo</distribution>
     </license>
   </licenses>
@@ -41,10 +41,11 @@
     <spark.version>1.6.3</spark.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.build.targetEncoding>UTF-8</project.build.targetEncoding>
-    <maven.enforcer.maven-version>[3.2.5,)</maven.enforcer.maven-version>
+    <maven.enforcer.maven-version>[3.1.1,)</maven.enforcer.maven-version>
     <maven.enforcer.jdk-version>[1.8,)</maven.enforcer.jdk-version>
     <maven.compile.source>1.8</maven.compile.source>
     <maven.compile.target>1.8</maven.compile.target>
+    <scoverage.plugin.version>1.1.1</scoverage.plugin.version>
   </properties>
   <build>
     <outputDirectory>target/scala-${scala.version}/classes</outputDirectory>
@@ -145,9 +146,42 @@
           <artifactId>scalatest-maven-plugin</artifactId>
           <version>1.0</version>
         </plugin>
+        <plugin>
+          <groupId>com.mycila.maven-license-plugin</groupId>
+          <artifactId>maven-license-plugin</artifactId>
+          <version>1.10.b1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>build-helper-maven-plugin</artifactId>
+          <version>1.10</version>
+        </plugin>
       </plugins>
     </pluginManagement>
     <plugins>
+      <plugin>
+        <groupId>com.mycila.maven-license-plugin</groupId>
+        <artifactId>maven-license-plugin</artifactId>
+        <configuration>
+          <header>LICENSE_header.txt</header>
+          <strictCheck>true</strictCheck>
+          <properties>
+            <owner>Big Data Genomics Developers</owner>
+            <email>adam-developers@googlegroups.com</email>
+          </properties>
+          <includes>
+            <include>src/main/scala/**</include>
+            <include>src/test/scala/**</include>
+          </includes>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>net.alchim31.maven</groupId>
         <artifactId>scala-maven-plugin</artifactId>
@@ -245,12 +279,53 @@
       <plugin>
         <groupId>org.scalatest</groupId>
         <artifactId>scalatest-maven-plugin</artifactId>
+        <configuration>
+          <reportsDirectory>${project.build.directory}/scalatest-reports</reportsDirectory>
+          <junitxml>.</junitxml>
+          <filereports>CannoliTestSuite.txt</filereports>
+          <!--
+              As explained here: http://stackoverflow.com/questions/1660441/java-flag-to-enable-extended-serialization-debugging-info
+              The second option allows us better debugging for serialization-based errors.
+          -->
+          <argLine>-Xmx1024m -Dsun.io.serialization.extendedDebugInfo=true</argLine>
+          <stdout>F</stdout>
+        </configuration>
         <executions>
           <execution>
             <id>test</id>
             <goals>
               <goal>test</goal>
             </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>add-source</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>src/main/scala</source>
+              </sources>
+            </configuration>
+          </execution>
+          <execution>
+            <id>add-test-source</id>
+            <phase>generate-test-sources</phase>
+            <goals>
+              <goal>add-test-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>src/test/scala</source>
+              </sources>
+            </configuration>
           </execution>
         </executions>
       </plugin>
@@ -347,6 +422,41 @@
                 </goals>
               </execution>
             </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>coverage</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.scoverage</groupId>
+            <artifactId>scoverage-maven-plugin</artifactId>
+            <version>${scoverage.plugin.version}</version>
+            <configuration>
+              <scalaVersion>2.10.6</scalaVersion>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>coveralls</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.eluder.coveralls</groupId>
+            <artifactId>coveralls-maven-plugin</artifactId>
+            <version>3.0.1</version>
+            <configuration>
+              <coberturaReports>
+                <param>${project.build.directory}/cobertura.xml</param>
+              </coberturaReports>
+              <sourceDirectories>
+                <param>src/main/scala</param>
+              </sourceDirectories>
+            </configuration>
           </plugin>
         </plugins>
       </build>
