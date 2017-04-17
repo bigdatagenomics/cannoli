@@ -41,7 +41,7 @@
     <spark.version>1.6.3</spark.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.build.targetEncoding>UTF-8</project.build.targetEncoding>
-    <maven.enforcer.maven-version>[3.2.5,)</maven.enforcer.maven-version>
+    <maven.enforcer.maven-version>[3.1.1,)</maven.enforcer.maven-version>
     <maven.enforcer.jdk-version>[1.8,)</maven.enforcer.jdk-version>
     <maven.compile.source>1.8</maven.compile.source>
     <maven.compile.target>1.8</maven.compile.target>
