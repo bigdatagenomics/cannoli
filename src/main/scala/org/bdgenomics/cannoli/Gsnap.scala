@@ -58,8 +58,14 @@ class GsnapArgs extends Args4jBase with ADAMSaveAnyArgs with ParquetArgs {
   @Args4jOption(required = false, name = "-defer_merging", usage = "Defers merging single file output.")
   var deferMerging: Boolean = false
 
+  @Args4jOption(required = false, name = "-disable_fast_concat", usage = "Disables the parallel file concatenation engine.")
+  var disableFastConcat: Boolean = false
+
   @Args4jOption(required = false, name = "-stringency", usage = "Stringency level for various checks; can be SILENT, LENIENT, or STRICT. Defaults to STRICT.")
   var stringency: String = "STRICT"
+
+  @Args4jOption(required = false, name = "-gsnap_path", usage = "Path to the GSNAP executable. Defaults to gsnap.")
+  var gsnapPath: String = "gsnap"
 
   // must be defined due to ADAMSaveAnyArgs, but unused here
   var sortFastqOutput: Boolean = false
@@ -78,9 +84,12 @@ class Gsnap(protected val args: GsnapArgs) extends BDGSparkCommand[GsnapArgs] wi
     implicit val tFormatter = InterleavedFASTQInFormatter
     implicit val uFormatter = new AnySAMOutFormatter
 
-    val gsnapCommand = "gsnap --dir= " + args.genomePath + " --db=" + args.genomeName + " --format=sam"
+    val gsnapCommand = Seq(args.gsnapPath,
+      "--dir=" + args.genomePath,
+      "--db=" + args.genomeName,
+      "--format=sam").mkString(" ")
+
     val output: AlignmentRecordRDD = input.pipe[AlignmentRecord, AlignmentRecordRDD, InterleavedFASTQInFormatter](gsnapCommand)
-      .transform(_.cache())
 
     output.save(args)
   }

@@ -58,8 +58,14 @@ class GmapArgs extends Args4jBase with ADAMSaveAnyArgs with ParquetArgs {
   @Args4jOption(required = false, name = "-defer_merging", usage = "Defers merging single file output.")
   var deferMerging: Boolean = false
 
+  @Args4jOption(required = false, name = "-disable_fast_concat", usage = "Disables the parallel file concatenation engine.")
+  var disableFastConcat: Boolean = false
+
   @Args4jOption(required = false, name = "-stringency", usage = "Stringency level for various checks; can be SILENT, LENIENT, or STRICT. Defaults to STRICT.")
   var stringency: String = "STRICT"
+
+  @Args4jOption(required = false, name = "-gmap_path", usage = "Path to the GMAP executable. Defaults to gmap.")
+  var gmapPath: String = "gmap"
 
   // must be defined due to ADAMSaveAnyArgs, but unused here
   var sortFastqOutput: Boolean = false
@@ -78,9 +84,12 @@ class Gmap(protected val args: GmapArgs) extends BDGSparkCommand[GmapArgs] with 
     implicit val tFormatter = InterleavedFASTQInFormatter
     implicit val uFormatter = new AnySAMOutFormatter
 
-    val gmapCommand = "gmap --dir= " + args.genomePath + " --db=" + args.genomeName + " --format=sampe"
+    val gmapCommand = Seq(args.gmapPath,
+      "--dir=" + args.genomePath,
+      "--db=" + args.genomeName,
+      "--format=sampe").mkString(" ")
+
     val output: AlignmentRecordRDD = input.pipe[AlignmentRecord, AlignmentRecordRDD, InterleavedFASTQInFormatter](gmapCommand)
-      .transform(_.cache())
 
     output.save(args)
   }
