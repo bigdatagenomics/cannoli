@@ -23,7 +23,7 @@ import org.apache.spark.SparkContext._
 import org.apache.spark.rdd.RDD
 import org.bdgenomics.adam.rdd.ADAMContext._
 import org.bdgenomics.adam.rdd.ADAMSaveAnyArgs
-import org.bdgenomics.adam.rdd.fragment.{ FragmentRDD, InterleavedFASTQInFormatter }
+import org.bdgenomics.adam.rdd.fragment.{ FragmentRDD, Tab5InFormatter }
 import org.bdgenomics.adam.rdd.read.{ AlignmentRecordRDD, AnySAMOutFormatter }
 import org.bdgenomics.formats.avro.AlignmentRecord
 import org.bdgenomics.utils.cli._
@@ -55,8 +55,14 @@ class BowtieArgs extends Args4jBase with ADAMSaveAnyArgs with ParquetArgs {
   @Args4jOption(required = false, name = "-defer_merging", usage = "Defers merging single file output.")
   var deferMerging: Boolean = false
 
+  @Args4jOption(required = false, name = "-disable_fast_concat", usage = "Disables the parallel file concatenation engine.")
+  var disableFastConcat: Boolean = false
+
   @Args4jOption(required = false, name = "-stringency", usage = "Stringency level for various checks; can be SILENT, LENIENT, or STRICT. Defaults to STRICT.")
   var stringency: String = "STRICT"
+
+  @Args4jOption(required = false, name = "-bowtie_path", usage = "Path to the Bowtie executable. Defaults to bowtie.")
+  var bowtiePath: String = "bowtie"
 
   // must be defined due to ADAMSaveAnyArgs, but unused here
   var sortFastqOutput: Boolean = false
@@ -72,14 +78,16 @@ class Bowtie(protected val args: BowtieArgs) extends BDGSparkCommand[BowtieArgs]
   def run(sc: SparkContext) {
     val input: FragmentRDD = sc.loadFragments(args.inputPath)
 
-    implicit val tFormatter = InterleavedFASTQInFormatter
+    implicit val tFormatter = Tab5InFormatter
     implicit val uFormatter = new AnySAMOutFormatter
 
-    // currently using <s> for unpaired reads, results will suffer accordingly
-    // fix is to use --tab5/6, see https://github.com/bigdatagenomics/adam/issues/1377
-    val bowtieCommand = "bowtie -S " + args.indexPath + " -"
-    val output: AlignmentRecordRDD = input.pipe[AlignmentRecord, AlignmentRecordRDD, InterleavedFASTQInFormatter](bowtieCommand)
-      .transform(_.cache())
+    val bowtieCommand = Seq(args.bowtiePath,
+      "-S",
+      args.indexPath,
+      "--12",
+      "-").mkString(" ")
+    val output: AlignmentRecordRDD = input.pipe[AlignmentRecord, AlignmentRecordRDD, Tab5InFormatter](bowtieCommand)
+      .transform()
 
     output.save(args)
   }
