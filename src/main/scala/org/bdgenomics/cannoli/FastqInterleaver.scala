@@ -17,6 +17,12 @@
  */
 package org.bdgenomics.cannoli
 
+import htsjdk.samtools.{
+  SAMFileHeader,
+  SAMFileWriter,
+  SAMFileWriterFactory,
+  SAMRecord
+}
 import htsjdk.tribble.readers.{
   AsciiLineReader,
   AsciiLineReaderIterator,
@@ -55,6 +61,9 @@ class FastqInterleaverArgs extends Args4jBase {
 
   @Argument(required = true, metaVar = "OUTPUT", usage = "Location to write interleaved FASTQ.", index = 2)
   var outputPath: String = null
+
+  @Args4jOption(required = false, name = "-as_bam", usage = "Saves the output as BAM.")
+  var asBam: Boolean = false
 }
 
 /**
@@ -99,24 +108,91 @@ class FastqInterleaver(protected val args: FastqInterleaverArgs) extends BDGSpar
     })
 
     // wrap input streams in line readers
-    val pair1Reader = new AsciiLineReader(cIs1)
-    val pair2Reader = new AsciiLineReader(cIs2)
+    val pair1Reader = new AsciiLineReaderIterator(new AsciiLineReader(cIs1))
+    val pair2Reader = new AsciiLineReaderIterator(new AsciiLineReader(cIs2))
 
     // interleave the streams
-    interleaveStreams(new AsciiLineReaderIterator(pair1Reader),
-      new AsciiLineReaderIterator(pair2Reader),
-      cOs)
+    if (args.asBam) {
+      val header = new SAMFileHeader()
+      header.setGroupOrder(SAMFileHeader.GroupOrder.query)
+      val bamWriter = new SAMFileWriterFactory()
+        .makeBAMWriter(header, true, os)
+      interleaveStreamsAsBam(pair1Reader, pair2Reader,
+        bamWriter,
+        header,
+        new SAMRecord(header))
+    } else {
+      interleaveStreamsAsFastq(pair1Reader, pair2Reader, cOs)
+    }
+  }
+
+  @tailrec private def interleaveStreamsAsBam(pair1Reader: LineIterator,
+                                              pair2Reader: LineIterator,
+                                              writer: SAMFileWriter,
+                                              header: SAMFileHeader,
+                                              record: SAMRecord,
+                                              lineInPair: Int = 0,
+                                              read1: Boolean = true) {
+    if (!pair2Reader.hasNext) {
+      assert(lineInPair == 0,
+        "File ended in the middle of a FASTQ record.")
+      writer.close()
+    } else {
+
+      val (nextLineInPair, nextRead1, nextRecord) = if (lineInPair == 3) {
+        (0, !read1, new SAMRecord(header))
+      } else {
+        (lineInPair + 1, read1, record)
+      }
+
+      val fastqLine = if (read1) {
+        assert(pair1Reader.hasNext, "File 1 ended before file 2.")
+        assert(pair2Reader.hasNext, "File 2 ended before file 1.")
+        pair1Reader.next
+      } else {
+        pair2Reader.next
+      }
+
+      if (lineInPair == 0) {
+        // @readname
+        record.setReadName(fastqLine.drop(1))
+      } else if (lineInPair == 1) {
+        // read sequence
+        record.setReadString(fastqLine)
+      } else if (lineInPair == 3) {
+        // read qualities
+        record.setBaseQualityString(fastqLine)
+
+        // set other metadata
+        record.setReadPairedFlag(true)
+        record.setFirstOfPairFlag(read1)
+        record.setSecondOfPairFlag(!read1)
+        record.setReadUnmappedFlag(true)
+        record.setMateUnmappedFlag(true)
+
+        // and write!
+        writer.addAlignment(record)
+      } else {
+        assert(lineInPair == 2,
+          "Invalid line number (%d) in read.".format(lineInPair))
+      }
+
+      interleaveStreamsAsBam(pair1Reader, pair2Reader,
+        writer, header, nextRecord,
+        nextLineInPair,
+        nextRead1)
+    }
   }
 
   // java.io.OutputStream takes the lower 8 bytes of an int to write a byte
   // odd decision, but we'll play along
   private val newline = '\n'.toInt
 
-  @tailrec private def interleaveStreams(pair1Reader: LineIterator,
-                                         pair2Reader: LineIterator,
-                                         os: OutputStream,
-                                         lineInPair: Int = 0,
-                                         read1: Boolean = true) {
+  @tailrec private def interleaveStreamsAsFastq(pair1Reader: LineIterator,
+                                                pair2Reader: LineIterator,
+                                                os: OutputStream,
+                                                lineInPair: Int = 0,
+                                                read1: Boolean = true) {
     if (!pair2Reader.hasNext) {
       assert(lineInPair == 0,
         "File ended in the middle of a FASTQ record.")
@@ -142,7 +218,7 @@ class FastqInterleaver(protected val args: FastqInterleaverArgs) extends BDGSpar
       os.write(fastqLine.getBytes())
       os.write(newline)
 
-      interleaveStreams(pair1Reader,
+      interleaveStreamsAsFastq(pair1Reader,
         pair2Reader,
         os,
         nextLineInPair,
