@@ -87,7 +87,6 @@ class Bowtie(protected val args: BowtieArgs) extends BDGSparkCommand[BowtieArgs]
       "--12",
       "-").mkString(" ")
     val output: AlignmentRecordRDD = input.pipe[AlignmentRecord, AlignmentRecordRDD, Tab5InFormatter](bowtieCommand)
-      .transform()
 
     output.save(args)
   }

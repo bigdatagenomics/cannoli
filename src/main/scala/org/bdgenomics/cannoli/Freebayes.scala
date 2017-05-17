@@ -104,7 +104,6 @@ class Freebayes(protected val args: FreebayesArgs) extends BDGSparkCommand[Freeb
     }
 
     val output: VariantContextRDD = input.pipe[VariantContext, VariantContextRDD, BAMInFormatter](freebayesCommand)
-      .transform(_.cache())
 
     output.saveAsVcf(args.outputPath, args.asSingleFile, stringency)
   }

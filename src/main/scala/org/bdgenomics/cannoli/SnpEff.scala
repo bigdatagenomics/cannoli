@@ -104,7 +104,6 @@ class SnpEff(protected val args: SnpEffArgs) extends BDGSparkCommand[SnpEffArgs]
     }
 
     val output: VariantContextRDD = input.pipe[VariantContext, VariantContextRDD, VCFInFormatter](snpEffCommand)
-      .transform(_.cache())
 
     output.saveAsVcf(args.outputPath, args.asSingleFile, stringency)
   }
