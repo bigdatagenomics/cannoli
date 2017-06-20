@@ -44,7 +44,7 @@ class FreebayesArgs extends Args4jBase with ADAMSaveAnyArgs with ParquetArgs {
   @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe from.", index = 0)
   var inputPath: String = null
 
-  @Argument(required = true, metaVar = "OUTPUT", usage = "Location to pipe to.", index = 1)
+  @Argument(required = true, metaVar = "OUTPUT", usage = "Location to pipe to, in VCF format.", index = 1)
   var outputPath: String = null
 
   @Args4jOption(required = false, name = "-freebayes_path", usage = "Path to the Freebayes executable. Defaults to freebayes.")
@@ -86,7 +86,7 @@ class Freebayes(protected val args: FreebayesArgs) extends BDGSparkCommand[Freeb
     val input: AlignmentRecordRDD = sc.loadAlignments(args.inputPath, stringency = stringency)
 
     implicit val tFormatter = BAMInFormatter
-    implicit val uFormatter = new VCFOutFormatter(DefaultHeaderLines.allHeaderLines)
+    implicit val uFormatter = new VCFOutFormatter
 
     val freebayesCommand = if (args.useDocker) {
       Seq("docker",
@@ -105,6 +105,6 @@ class Freebayes(protected val args: FreebayesArgs) extends BDGSparkCommand[Freeb
 
     val output: VariantContextRDD = input.pipe[VariantContext, VariantContextRDD, BAMInFormatter](freebayesCommand)
 
-    output.saveAsVcf(args.outputPath, args.asSingleFile, stringency)
+    output.saveAsVcf(args, stringency)
   }
 }

@@ -43,10 +43,10 @@ object SnpEff extends BDGCommandCompanion {
 }
 
 class SnpEffArgs extends Args4jBase with ADAMSaveAnyArgs with ParquetArgs {
-  @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe from.", index = 0)
+  @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe from, in VCF format.", index = 0)
   var inputPath: String = null
 
-  @Argument(required = true, metaVar = "OUTPUT", usage = "Location to pipe to.", index = 1)
+  @Argument(required = true, metaVar = "OUTPUT", usage = "Location to pipe to, in VCF format.", index = 1)
   var outputPath: String = null
 
   @Args4jOption(required = true, name = "-database", usage = "SnpEff database name. Defaults to GRCh38.82.")
@@ -88,7 +88,7 @@ class SnpEff(protected val args: SnpEffArgs) extends BDGSparkCommand[SnpEffArgs]
     val input: VariantContextRDD = sc.loadVcf(args.inputPath, stringency)
 
     implicit val tFormatter = VCFInFormatter
-    implicit val uFormatter = new VCFOutFormatter(input.headerLines)
+    implicit val uFormatter = new VCFOutFormatter
 
     val snpEffCommand = if (args.useDocker) {
       Seq("docker",
@@ -105,6 +105,6 @@ class SnpEff(protected val args: SnpEffArgs) extends BDGSparkCommand[SnpEffArgs]
 
     val output: VariantContextRDD = input.pipe[VariantContext, VariantContextRDD, VCFInFormatter](snpEffCommand)
 
-    output.saveAsVcf(args.outputPath, args.asSingleFile, stringency)
+    output.saveAsVcf(args, stringency)
   }
 }
