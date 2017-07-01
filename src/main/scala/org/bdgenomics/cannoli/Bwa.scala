@@ -69,6 +69,9 @@ class BwaArgs extends Args4jBase with ADAMSaveAnyArgs with ParquetArgs {
   @Args4jOption(required = false, name = "-defer_merging", usage = "Defers merging single file output.")
   var deferMerging: Boolean = false
 
+  @Args4jOption(required = false, name = "-disable_fast_concat", usage = "Disables the parallel file concatenation engine.")
+  var disableFastConcat: Boolean = false
+
   @Args4jOption(required = false, name = "-bwa_path", usage = "Path to the BWA executable. Defaults to bwa.")
   var bwaPath: String = "bwa"
 

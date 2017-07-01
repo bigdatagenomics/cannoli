@@ -55,6 +55,9 @@ class Bowtie2Args extends Args4jBase with ADAMSaveAnyArgs with ParquetArgs {
   @Args4jOption(required = false, name = "-defer_merging", usage = "Defers merging single file output.")
   var deferMerging: Boolean = false
 
+  @Args4jOption(required = false, name = "-disable_fast_concat", usage = "Disables the parallel file concatenation engine.")
+  var disableFastConcat: Boolean = false
+
   @Args4jOption(required = false, name = "-stringency", usage = "Stringency level for various checks; can be SILENT, LENIENT, or STRICT. Defaults to STRICT.")
   var stringency: String = "STRICT"
 
@@ -77,7 +80,6 @@ class Bowtie2(protected val args: Bowtie2Args) extends BDGSparkCommand[Bowtie2Ar
 
     val bowtie2Command = "bowtie2 -x " + args.indexPath + " --interleaved -"
     val output: AlignmentRecordRDD = input.pipe[AlignmentRecord, AlignmentRecordRDD, InterleavedFASTQInFormatter](bowtie2Command)
-      .transform(_.cache())
 
     output.save(args)
   }
