@@ -69,6 +69,9 @@ class BedtoolsArgs extends Args4jBase with ADAMSaveAnyArgs with ParquetArgs {
   @Args4jOption(required = false, name = "-single", usage = "Saves OUTPUT as single file.")
   var asSingleFile: Boolean = false
 
+  @Args4jOption(required = false, name = "-disable_fast_concat", usage = "Disables the parallel file concatenation engine.")
+  var disableFastConcat: Boolean = false
+
   @Args4jOption(required = false, name = "-defer_merging", usage = "Defers merging single file output.")
   var deferMerging: Boolean = false
 
@@ -117,6 +120,8 @@ class Bedtools(protected val args: BedtoolsArgs) extends BDGSparkCommand[Bedtool
     implicit val uFormatter = new BEDOutFormatter
     val pipedFeatures: FeatureRDD = features.pipe(bedtoolsCommand)
 
-    pipedFeatures.save(args.outputPath, args.asSingleFile)
+    pipedFeatures.save(args.outputPath,
+      asSingleFile = args.asSingleFile,
+      disableFastConcat = args.disableFastConcat)
   }
 }
