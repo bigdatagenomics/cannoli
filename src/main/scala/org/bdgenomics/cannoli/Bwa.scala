@@ -85,6 +85,9 @@ class BwaArgs extends Args4jBase with ADAMSaveAnyArgs with ParquetArgs {
   @Args4jOption(required = false, name = "-use_docker", usage = "If true, uses Docker to launch BWA. If false, uses the BWA executable path.")
   var useDocker: Boolean = false
 
+  @Args4jOption(required = false, name = "-docker_cmd", usage = "The docker command to run. Defaults to 'docker'.")
+  var dockerCmd: String = "docker"
+
   @Args4jOption(required = false, name = "-force_load_ifastq", usage = "Forces loading using interleaved FASTQ.")
   var forceLoadIfastq: Boolean = false
 
@@ -169,7 +172,7 @@ class Bwa(protected val args: BwaArgs) extends BDGSparkCommand[BwaArgs] with Log
           Seq.empty)
       }
 
-      (filesToMount, Seq("docker",
+      (filesToMount, Seq(args.dockerCmd,
         "-v", "%s:%s".format(mountpoint, mountpoint),
         "run",
         args.dockerImage,
