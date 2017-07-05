@@ -20,7 +20,7 @@ package org.bdgenomics.cannoli.util
 import java.io.{ BufferedWriter, OutputStreamWriter }
 import htsjdk.samtools.SAMSequenceDictionaryCodec
 import htsjdk.samtools.util.BufferedLineReader
-import org.apache.hadoop.fs.{ FileSystem, Path }
+import org.apache.hadoop.fs.Path
 import org.apache.spark.SparkContext
 import org.bdgenomics.adam.models.SequenceDictionary
 

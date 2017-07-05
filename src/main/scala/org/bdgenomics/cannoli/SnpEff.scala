@@ -19,8 +19,6 @@ package org.bdgenomics.cannoli
 
 import htsjdk.samtools.ValidationStringency
 import org.apache.spark.SparkContext
-import org.apache.spark.SparkContext._
-import org.apache.spark.rdd.RDD
 import org.bdgenomics.adam.models.VariantContext
 import org.bdgenomics.adam.rdd.ADAMContext._
 import org.bdgenomics.adam.rdd.ADAMSaveAnyArgs
@@ -82,7 +80,7 @@ class SnpEffArgs extends Args4jBase with ADAMSaveAnyArgs with ParquetArgs {
  */
 class SnpEff(protected val args: SnpEffArgs) extends BDGSparkCommand[SnpEffArgs] with Logging {
   val companion = SnpEff
-  val stringency = ValidationStringency.valueOf(args.stringency)
+  val stringency: ValidationStringency = ValidationStringency.valueOf(args.stringency)
 
   def run(sc: SparkContext) {
     val input: VariantContextRDD = sc.loadVcf(args.inputPath, stringency)

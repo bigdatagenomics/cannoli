@@ -19,9 +19,6 @@ package org.bdgenomics.cannoli
 
 import htsjdk.samtools.ValidationStringency
 import org.apache.spark.SparkContext
-import org.apache.spark.SparkContext._
-import org.apache.spark.rdd.RDD
-import org.bdgenomics.adam.converters.DefaultHeaderLines
 import org.bdgenomics.adam.models.VariantContext
 import org.bdgenomics.adam.rdd.ADAMContext._
 import org.bdgenomics.adam.rdd.ADAMSaveAnyArgs
@@ -80,7 +77,7 @@ class FreebayesArgs extends Args4jBase with ADAMSaveAnyArgs with ParquetArgs {
  */
 class Freebayes(protected val args: FreebayesArgs) extends BDGSparkCommand[FreebayesArgs] with Logging {
   val companion = Freebayes
-  val stringency = ValidationStringency.valueOf(args.stringency)
+  val stringency: ValidationStringency = ValidationStringency.valueOf(args.stringency)
 
   def run(sc: SparkContext) {
     val input: AlignmentRecordRDD = sc.loadAlignments(args.inputPath, stringency = stringency)
