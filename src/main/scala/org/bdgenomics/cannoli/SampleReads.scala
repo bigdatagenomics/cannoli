@@ -43,27 +43,23 @@ class SampleReadsArgs extends Args4jBase with ADAMSaveAnyArgs with ParquetArgs {
   @Argument(required = true, metaVar = "INPUT", usage = "Location to read from, in interleaved FASTQ format.", index = 0)
   var inputPath: String = null
 
-  @Argument(required = true, metaVar = "OUTPUT", usage = "Location to write Parquet data to.", index = 1)
+  @Argument(required = true, metaVar = "OUTPUT", usage = "Location to write Parquet fragments to.", index = 1)
   var outputPath: String = null
 
   @Args4jOption(required = true, name = "-fraction", usage = "Expected size of the sample as a fraction of the input size, [0.0, 1.0].")
   var fraction: Double = 0.5d
 
-  @Args4jOption(required = true, name = "-seed", usage = "Random number seed.")
-  var seed: Long = 42L
-
-  // FragmentRDD only supports saving to Parquet
-  //@Args4jOption(required = false, name = "-single", usage = "Saves OUTPUT as single file.")
-  var asSingleFile: Boolean = false
-
-  //@Args4jOption(required = false, name = "-defer_merging", usage = "Defers merging single file output.")
-  var deferMerging: Boolean = false
+  @Args4jOption(required = false, name = "-seed", usage = "Random number seed. Defaults to current timestamp.")
+  var seed: Long = System.currentTimeMillis
 
   @Args4jOption(required = false, name = "-stringency", usage = "Stringency level for various checks; can be SILENT, LENIENT, or STRICT. Defaults to STRICT.")
   var stringency: String = "STRICT"
 
   // must be defined due to ADAMSaveAnyArgs, but unused here
   var sortFastqOutput: Boolean = false
+  var asSingleFile: Boolean = false
+  var deferMerging: Boolean = false
+  var disableFastConcat: Boolean = false
 }
 
 /**
@@ -76,6 +72,7 @@ class SampleReads(protected val args: SampleReadsArgs) extends BDGSparkCommand[S
   def run(sc: SparkContext) {
     val fragments: FragmentRDD = sc.loadFragments(args.inputPath)
 
+    log.info("Sampling fraction %f with seed %d".format(args.fraction, args.seed))
     fragments
       .transform(_.sample(withReplacement = false, args.fraction, args.seed))
       .save(args.outputPath)
