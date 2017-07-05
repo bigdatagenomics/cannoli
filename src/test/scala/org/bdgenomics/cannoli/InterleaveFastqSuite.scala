@@ -30,7 +30,7 @@ import org.apache.hadoop.io.compress.{
 import org.bdgenomics.adam.rdd.ADAMContext._
 import org.bdgenomics.utils.misc.SparkFunSuite
 
-class FastqInterleaverSuite extends SparkFunSuite {
+class InterleaveFastqSuite extends SparkFunSuite {
 
   sparkTest("interleave two paired FASTQ files") {
     val file1 = testFile("fastq_sample1_1.fq")
@@ -38,7 +38,7 @@ class FastqInterleaverSuite extends SparkFunSuite {
     val interleavedFile = testFile("interleaved_fastq_sample1.ifq")
     val outputFile = tmpFile("test.ifq")
 
-    FastqInterleaver(Array(file1, file2, outputFile)).run(sc)
+    InterleaveFastq(Array(file1, file2, outputFile)).run(sc)
 
     checkFiles(outputFile, interleavedFile)
   }
@@ -48,7 +48,7 @@ class FastqInterleaverSuite extends SparkFunSuite {
     val file2 = testFile("fastq_sample1_2.fq")
     val outputFile = tmpFile("test.bam")
 
-    FastqInterleaver(Array(file1, file2, outputFile, "-as_bam")).run(sc)
+    InterleaveFastq(Array(file1, file2, outputFile, "-as_bam")).run(sc)
 
     val fragments = sc.loadFragments(outputFile).rdd.collect
     assert(fragments.length === 6)
@@ -85,19 +85,19 @@ class FastqInterleaverSuite extends SparkFunSuite {
     val doublyInterleavedFile = testFile("doubly_interleaved_fastq.ifq")
 
     // first, interleave to gzip
-    FastqInterleaver(Array(file1, file2, outputFile1)).run(sc)
+    InterleaveFastq(Array(file1, file2, outputFile1)).run(sc)
     val gzipCodec = new GzipCodec()
     gzipCodec.setConf(sc.hadoopConfiguration)
     checkCodecAndLines(outputFile1, gzipCodec, 6)
 
     // then interleave to bzip2
-    FastqInterleaver(Array(file1, file2, outputFile2)).run(sc)
+    InterleaveFastq(Array(file1, file2, outputFile2)).run(sc)
     val bzipCodec = new BZip2Codec()
     bzipCodec.setConf(sc.hadoopConfiguration)
     checkCodecAndLines(outputFile2, bzipCodec, 6)
 
     // then interleave the two zipped files
-    FastqInterleaver(Array(outputFile1, outputFile2, outputFile3)).run(sc)
+    InterleaveFastq(Array(outputFile1, outputFile2, outputFile3)).run(sc)
 
     checkFiles(outputFile3, doublyInterleavedFile)
   }
