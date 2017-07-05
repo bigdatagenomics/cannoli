@@ -27,6 +27,7 @@ import org.apache.hadoop.io.compress.{
   CompressionCodec,
   GzipCodec
 }
+import org.bdgenomics.adam.rdd.ADAMContext._
 import org.bdgenomics.utils.misc.SparkFunSuite
 
 class FastqInterleaverSuite extends SparkFunSuite {
@@ -40,6 +41,22 @@ class FastqInterleaverSuite extends SparkFunSuite {
     FastqInterleaver(Array(file1, file2, outputFile)).run(sc)
 
     checkFiles(outputFile, interleavedFile)
+  }
+
+  sparkTest("interleave two paired FASTQ files and save as BAM") {
+    val file1 = testFile("fastq_sample1_1.fq")
+    val file2 = testFile("fastq_sample1_2.fq")
+    val outputFile = tmpFile("test.bam")
+
+    FastqInterleaver(Array(file1, file2, outputFile, "-as_bam")).run(sc)
+
+    val fragments = sc.loadFragments(outputFile).rdd.collect
+    assert(fragments.size === 6)
+    /*
+     * see: https://github.com/bigdatagenomics/adam/issues/1530
+     * assert(fragments.size === 3)
+     * assert(fragments.forall(f => f.getAlignments.size == 2))
+     */
   }
 
   def checkCodecAndLines(fileName: String,
