@@ -40,16 +40,16 @@ import org.bdgenomics.utils.misc.Logging
 import org.kohsuke.args4j.{ Argument, Option => Args4jOption }
 import scala.annotation.tailrec
 
-object FastqInterleaver extends BDGCommandCompanion {
-  val commandName = "fastqInterleaver"
-  val commandDescription = "Interleaves two FASTQ files"
+object InterleaveFastq extends BDGCommandCompanion {
+  val commandName = "interleaveFastq"
+  val commandDescription = "Interleaves two FASTQ files."
 
   def apply(cmdLine: Array[String]) = {
-    new FastqInterleaver(Args4j[FastqInterleaverArgs](cmdLine))
+    new InterleaveFastq(Args4j[InterleaveFastqArgs](cmdLine))
   }
 }
 
-class FastqInterleaverArgs extends Args4jBase {
+class InterleaveFastqArgs extends Args4jBase {
   @Argument(required = true, metaVar = "INPUT1", usage = "First of pair reads in (possibly compressed) FASTQ", index = 0)
   var input1Path: String = null
 
@@ -66,8 +66,8 @@ class FastqInterleaverArgs extends Args4jBase {
 /**
  * Interleaves two FASTQ files.
  */
-class FastqInterleaver(protected val args: FastqInterleaverArgs) extends BDGSparkCommand[FastqInterleaverArgs] with Logging {
-  val companion = FastqInterleaver
+class InterleaveFastq(protected val args: InterleaveFastqArgs) extends BDGSparkCommand[InterleaveFastqArgs] with Logging {
+  val companion = InterleaveFastq
 
   def run(sc: SparkContext) {
 
