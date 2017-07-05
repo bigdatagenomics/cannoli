@@ -17,11 +17,8 @@
  */
 package org.bdgenomics.cannoli
 
-import htsjdk.samtools.ValidationStringency
 import org.apache.hadoop.fs.{ FileSystem, Path }
 import org.apache.spark.SparkContext
-import org.apache.spark.SparkContext._
-import org.apache.spark.rdd.RDD
 import org.bdgenomics.adam.models.{
   RecordGroup,
   RecordGroupDictionary

@@ -21,7 +21,7 @@ import htsjdk.tribble.readers.{
   AsciiLineReader,
   AsciiLineReaderIterator
 }
-import org.apache.hadoop.fs.{ FileSystem, Path }
+import org.apache.hadoop.fs.Path
 import org.apache.hadoop.io.compress.{
   BZip2Codec,
   CompressionCodec,
@@ -51,10 +51,10 @@ class FastqInterleaverSuite extends SparkFunSuite {
     FastqInterleaver(Array(file1, file2, outputFile, "-as_bam")).run(sc)
 
     val fragments = sc.loadFragments(outputFile).rdd.collect
-    assert(fragments.size === 6)
+    assert(fragments.length === 6)
     /*
      * see: https://github.com/bigdatagenomics/adam/issues/1530
-     * assert(fragments.size === 3)
+     * assert(fragments.length === 3)
      * assert(fragments.forall(f => f.getAlignments.size == 2))
      */
   }

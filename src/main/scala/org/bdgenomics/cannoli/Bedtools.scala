@@ -18,8 +18,6 @@
 package org.bdgenomics.cannoli
 
 import org.apache.spark.SparkContext
-import org.apache.spark.SparkContext._
-import org.apache.spark.rdd.RDD
 import org.bdgenomics.adam.rdd.ADAMContext._
 import org.bdgenomics.adam.rdd.ADAMSaveAnyArgs
 import org.bdgenomics.adam.rdd.feature.{
@@ -27,7 +25,6 @@ import org.bdgenomics.adam.rdd.feature.{
   BEDInFormatter,
   BEDOutFormatter
 }
-import org.bdgenomics.formats.avro.Feature
 import org.bdgenomics.utils.cli._
 import org.bdgenomics.utils.misc.Logging
 import org.kohsuke.args4j.{ Argument, Option => Args4jOption }
@@ -52,7 +49,7 @@ class BedtoolsArgs extends Args4jBase with ADAMSaveAnyArgs with ParquetArgs {
   var a: String = null
 
   @Args4jOption(required = false, name = "-b", usage = "Bedtools intersect -b option. One of {-a,-b} should be left unspecified to accept piped input.")
-  var b: String = null;
+  var b: String = null
 
   @Args4jOption(required = false, name = "-sorted", usage = "Bedtools intersect -sorted option. Inputs must be sorted by chromosome and then by start position.")
   var sorted: Boolean = false

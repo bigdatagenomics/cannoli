@@ -32,11 +32,8 @@ import java.io.{
   InputStream,
   OutputStream
 }
-import org.apache.hadoop.fs.{ FileSystem, Path }
-import org.apache.hadoop.io.compress.{
-  CompressionCodec,
-  CompressionCodecFactory
-}
+import org.apache.hadoop.fs.Path
+import org.apache.hadoop.io.compress.CompressionCodecFactory
 import org.apache.spark.SparkContext
 import org.bdgenomics.utils.cli._
 import org.bdgenomics.utils.misc.Logging

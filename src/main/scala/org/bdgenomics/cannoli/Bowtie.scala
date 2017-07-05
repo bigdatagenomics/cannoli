@@ -19,8 +19,6 @@ package org.bdgenomics.cannoli
 
 import htsjdk.samtools.ValidationStringency
 import org.apache.spark.SparkContext
-import org.apache.spark.SparkContext._
-import org.apache.spark.rdd.RDD
 import org.bdgenomics.adam.rdd.ADAMContext._
 import org.bdgenomics.adam.rdd.ADAMSaveAnyArgs
 import org.bdgenomics.adam.rdd.fragment.{ FragmentRDD, InterleavedFASTQInFormatter }
@@ -70,7 +68,7 @@ class BowtieArgs extends Args4jBase with ADAMSaveAnyArgs with ParquetArgs {
  */
 class Bowtie(protected val args: BowtieArgs) extends BDGSparkCommand[BowtieArgs] with Logging {
   val companion = Bowtie
-  val stringency = ValidationStringency.valueOf(args.stringency)
+  val stringency: ValidationStringency = ValidationStringency.valueOf(args.stringency)
 
   def run(sc: SparkContext) {
     val input: FragmentRDD = sc.loadFragments(args.inputPath)
