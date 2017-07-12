@@ -196,11 +196,12 @@ class Bwa(protected val args: BwaArgs) extends BDGSparkCommand[BwaArgs] with Log
     }
 
     val output: AlignmentRecordRDD = input.pipe[AlignmentRecord, AlignmentRecordRDD, InterleavedFASTQInFormatter](bwaCommand)
-      .copy(recordGroups = RecordGroupDictionary(Seq(RecordGroup(sample, sample))))
+
+    val outputWithRecordGroups = AlignmentRecordRDD(output.rdd, output.sequences, RecordGroupDictionary(Seq(RecordGroup(sample, sample))))
 
     val outputMaybeWithSequences = Option(args.sequenceDictionary).fold(output)(sdPath => {
       val sequences = SequenceDictionaryReader(sdPath, sc)
-      output.copy(sequences = sequences)
+      AlignmentRecordRDD(outputWithRecordGroups.rdd, sequences, outputWithRecordGroups.recordGroups)
     })
 
     if (!args.asFragments) {
