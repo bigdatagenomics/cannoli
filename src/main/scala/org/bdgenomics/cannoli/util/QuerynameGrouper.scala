@@ -29,9 +29,8 @@ private[cannoli] object QuerynameGrouper extends Serializable {
   }
 
   def apply(rdd: AlignmentRecordRDD): FragmentRDD = {
-    new FragmentRDD(apply(rdd.rdd),
+    FragmentRDD(apply(rdd.rdd),
       rdd.sequences,
-      rdd.recordGroups,
-      optPartitionMap = None)
+      rdd.recordGroups)
   }
 }
