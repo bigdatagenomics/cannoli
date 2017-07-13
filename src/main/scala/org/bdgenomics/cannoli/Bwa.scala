@@ -27,10 +27,7 @@ import org.bdgenomics.adam.rdd.ADAMContext._
 import org.bdgenomics.adam.rdd.ADAMSaveAnyArgs
 import org.bdgenomics.adam.rdd.fragment.{ FragmentRDD, InterleavedFASTQInFormatter }
 import org.bdgenomics.adam.rdd.read.{ AlignmentRecordRDD, AnySAMOutFormatter }
-import org.bdgenomics.cannoli.util.{
-  QuerynameGrouper,
-  SequenceDictionaryReader
-}
+import org.bdgenomics.cannoli.util.QuerynameGrouper
 import org.bdgenomics.formats.avro.AlignmentRecord
 import org.bdgenomics.utils.cli._
 import org.bdgenomics.utils.misc.Logging
@@ -199,7 +196,7 @@ class Bwa(protected val args: BwaArgs) extends BDGSparkCommand[BwaArgs] with Log
       .replaceRecordGroups(RecordGroupDictionary(Seq(RecordGroup(sample, sample))))
 
     val outputMaybeWithSequences = Option(args.sequenceDictionary).fold(output)(sdPath => {
-      val sequences = SequenceDictionaryReader(sdPath, sc)
+      val sequences = sc.loadSequenceDictionary(sdPath)
       output.replaceSequences(sequences)
     })
 
