@@ -155,7 +155,7 @@
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>build-helper-maven-plugin</artifactId>
-          <version>1.10</version>
+          <version>1.12</version>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -232,6 +232,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
+        <version>1.4.1</version>
         <executions>
           <execution>
             <id>enforce-java</id>
@@ -343,7 +344,6 @@
         <artifactId>utils-misc_${scala.version.prefix}</artifactId>
         <version>${utils.version}</version>
         <type>test-jar</type>
-        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.spark</groupId>
