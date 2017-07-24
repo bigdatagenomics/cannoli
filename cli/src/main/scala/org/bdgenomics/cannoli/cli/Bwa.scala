@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bdgenomics.cannoli
+package org.bdgenomics.cannoli.cli
 
 import org.apache.hadoop.fs.{ FileSystem, Path }
 import org.apache.spark.SparkContext

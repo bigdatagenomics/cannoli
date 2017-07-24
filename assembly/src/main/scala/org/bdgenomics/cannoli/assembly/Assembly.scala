@@ -15,23 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bdgenomics.cannoli
-
-import org.bdgenomics.adam.cli.{ ADAMMain, CommandGroup }
-import org.bdgenomics.adam.cli.ADAMMain.defaultCommandGroups
+package org.bdgenomics.adam.assembly
 
 /**
- * Cannoli.
+ * Empty assembly object, allows Maven build to create sources and javadoc artifacts.
  */
-object Cannoli {
-  def main(args: Array[String]) {
-    val commandGroup = List(CommandGroup("CANNOLI", List(Bedtools,
-      Bowtie,
-      Bowtie2,
-      Bwa,
-      Freebayes,
-      SnpEff)),
-      CommandGroup("CANNOLI TOOLS", List(InterleaveFastq, SampleReads)))
-    new ADAMMain(defaultCommandGroups.union(commandGroup))(args)
-  }
+object Assembly {
+  // empty
 }

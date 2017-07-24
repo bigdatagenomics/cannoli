@@ -15,45 +15,48 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bdgenomics.cannoli
+package org.bdgenomics.cannoli.cli
 
 import htsjdk.samtools.ValidationStringency
 import org.apache.spark.SparkContext
 import org.bdgenomics.adam.models.VariantContext
 import org.bdgenomics.adam.rdd.ADAMContext._
 import org.bdgenomics.adam.rdd.ADAMSaveAnyArgs
-import org.bdgenomics.adam.rdd.read.{ AlignmentRecordRDD, BAMInFormatter }
-import org.bdgenomics.adam.rdd.variant.{ VariantContextRDD, VCFOutFormatter }
+import org.bdgenomics.adam.rdd.variant.{
+  VariantContextRDD,
+  VCFInFormatter,
+  VCFOutFormatter
+}
 import org.bdgenomics.utils.cli._
 import org.bdgenomics.utils.misc.Logging
 import org.kohsuke.args4j.{ Argument, Option => Args4jOption }
 
-object Freebayes extends BDGCommandCompanion {
-  val commandName = "freebayes"
-  val commandDescription = "ADAM Pipe API wrapper for Freebayes."
+object SnpEff extends BDGCommandCompanion {
+  val commandName = "snpEff"
+  val commandDescription = "ADAM Pipe API wrapper for SnpEff."
 
   def apply(cmdLine: Array[String]) = {
-    new Freebayes(Args4j[FreebayesArgs](cmdLine))
+    new SnpEff(Args4j[SnpEffArgs](cmdLine))
   }
 }
 
-class FreebayesArgs extends Args4jBase with ADAMSaveAnyArgs with ParquetArgs {
-  @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe from.", index = 0)
+class SnpEffArgs extends Args4jBase with ADAMSaveAnyArgs with ParquetArgs {
+  @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe from, in VCF format.", index = 0)
   var inputPath: String = null
 
   @Argument(required = true, metaVar = "OUTPUT", usage = "Location to pipe to, in VCF format.", index = 1)
   var outputPath: String = null
 
-  @Args4jOption(required = false, name = "-freebayes_path", usage = "Path to the Freebayes executable. Defaults to freebayes.")
-  var freebayesPath: String = "freebayes"
+  @Args4jOption(required = true, name = "-database", usage = "SnpEff database name. Defaults to GRCh38.82.")
+  var snpEffDatabase: String = "GRCh38.82"
 
-  @Args4jOption(required = true, name = "-freebayes_reference", usage = "Reference sequence for analysis. An index file (.fai) will be created if none exists.")
-  var referencePath: String = null
+  @Args4jOption(required = false, name = "-snpeff_path", usage = "Path to the SnpEff executable. Defaults to snpeff.")
+  var snpEffPath: String = "snpeff"
 
-  @Args4jOption(required = false, name = "-docker_image", usage = "Docker image to use. Defaults to heuermh/freebayes.")
-  var dockerImage: String = "heuermh/freebayes"
+  @Args4jOption(required = false, name = "-docker_image", usage = "Docker image to use. Defaults to heuermh/snpeff.")
+  var dockerImage: String = "heuermh/snpeff"
 
-  @Args4jOption(required = false, name = "-use_docker", usage = "If true, uses Docker to launch Freebayes. If false, uses the Freebayes executable path.")
+  @Args4jOption(required = false, name = "-use_docker", usage = "If true, uses Docker to launch SnpEff. If false, uses the SnpEff executable path.")
   var useDocker: Boolean = false
 
   @Args4jOption(required = false, name = "-single", usage = "Saves OUTPUT as single file.")
@@ -73,34 +76,32 @@ class FreebayesArgs extends Args4jBase with ADAMSaveAnyArgs with ParquetArgs {
 }
 
 /**
- * Freebayes.
+ * SnpEff.
  */
-class Freebayes(protected val args: FreebayesArgs) extends BDGSparkCommand[FreebayesArgs] with Logging {
-  val companion = Freebayes
+class SnpEff(protected val args: SnpEffArgs) extends BDGSparkCommand[SnpEffArgs] with Logging {
+  val companion = SnpEff
   val stringency: ValidationStringency = ValidationStringency.valueOf(args.stringency)
 
   def run(sc: SparkContext) {
-    val input: AlignmentRecordRDD = sc.loadAlignments(args.inputPath, stringency = stringency)
+    val input: VariantContextRDD = sc.loadVcf(args.inputPath, stringency)
 
-    implicit val tFormatter = BAMInFormatter
+    implicit val tFormatter = VCFInFormatter
     implicit val uFormatter = new VCFOutFormatter
 
-    val freebayesCommand = if (args.useDocker) {
+    val snpEffCommand = if (args.useDocker) {
       Seq("docker",
         "run",
         args.dockerImage,
-        "freebayes",
-        "--fasta-reference",
-        args.referencePath,
-        "--stdin").mkString(" ")
+        "snpeff",
+        "-download",
+        args.snpEffDatabase).mkString(" ")
     } else {
-      Seq(args.freebayesPath,
-        "--fasta-reference",
-        args.referencePath,
-        "--stdin").mkString(" ")
+      Seq(args.snpEffPath,
+        "-download",
+        args.snpEffDatabase).mkString(" ")
     }
 
-    val output: VariantContextRDD = input.pipe[VariantContext, VariantContextRDD, BAMInFormatter](freebayesCommand)
+    val output: VariantContextRDD = input.pipe[VariantContext, VariantContextRDD, VCFInFormatter](snpEffCommand)
       .transform(_.cache())
 
     output.saveAsVcf(args, stringency)
