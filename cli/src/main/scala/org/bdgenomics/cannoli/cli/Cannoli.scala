@@ -28,7 +28,7 @@ import org.bdgenomics.utils.cli._
 
 object Cannoli {
 
-  val commandGroups = List(CommandGroup("CANNOLI", List(Bedtools,
+  val defaultCommandGroups = List(CommandGroup("CANNOLI", List(Bedtools,
     Bowtie,
     Bowtie2,
     Bwa,
@@ -37,7 +37,7 @@ object Cannoli {
     CommandGroup("CANNOLI TOOLS", List(InterleaveFastq)))
 
   def main(args: Array[String]) {
-    new Cannoli(commandGroups)(args)
+    new Cannoli(defaultCommandGroups)(args)
   }
 }
 
@@ -46,12 +46,11 @@ private class InitArgs extends Args4jBase with ParquetArgs {}
 class Cannoli @Inject() (commandGroups: List[CommandGroup]) extends Logging {
 
   private def printLogo() {
-    print("\n")
-    println("""                             _
-               |                         |
-               |   -   -   |-  |-    -   +   +
-               |  |   | |  | | | |  | |  |   |
-               |   -   --            -   -""".stripMargin('|'))
+    print("\n\n")
+    println("""                         |   o
+               *   -   -   |-  |-    -   +
+               *  |   | |  | | | |  | |  |   |
+               *   -   --            -   -   -""".stripMargin('*'))
   }
 
   private def printVersion() {
@@ -115,6 +114,6 @@ class Cannoli @Inject() (commandGroups: List[CommandGroup]) extends Logging {
 
 class CannoliModule extends AbstractModule with ScalaModule {
   def configure() {
-    bind[List[CommandGroup]].toInstance(Cannoli.commandGroups)
+    bind[List[CommandGroup]].toInstance(Cannoli.defaultCommandGroups)
   }
 }

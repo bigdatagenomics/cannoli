@@ -24,11 +24,11 @@ Note the ```--``` argument separator between Spark arguments and Cannoli command
 ```
 $ ./bin/cannoli-submit --help
 
-                             _
-                         |
-   -   -   |-  |-    -   +   +
+                             
+                         |   o
+   -   -   |-  |-    -   +
   |   | |  | | | |  | |  |   |
-   -   --            -   -
+   -   --            -   -   -
 
 Usage: cannoli-submit [<spark-args> --] <cannoli-args>
 

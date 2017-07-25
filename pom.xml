@@ -9,7 +9,7 @@
 
   <groupId>org.bdgenomics.cannoli</groupId>
   <artifactId>cannoli-parent_2.10</artifactId>
-  <version>0.1-SNAPSHOT</version>
+  <version>0.1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Cannoli_${scala.version.prefix}</name>
   <description>Big Data Genomics ADAM Pipe API wrappers for bioinformatics tools.</description>
@@ -39,7 +39,7 @@
 
   <licenses>
     <license>
-      <name>Apache License</name>
+      <name>Apache License, Version 2.0</name>
       <url>https://github.com/bigdatagenomics/cannoli/master/LICENSE.txt</url>
       <distribution>repo</distribution>
     </license>
@@ -51,6 +51,14 @@
     <tag>HEAD</tag>
   </scm>
   <developers>
+    <developer>
+      <id>fnothaft</id>
+      <name>Frank Austin Nothaft</name>
+      <email>fnothaft@berkeley.edu</email>
+      <url>http://www.fnothaft.net</url>
+      <organization>U.C. Berkeley, Department of Electrical Engineering and  Computer Science</organization>
+      <organizationUrl>http://www.cs.berkeley.edu/</organizationUrl>
+    </developer>
     <developer>
       <id>heuermh</id>
       <name>Michael Heuer</name>
@@ -348,6 +356,16 @@
         <groupId>org.bdgenomics.adam</groupId>
         <artifactId>adam-cli_${scala.version.prefix}</artifactId>
         <version>${adam.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.bdgenomics.cannoli</groupId>
+        <artifactId>cannoli-core_${scala.version.prefix}</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.bdgenomics.cannoli</groupId>
+        <artifactId>cannoli-cli_${scala.version.prefix}</artifactId>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.bdgenomics.utils</groupId>

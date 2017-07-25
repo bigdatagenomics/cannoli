@@ -84,18 +84,18 @@ public final class About {
     }
 
     /**
-     * Return the ADAM version.
+     * Return the Cannoli version.
      *
-     * @return the ADAM version
+     * @return the Cannoli version
      */
     public String version() {
         return VERSION;
     }
 
     /**
-     * Return true if the ADAM version is a snapshot.
+     * Return true if the Cannoli version is a snapshot.
      *
-     * @return true if the ADAM version is a snapshot
+     * @return true if the Cannoli version is a snapshot
      */
     public boolean isSnapshot() {
         return VERSION.contains("SNAPSHOT");

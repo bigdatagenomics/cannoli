@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.bdgenomics.cannoli</groupId>
     <artifactId>cannoli-parent_2.10</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.1.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
@@ -46,7 +46,7 @@
         <configuration>
           <reportsDirectory>${project.build.directory}/scalatest-reports</reportsDirectory>
           <junitxml>.</junitxml>
-          <filereports>ADAMTestSuite.txt</filereports>
+          <filereports>CannoliTestSuite.txt</filereports>
           <argLine>-Xmx1024m -Dsun.io.serialization.extendedDebugInfo=true</argLine>
           <stdout>F</stdout>
         </configuration>
@@ -61,15 +61,6 @@
       </plugin>
     </plugins>
   </build>
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.bdgenomics.cannoli</groupId>
-        <artifactId>cannoli-core_${scala.version.prefix}</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
   <dependencies>
     <dependency>
       <groupId>org.apache.spark</groupId>
