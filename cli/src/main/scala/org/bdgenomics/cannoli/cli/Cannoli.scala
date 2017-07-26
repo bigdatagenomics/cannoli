@@ -43,6 +43,11 @@ object Cannoli {
 
 private class InitArgs extends Args4jBase with ParquetArgs {}
 
+/**
+ * Cannoli main.
+ *
+ * @param commandGroups List of command groups, can be injected via Guice.
+ */
 class Cannoli @Inject() (commandGroups: List[CommandGroup]) extends Logging {
 
   private def printLogo() {
@@ -112,6 +117,9 @@ class Cannoli @Inject() (commandGroups: List[CommandGroup]) extends Logging {
   }
 }
 
+/**
+ * Cannoli module, binds the default list of command groups.
+ */
 class CannoliModule extends AbstractModule with ScalaModule {
   def configure() {
     bind[List[CommandGroup]].toInstance(Cannoli.defaultCommandGroups)
