@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bdgenomics.cannoli
+package org.bdgenomics.cannoli.cli
 
 import htsjdk.samtools.ValidationStringency
 import org.apache.spark.SparkContext
@@ -32,7 +32,7 @@ import org.kohsuke.args4j.{ Argument, Option => Args4jOption }
 
 object SampleReads extends BDGCommandCompanion {
   val commandName = "sampleReads"
-  val commandDescription = "Sample reads"
+  val commandDescription = "Sample reads from interleaved FASTQ format."
 
   def apply(cmdLine: Array[String]) = {
     new SampleReads(Args4j[SampleReadsArgs](cmdLine))
@@ -63,7 +63,7 @@ class SampleReadsArgs extends Args4jBase with ADAMSaveAnyArgs with ParquetArgs {
 }
 
 /**
- * Sample reads.
+ * Sample reads from interleaved FASTQ format.
  */
 class SampleReads(protected val args: SampleReadsArgs) extends BDGSparkCommand[SampleReadsArgs] with Logging {
   val companion = SampleReads

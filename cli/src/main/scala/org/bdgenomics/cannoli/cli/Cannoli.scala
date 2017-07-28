@@ -34,7 +34,8 @@ object Cannoli {
     Bwa,
     Freebayes,
     SnpEff)),
-    CommandGroup("CANNOLI TOOLS", List(InterleaveFastq)))
+    CommandGroup("CANNOLI TOOLS", List(InterleaveFastq,
+      SampleReads)))
 
   def main(args: Array[String]) {
     new Cannoli(defaultCommandGroups)(args)
