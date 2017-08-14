@@ -6,34 +6,16 @@
     <artifactId>oss-parent</artifactId>
     <version>9</version>
   </parent>
-  <groupId>org.bdgenomics.cannoli</groupId>
-  <artifactId>cannoli_2.10</artifactId>
-  <version>0.1-SNAPSHOT</version>
-  <packaging>jar</packaging>
 
-  <name>cannoli ${scala.version.prefix}</name>
+  <groupId>org.bdgenomics.cannoli</groupId>
+  <artifactId>cannoli-parent_2.10</artifactId>
+  <version>0.1.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <name>Cannoli_${scala.version.prefix}</name>
   <description>Big Data Genomics ADAM Pipe API wrappers for bioinformatics tools.</description>
   <url>https://github.com/bigdatagenomics/cannoli</url>
   <inceptionYear>2017</inceptionYear>
-  <scm>
-    <connection>scm:git:https://github.com/bigdatagenomics/cannoli</connection>
-    <developerConnection>scm:git:https://github.com/bigdatagenomics/cannoli</developerConnection>
-    <url>https://github.com/bigdatagenomics/cannoli.git</url>
-    <tag>HEAD</tag>
-  </scm>
-  <licenses>
-    <license>
-      <name>Apache License</name>
-      <url>https://github.com/bigdatagenomics/cannoli/master/LICENSE.txt</url>
-      <distribution>repo</distribution>
-    </license>
-  </licenses>
-  <developers>
-    <developer>
-      <id>heuermh</id>
-      <name>Michael Heuer</name>
-    </developer>
-  </developers>
+
   <properties>
     <adam.version>0.23.0-SNAPSHOT</adam.version>
     <scala.version>2.10.6</scala.version>
@@ -48,6 +30,45 @@
     <scoverage.plugin.version>1.1.1</scoverage.plugin.version>
     <utils.version>0.2.13</utils.version>
   </properties>
+
+  <modules>
+    <module>core</module>
+    <module>cli</module>
+    <module>assembly</module>
+  </modules>
+
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>https://github.com/bigdatagenomics/cannoli/master/LICENSE.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <scm>
+    <connection>scm:git:https://github.com/bigdatagenomics/cannoli</connection>
+    <developerConnection>scm:git:https://github.com/bigdatagenomics/cannoli</developerConnection>
+    <url>https://github.com/bigdatagenomics/cannoli.git</url>
+    <tag>HEAD</tag>
+  </scm>
+  <developers>
+    <developer>
+      <id>fnothaft</id>
+      <name>Frank Austin Nothaft</name>
+      <email>fnothaft@berkeley.edu</email>
+      <url>http://www.fnothaft.net</url>
+      <organization>U.C. Berkeley, Department of Electrical Engineering and  Computer Science</organization>
+      <organizationUrl>http://www.cs.berkeley.edu/</organizationUrl>
+    </developer>
+    <developer>
+      <id>heuermh</id>
+      <name>Michael Heuer</name>
+    </developer>
+  </developers>
+  <issueManagement>
+    <system>github</system>
+    <url>https://github.com/bigdatagenomics/cannoli/issues</url>
+  </issueManagement>
+
   <build>
     <outputDirectory>target/scala-${scala.version}/classes</outputDirectory>
     <testOutputDirectory>target/scala-${scala.version}/test-classes</testOutputDirectory>
@@ -119,6 +140,11 @@
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-shade-plugin</artifactId>
+          <version>2.4.3</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-site-plugin</artifactId>
           <version>3.5.1</version>
         </plugin>
@@ -153,9 +179,19 @@
           <version>1.10.b1</version>
         </plugin>
         <plugin>
+          <groupId>pl.project13.maven</groupId>
+          <artifactId>git-commit-id-plugin</artifactId>
+          <version>2.2.1</version>
+        </plugin>
+        <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>build-helper-maven-plugin</artifactId>
           <version>1.12</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>templating-maven-plugin</artifactId>
+          <version>1.0.0</version>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -278,29 +314,6 @@
         </executions>
       </plugin>
       <plugin>
-        <groupId>org.scalatest</groupId>
-        <artifactId>scalatest-maven-plugin</artifactId>
-        <configuration>
-          <reportsDirectory>${project.build.directory}/scalatest-reports</reportsDirectory>
-          <junitxml>.</junitxml>
-          <filereports>CannoliTestSuite.txt</filereports>
-          <!--
-              As explained here: http://stackoverflow.com/questions/1660441/java-flag-to-enable-extended-serialization-debugging-info
-              The second option allows us better debugging for serialization-based errors.
-          -->
-          <argLine>-Xmx1024m -Dsun.io.serialization.extendedDebugInfo=true</argLine>
-          <stdout>F</stdout>
-        </configuration>
-        <executions>
-          <execution>
-            <id>test</id>
-            <goals>
-              <goal>test</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
         <executions>
@@ -336,8 +349,23 @@
     <dependencies>
       <dependency>
         <groupId>org.bdgenomics.adam</groupId>
+        <artifactId>adam-core_${scala.version.prefix}</artifactId>
+        <version>${adam.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.bdgenomics.adam</groupId>
         <artifactId>adam-cli_${scala.version.prefix}</artifactId>
         <version>${adam.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.bdgenomics.cannoli</groupId>
+        <artifactId>cannoli-core_${scala.version.prefix}</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.bdgenomics.cannoli</groupId>
+        <artifactId>cannoli-cli_${scala.version.prefix}</artifactId>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.bdgenomics.utils</groupId>
@@ -372,36 +400,120 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
-  <dependencies>
-    <dependency>
-      <groupId>org.apache.spark</groupId>
-      <artifactId>spark-core_${scala.version.prefix}</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.spark</groupId>
-      <artifactId>spark-sql_${scala.version.prefix}</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.bdgenomics.adam</groupId>
-      <artifactId>adam-cli_${scala.version.prefix}</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.bdgenomics.utils</groupId>
-      <artifactId>utils-misc_${scala.version.prefix}</artifactId>
-      <type>test-jar</type>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.scalatest</groupId>
-      <artifactId>scalatest_${scala.version.prefix}</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <!-- override older plugin versions in oss-parent -->
+
   <profiles>
+    <profile>
+      <id>coverage</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.scoverage</groupId>
+            <artifactId>scoverage-maven-plugin</artifactId>
+            <version>${scoverage.plugin.version}</version>
+            <configuration>
+              <scalaVersion>${scala.version}</scalaVersion>
+              <aggregate>true</aggregate>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>coveralls</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.eluder.coveralls</groupId>
+            <artifactId>coveralls-maven-plugin</artifactId>
+            <version>4.3.0</version>
+            <configuration>
+              <coberturaReports>
+                <param>${project.build.directory}/cobertura.xml</param>
+              </coberturaReports>
+              <failOnServiceError>false</failOnServiceError>
+              <sourceDirectories>
+                <param>core/src/main/scala</param>
+                <param>cli/src/main/scala</param>
+              </sourceDirectories>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>distribution</id>
+      <modules>
+        <module>core</module>
+        <module>cli</module>
+        <module>assembly</module>
+        <!-- distribution should be last -->
+        <module>distribution</module>
+      </modules>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <version>3.0.1</version>
+            <executions>
+              <execution>
+                <id>attach-sources</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>jar-no-fork</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>2.10.4</version>
+            <executions>
+              <execution>
+                <id>attach-javadocs</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>net.alchim31.maven</groupId>
+            <artifactId>scala-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>scala-compile-first</id>
+                <phase>process-resources</phase>
+                <goals>
+                  <goal>compile</goal>
+                </goals>
+                <configuration>
+                  <args>
+                    <arg>-g:vars</arg>
+                  </args>
+                </configuration>
+              </execution>
+              <execution>
+                <id>scala-test-compile-first</id>
+                <phase>process-test-resources</phase>
+                <goals>
+                  <goal>testCompile</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>attach-scaladocs</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>doc-jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
     <profile>
       <id>sonatype-oss-release</id>
       <build>
@@ -445,41 +557,6 @@
                 </goals>
               </execution>
             </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-    <profile>
-      <id>coverage</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.scoverage</groupId>
-            <artifactId>scoverage-maven-plugin</artifactId>
-            <version>${scoverage.plugin.version}</version>
-            <configuration>
-              <scalaVersion>2.10.6</scalaVersion>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-    <profile>
-      <id>coveralls</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.eluder.coveralls</groupId>
-            <artifactId>coveralls-maven-plugin</artifactId>
-            <version>3.0.1</version>
-            <configuration>
-              <coberturaReports>
-                <param>${project.build.directory}/cobertura.xml</param>
-              </coberturaReports>
-              <sourceDirectories>
-                <param>src/main/scala</param>
-              </sourceDirectories>
-            </configuration>
           </plugin>
         </plugins>
       </build>

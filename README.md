@@ -15,36 +15,24 @@ To build
     $ mvn install
 
 
-### Running cannoli using ```adam-submit```
+### Running cannoli
 
-To run the commands in this repository via the ADAM command line, specify ```ADAM_MAIN``` and add the cannoli jar
-to the classpath with the Spark ```--jars``` argument.
+To run the commands in this repository via the command line, use `cannoli-submit`.
 
 Note the ```--``` argument separator between Spark arguments and Cannoli command arguments.
 
-Cannoli commands are now listed in the usage text.
-
 ```
-$ ADAM_MAIN=org.bdgenomics.cannoli.Cannoli \
-    adam-submit \
-    --jars cannoli_2.10-0.1-SNAPSHOT.jar \
-    --
+$ ./bin/cannoli-submit --help
 
-Using ADAM_MAIN=org.bdgenomics.cannoli.Cannoli
-Using SPARK_SUBMIT=/usr/local/bin/spark-submit
+                             
+                         |   o
+   -   -   |-  |-    -   +
+  |   | |  | | | |  | |  |   |
+   -   --            -   -   -
 
-       e         888~-_          e             e    e
-      d8b        888   \        d8b           d8b  d8b
-     /Y88b       888    |      /Y88b         d888bdY88b
-    /  Y88b      888    |     /  Y88b       / Y88Y Y888b
-   /____Y88b     888   /     /____Y88b     /   YY   Y888b
-  /      Y88b    888_-~     /      Y88b   /          Y888b
-
-Usage: adam-submit [<spark-args> --] <adam-args>
+Usage: cannoli-submit [<spark-args> --] <cannoli-args>
 
 Choose one of the following commands:
-
-...
 
 CANNOLI
             bedtools : ADAM Pipe API wrapper for Bedtools intersect.
@@ -55,40 +43,40 @@ CANNOLI
               snpEff : ADAM Pipe API wrapper for SnpEff.
 
 CANNOLI TOOLS
-    fastqInterleaver : Interleaves two FASTQ files
+     interleaveFastq : Interleaves two FASTQ files.
 ```
 
-Command arguments follow the ```--``` separator and command name.
+
+External commands wrapped by Cannoli should be installed to each executor node in the cluster
 
 ```
-$ ADAM_MAIN=org.bdgenomics.cannoli.Cannoli \
-    adam-submit \
-    --jars cannoli_2.10-0.1-SNAPSHOT.jar \
+$ ./bin/cannoli-submit \
+    <spark-args>
     -- \
-    bwa --help
+    bwa \
+    sample.unaligned.fragments.adam \
+    sample.bwa.hg38.alignments.adam \
+    sample \
+    -index hg38.fa \
+    -sequence_dictionary hg38.dict \
+    -fragments \
+    -add_indices
+```
 
-Using ADAM_MAIN=org.bdgenomics.cannoli.Cannoli
-Using SPARK_SUBMIT=/usr/local/bin/spark-submit
+or can be run using Docker.
 
- INPUT                        : Location to pipe from, in interleaved FASTQ format.
- OUTPUT                       : Location to pipe to.
- SAMPLE                       : Sample ID.
- -bwa_path VAL                : Path to the BWA executable. Defaults to bwa.
- -defer_merging               : Defers merging single file output.
- -docker_image VAL            : Docker image to use.
-   Defaults to quay.io/ucsc_cgl/bwa:0.7.12--256539928ea162949d8a65ca5c79a72ef557ce7c.
- -force_load_ifastq           : Forces loading using interleaved FASTQ.
- -force_load_parquet          : Forces loading using Parquet.
- -fragments                   : Saves OUTPUT as Fragments in Parquet. Exclusive of -single.
- -h (-help, --help, -?)       : Print help
- -index VAL                   : Path to the bwa index to be searched, e.g. <ebwt> in bwa [options]* <ebwt> ...
- -parquet_block_size N        : Parquet block size (default = 128mb)
- -parquet_compression_codec   : Parquet compression codec
- -parquet_disable_dictionary  : Disable dictionary encoding
- -parquet_logging_level VAL   : Parquet logging level (default = severe)
- -parquet_page_size N         : Parquet page size (default = 1mb)
- -print_metrics               : Print metrics to the log on completion
- -sequence_dictionary VAL     : Path to the sequence dictionary.
- -single                      : Saves OUTPUT as single file. Exclusive of -fragments.
- -use_docker                  : If true, uses Docker to launch BWA. If false, uses the BWA executable path.
+```
+$ ./bin/cannoli-submit \
+    <spark-args>
+    -- \
+    bwa \
+    sample.unaligned.fragments.adam \
+    sample.bwa.hg38.alignments.adam \
+    sample \
+    -index hg38.fa \
+    -sequence_dictionary hg38.dict \
+    -fragments \
+    -use_docker \
+    -docker_image quay.io/ucsc_cgl/bwa:0.7.12--256539928ea162949d8a65ca5c79a72ef557ce7c \
+    -add_indices
 ```
