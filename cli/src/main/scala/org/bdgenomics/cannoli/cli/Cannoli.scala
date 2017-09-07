@@ -35,7 +35,8 @@ object Cannoli {
     Bwa,
     Freebayes,
     Samtools,
-    SnpEff)),
+    SnpEff,
+    Vt)),
     CommandGroup("CANNOLI TOOLS", List(InterleaveFastq,
       SampleReads)))
 
