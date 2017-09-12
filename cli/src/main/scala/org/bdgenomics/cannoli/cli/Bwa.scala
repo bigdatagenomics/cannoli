@@ -17,61 +17,31 @@
  */
 package org.bdgenomics.cannoli.cli
 
+import htsjdk.samtools.ValidationStringency
 import org.apache.hadoop.fs.{ FileSystem, Path }
 import org.apache.spark.SparkContext
-import org.bdgenomics.adam.models.{
-  RecordGroup,
-  RecordGroupDictionary
-}
+import org.bdgenomics.adam.models.{ RecordGroup, RecordGroupDictionary }
 import org.bdgenomics.adam.rdd.ADAMContext._
 import org.bdgenomics.adam.rdd.ADAMSaveAnyArgs
 import org.bdgenomics.adam.rdd.fragment.{ FragmentRDD, InterleavedFASTQInFormatter }
 import org.bdgenomics.adam.rdd.read.{ AlignmentRecordRDD, AnySAMOutFormatter }
 import org.bdgenomics.cannoli.util.QuerynameGrouper
-import org.bdgenomics.formats.avro.AlignmentRecord
 import org.bdgenomics.utils.cli._
 import org.bdgenomics.utils.misc.Logging
 import org.kohsuke.args4j.{ Argument, Option => Args4jOption }
 
-object Bwa extends BDGCommandCompanion {
-  val commandName = "bwa"
-  val commandDescription = "ADAM Pipe API wrapper for BWA."
-
-  def apply(cmdLine: Array[String]) = {
-    new Bwa(Args4j[BwaArgs](cmdLine))
-  }
-}
-
-class BwaArgs extends Args4jBase with ADAMSaveAnyArgs with ParquetArgs {
-  @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe from, in interleaved FASTQ format.", index = 0)
-  var inputPath: String = null
-
-  @Argument(required = true, metaVar = "OUTPUT", usage = "Location to pipe to.", index = 1)
-  var outputPath: String = null
-
+/**
+ * Bwa function arguments.
+ */
+class BwaFnArgs extends Args4jBase {
   @Argument(required = true, metaVar = "SAMPLE", usage = "Sample ID.", index = 2)
   var sample: String = null
 
   @Args4jOption(required = true, name = "-index", usage = "Path to the bwa index to be searched, e.g. <ebwt> in bwa [options]* <ebwt> ...")
   var indexPath: String = null
 
-  @Args4jOption(required = false, name = "-single", usage = "Saves OUTPUT as single file. Exclusive of -fragments.")
-  var asSingleFile: Boolean = false
-
-  @Args4jOption(required = false, name = "-fragments", usage = "Saves OUTPUT as Fragments in Parquet. Exclusive of -single.")
-  var asFragments: Boolean = false
-
-  @Args4jOption(required = false, name = "-defer_merging", usage = "Defers merging single file output.")
-  var deferMerging: Boolean = false
-
-  @Args4jOption(required = false, name = "-disable_fast_concat", usage = "Disables the parallel file concatenation engine.")
-  var disableFastConcat: Boolean = false
-
   @Args4jOption(required = false, name = "-bwa_path", usage = "Path to the BWA executable. Defaults to bwa.")
   var bwaPath: String = "bwa"
-
-  @Args4jOption(required = false, name = "-sequence_dictionary", usage = "Path to the sequence dictionary.")
-  var sequenceDictionary: String = _
 
   @Args4jOption(required = false, name = "-docker_image", usage = "Docker image to use. Defaults to quay.io/biocontainers/bwa:0.7.17--pl5.22.0_0.")
   var dockerImage: String = "quay.io/biocontainers/bwa:0.7.17--pl5.22.0_0"
@@ -82,41 +52,40 @@ class BwaArgs extends Args4jBase with ADAMSaveAnyArgs with ParquetArgs {
   @Args4jOption(required = false, name = "-docker_cmd", usage = "The docker command to run. Defaults to 'docker'.")
   var dockerCmd: String = "docker"
 
-  @Args4jOption(required = false, name = "-force_load_ifastq", usage = "Forces loading using interleaved FASTQ.")
-  var forceLoadIfastq: Boolean = false
-
-  @Args4jOption(required = false, name = "-force_load_parquet", usage = "Forces loading using Parquet.")
-  var forceLoadParquet: Boolean = false
-
   @Args4jOption(required = false, name = "-add_indices", usage = "Adds index files via SparkFiles mechanism.")
   var addIndices: Boolean = false
-
-  // must be defined due to ADAMSaveAnyArgs, but unused here
-  var sortFastqOutput: Boolean = false
 }
 
 /**
- * Bwa.
+ * Bwa wrapper as a function FragmentRDD &rarr; AlignmentRecordRDD,
+ * for use in cannoli-shell or notebooks.
+ *
+ * @param args Bwa function arguments.
+ * @param files Files to make locally available to the commands being run.
+ * @param environment A map containing environment variable/value pairs to set
+ *   in the environment for the newly created process.
+ * @param sc Spark context.
  */
-class Bwa(protected val args: BwaArgs) extends BDGSparkCommand[BwaArgs] with Logging {
-  val companion = Bwa
+class BwaFn(
+    val args: BwaFnArgs,
+    val files: Seq[String],
+    val environment: Map[String, String],
+    val sc: SparkContext) extends Function1[FragmentRDD, AlignmentRecordRDD] with Logging {
 
-  def run(sc: SparkContext) {
-    require(!(args.asSingleFile && args.asFragments),
-      "-single and -fragments are mutually exclusive.")
-    require(!(args.forceLoadIfastq && args.forceLoadParquet),
-      "-force_load_ifastq and -force_load_parquet are mutually exclusive.")
-    val input: FragmentRDD = if (args.forceLoadIfastq) {
-      sc.loadInterleavedFastqAsFragments(args.inputPath)
-    } else if (args.forceLoadParquet) {
-      sc.loadParquetFragments(args.inputPath)
-    } else {
-      sc.loadFragments(args.inputPath)
-    }
+  /**
+   * @param args Bwa function arguments.
+   * @param sc Spark context.
+   */
+  def this(args: BwaFnArgs, sc: SparkContext) = this(args, Seq.empty, Map.empty, sc)
 
-    implicit val tFormatter = InterleavedFASTQInFormatter
-    implicit val uFormatter = new AnySAMOutFormatter
+  /**
+   * @param args Bwa function arguments.
+   * @param files Files to make locally available to the commands being run.
+   * @param sc Spark context.
+   */
+  def this(args: BwaFnArgs, files: Seq[String], sc: SparkContext) = this(args, files, Map.empty, sc)
 
+  override def apply(fragments: FragmentRDD): AlignmentRecordRDD = {
     val sample = args.sample
 
     def getIndexPaths(fastaPath: String): Seq[String] = {
@@ -193,7 +162,86 @@ class Bwa(protected val args: BwaArgs) extends BDGSparkCommand[BwaArgs] with Log
         "-"))
     }
 
-    val output: AlignmentRecordRDD = input.pipe[AlignmentRecord, AlignmentRecordRDD, InterleavedFASTQInFormatter](bwaCommand)
+    log.info("Piping {} to bwa with command: {} files: {} environment: {}",
+      Array(fragments, bwaCommand, files, environment))
+
+    implicit val tFormatter = InterleavedFASTQInFormatter
+    implicit val uFormatter = new AnySAMOutFormatter
+
+    fragments.pipe(bwaCommand, files, environment)
+  }
+}
+
+object Bwa extends BDGCommandCompanion {
+  val commandName = "bwa"
+  val commandDescription = "ADAM Pipe API wrapper for BWA."
+
+  def apply(cmdLine: Array[String]) = {
+    new Bwa(Args4j[BwaArgs](cmdLine))
+  }
+}
+
+/**
+ * Bwa command line arguments.
+ */
+class BwaArgs extends BwaFnArgs with ADAMSaveAnyArgs with ParquetArgs {
+  @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe from, in interleaved FASTQ format.", index = 0)
+  var inputPath: String = null
+
+  @Argument(required = true, metaVar = "OUTPUT", usage = "Location to pipe to.", index = 1)
+  var outputPath: String = null
+
+  @Args4jOption(required = false, name = "-single", usage = "Saves OUTPUT as single file. Exclusive of -fragments.")
+  var asSingleFile: Boolean = false
+
+  @Args4jOption(required = false, name = "-fragments", usage = "Saves OUTPUT as Fragments in Parquet. Exclusive of -single.")
+  var asFragments: Boolean = false
+
+  @Args4jOption(required = false, name = "-defer_merging", usage = "Defers merging single file output.")
+  var deferMerging: Boolean = false
+
+  @Args4jOption(required = false, name = "-disable_fast_concat", usage = "Disables the parallel file concatenation engine.")
+  var disableFastConcat: Boolean = false
+
+  @Args4jOption(required = false, name = "-force_load_ifastq", usage = "Forces loading using interleaved FASTQ.")
+  var forceLoadIfastq: Boolean = false
+
+  @Args4jOption(required = false, name = "-force_load_parquet", usage = "Forces loading using Parquet.")
+  var forceLoadParquet: Boolean = false
+
+  @Args4jOption(required = false, name = "-sequence_dictionary", usage = "Path to the sequence dictionary.")
+  var sequenceDictionary: String = _
+
+  @Args4jOption(required = false, name = "-stringency", usage = "Stringency level for various checks; can be SILENT, LENIENT, or STRICT. Defaults to STRICT.")
+  var stringency: String = "STRICT"
+
+  // must be defined due to ADAMSaveAnyArgs, but unused here
+  var sortFastqOutput: Boolean = false
+}
+
+/**
+ * Bwa command line wrapper.
+ */
+class Bwa(protected val args: BwaArgs) extends BDGSparkCommand[BwaArgs] with Logging {
+  val companion = Bwa
+  val stringency: ValidationStringency = ValidationStringency.valueOf(args.stringency)
+
+  def run(sc: SparkContext) {
+    require(!(args.asSingleFile && args.asFragments),
+      "-single and -fragments are mutually exclusive.")
+    require(!(args.forceLoadIfastq && args.forceLoadParquet),
+      "-force_load_ifastq and -force_load_parquet are mutually exclusive.")
+    val input: FragmentRDD = if (args.forceLoadIfastq) {
+      sc.loadInterleavedFastqAsFragments(args.inputPath)
+    } else if (args.forceLoadParquet) {
+      sc.loadParquetFragments(args.inputPath)
+    } else {
+      sc.loadFragments(args.inputPath, stringency = stringency)
+    }
+
+    val sample = args.sample
+
+    val output: AlignmentRecordRDD = new BwaFn(args, sc).apply(input)
       .replaceRecordGroups(RecordGroupDictionary(Seq(RecordGroup(sample, sample))))
 
     val outputMaybeWithSequences = Option(args.sequenceDictionary).fold(output)(sdPath => {

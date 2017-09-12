@@ -19,13 +19,9 @@ package org.bdgenomics.cannoli.cli
 
 import htsjdk.samtools.ValidationStringency
 import org.apache.spark.SparkContext
-import org.apache.spark.SparkContext._
-import org.apache.spark.rdd.RDD
 import org.bdgenomics.adam.rdd.ADAMContext._
 import org.bdgenomics.adam.rdd.ADAMSaveAnyArgs
-import org.bdgenomics.adam.rdd.fragment.{ FragmentRDD, InterleavedFASTQInFormatter }
-import org.bdgenomics.adam.rdd.read.{ AlignmentRecordRDD, AnySAMOutFormatter }
-import org.bdgenomics.formats.avro.AlignmentRecord
+import org.bdgenomics.adam.rdd.fragment.FragmentRDD
 import org.bdgenomics.utils.cli._
 import org.bdgenomics.utils.misc.Logging
 import org.kohsuke.args4j.{ Argument, Option => Args4jOption }
@@ -67,10 +63,10 @@ class SampleReadsArgs extends Args4jBase with ADAMSaveAnyArgs with ParquetArgs {
  */
 class SampleReads(protected val args: SampleReadsArgs) extends BDGSparkCommand[SampleReadsArgs] with Logging {
   val companion = SampleReads
-  val stringency = ValidationStringency.valueOf(args.stringency)
+  val stringency: ValidationStringency = ValidationStringency.valueOf(args.stringency)
 
   def run(sc: SparkContext) {
-    val fragments: FragmentRDD = sc.loadFragments(args.inputPath)
+    val fragments: FragmentRDD = sc.loadFragments(args.inputPath, stringency = stringency)
 
     log.info("Sampling fraction %f with seed %d".format(args.fraction, args.seed))
     fragments

@@ -31,22 +31,10 @@ import org.bdgenomics.utils.misc.Logging
 import org.kohsuke.args4j.{ Argument, Option => Args4jOption }
 import scala.collection.JavaConversions._
 
-object Freebayes extends BDGCommandCompanion {
-  val commandName = "freebayes"
-  val commandDescription = "ADAM Pipe API wrapper for Freebayes."
-
-  def apply(cmdLine: Array[String]) = {
-    new Freebayes(Args4j[FreebayesArgs](cmdLine))
-  }
-}
-
-class FreebayesArgs extends Args4jBase with ADAMSaveAnyArgs with ParquetArgs {
-  @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe from.", index = 0)
-  var inputPath: String = null
-
-  @Argument(required = true, metaVar = "OUTPUT", usage = "Location to pipe to, in VCF format.", index = 1)
-  var outputPath: String = null
-
+/**
+ * Freebayes function arguments.
+ */
+class FreebayesFnArgs extends Args4jBase {
   @Args4jOption(required = false, name = "-freebayes_path", usage = "Path to the Freebayes executable. Defaults to freebayes.")
   var freebayesPath: String = "freebayes"
 
@@ -58,6 +46,88 @@ class FreebayesArgs extends Args4jBase with ADAMSaveAnyArgs with ParquetArgs {
 
   @Args4jOption(required = false, name = "-use_docker", usage = "If true, uses Docker to launch Freebayes. If false, uses the Freebayes executable path.")
   var useDocker: Boolean = false
+}
+
+/**
+ * Freebayes wrapper as a function AlignmentRecordRDD &rarr; VariantContextRDD,
+ * for use in cannoli-shell or notebooks.
+ *
+ * @param args Freebayes function arguments.
+ * @param files Files to make locally available to the commands being run.
+ * @param environment A map containing environment variable/value pairs to set
+ *   in the environment for the newly created process.
+ * @param sc Spark context.
+ */
+class FreebayesFn(
+    val args: FreebayesFnArgs,
+    val files: Seq[String],
+    val environment: Map[String, String],
+    val sc: SparkContext) extends Function1[AlignmentRecordRDD, VariantContextRDD] with Logging {
+
+  /**
+   * @param args Freebayes function arguments.
+   * @param sc Spark context.
+   */
+  def this(args: FreebayesFnArgs, sc: SparkContext) = this(args, Seq.empty, Map.empty, sc)
+
+  /**
+   * @param args Freebayes function arguments.
+   * @param files Files to make locally available to the commands being run.
+   * @param sc Spark context.
+   */
+  def this(args: FreebayesFnArgs, files: Seq[String], sc: SparkContext) = this(args, files, Map.empty, sc)
+
+  override def apply(alignments: AlignmentRecordRDD): VariantContextRDD = {
+
+    val freebayesCommand = if (args.useDocker) {
+      Seq("docker",
+        "run",
+        "--rm",
+        args.dockerImage,
+        "freebayes",
+        "--fasta-reference",
+        args.referencePath,
+        "--stdin")
+    } else {
+      Seq(args.freebayesPath,
+        "--fasta-reference",
+        args.referencePath,
+        "--stdin")
+    }
+
+    log.info("Piping {} to freebayes with command: {} files: {} environment: {}",
+      Array(alignments, freebayesCommand, files, environment))
+
+    val accumulator: CollectionAccumulator[VCFHeaderLine] = sc.collectionAccumulator("headerLines")
+
+    implicit val tFormatter = BAMInFormatter
+    implicit val uFormatter = new VCFOutFormatter(sc.hadoopConfiguration, Some(accumulator))
+
+    val variantContexts = alignments.pipe[VariantContext, VariantContextRDD, BAMInFormatter](freebayesCommand, files, environment)
+
+    val headerLines = accumulator.value.distinct
+    variantContexts.replaceHeaderLines(headerLines)
+  }
+}
+
+object Freebayes extends BDGCommandCompanion {
+  val commandName = "freebayes"
+  val commandDescription = "ADAM Pipe API wrapper for Freebayes."
+
+  def apply(cmdLine: Array[String]) = {
+    new Freebayes(Args4j[FreebayesArgs](cmdLine))
+  }
+}
+
+/**
+ * Freebayes command line arguments.
+ */
+class FreebayesArgs extends FreebayesFnArgs with ADAMSaveAnyArgs with ParquetArgs {
+  @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe from.", index = 0)
+  var inputPath: String = null
+
+  @Argument(required = true, metaVar = "OUTPUT", usage = "Location to pipe to, in VCF format.", index = 1)
+  var outputPath: String = null
 
   @Args4jOption(required = false, name = "-single", usage = "Saves OUTPUT as single file.")
   var asSingleFile: Boolean = false
@@ -76,42 +146,15 @@ class FreebayesArgs extends Args4jBase with ADAMSaveAnyArgs with ParquetArgs {
 }
 
 /**
- * Freebayes.
+ * Freebayes command line wrapper.
  */
 class Freebayes(protected val args: FreebayesArgs) extends BDGSparkCommand[FreebayesArgs] with Logging {
   val companion = Freebayes
   val stringency: ValidationStringency = ValidationStringency.valueOf(args.stringency)
 
   def run(sc: SparkContext) {
-    val input: AlignmentRecordRDD = sc.loadAlignments(args.inputPath, stringency = stringency)
-
-    val accumulator: CollectionAccumulator[VCFHeaderLine] = sc.collectionAccumulator("headerLines")
-
-    implicit val tFormatter = BAMInFormatter
-    implicit val uFormatter = new VCFOutFormatter(sc.hadoopConfiguration, Some(accumulator))
-
-    val freebayesCommand = if (args.useDocker) {
-      Seq("docker",
-        "run",
-        "--rm",
-        args.dockerImage,
-        "freebayes",
-        "--fasta-reference",
-        args.referencePath,
-        "--stdin")
-    } else {
-      Seq(args.freebayesPath,
-        "--fasta-reference",
-        args.referencePath,
-        "--stdin")
-    }
-
-    val output: VariantContextRDD = input.pipe[VariantContext, VariantContextRDD, BAMInFormatter](freebayesCommand)
-      .transform(_.cache())
-
-    val headerLines = accumulator.value.distinct
-    val updatedHeaders = output.replaceHeaderLines(headerLines)
-
-    updatedHeaders.saveAsVcf(args, stringency)
+    val alignments = sc.loadAlignments(args.inputPath, stringency = stringency)
+    val variantContexts = new FreebayesFn(args, sc).apply(alignments)
+    variantContexts.saveAsVcf(args, stringency)
   }
 }
