@@ -29,22 +29,10 @@ import org.bdgenomics.utils.cli._
 import org.bdgenomics.utils.misc.Logging
 import org.kohsuke.args4j.{ Argument, Option => Args4jOption }
 
-object Bedtools extends BDGCommandCompanion {
-  val commandName = "bedtools"
-  val commandDescription = "ADAM Pipe API wrapper for Bedtools intersect."
-
-  def apply(cmdLine: Array[String]) = {
-    new Bedtools(Args4j[BedtoolsArgs](cmdLine))
-  }
-}
-
-class BedtoolsArgs extends Args4jBase with ADAMSaveAnyArgs with ParquetArgs {
-  @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe from.", index = 0)
-  var inputPath: String = null
-
-  @Argument(required = true, metaVar = "OUTPUT", usage = "Location to pipe to.", index = 1)
-  var outputPath: String = null
-
+/**
+ * Bedtools function arguments.
+ */
+class BedtoolsFnArgs extends Args4jBase {
   @Args4jOption(required = false, name = "-a", usage = "Bedtools intersect -a option. One of {-a,-b} should be left unspecified to accept piped input.")
   var a: String = null
 
@@ -62,29 +50,42 @@ class BedtoolsArgs extends Args4jBase with ADAMSaveAnyArgs with ParquetArgs {
 
   @Args4jOption(required = false, name = "-use_docker", usage = "If true, uses Docker to launch Bedtools. If false, uses the Bedtools executable path.")
   var useDocker: Boolean = false
-
-  @Args4jOption(required = false, name = "-single", usage = "Saves OUTPUT as single file.")
-  var asSingleFile: Boolean = false
-
-  @Args4jOption(required = false, name = "-disable_fast_concat", usage = "Disables the parallel file concatenation engine.")
-  var disableFastConcat: Boolean = false
-
-  @Args4jOption(required = false, name = "-defer_merging", usage = "Defers merging single file output.")
-  var deferMerging: Boolean = false
-
-  // must be defined due to ADAMSaveAnyArgs, but unused here
-  var sortFastqOutput: Boolean = false
 }
 
 /**
- * Bedtools.
+ * Bedtools wrapper as a function FeatureRDD &rarr; FeatureRDD,
+ * for use in cannoli-shell or notebooks.
+ *
+ * <code>
+ * val args = new BedtoolsFnArgs()
+ * args.b = "foo.bed"
+ * args.useDocker = true
+ * val features = ...
+ * val pipedFeatures = new BedtoolsFn(args).apply(features)
+ * </code>
+ *
+ * @param args Bedtools function arguments.
+ * @param files Files to make locally available to the commands being run.
+ * @param environment A map containing environment variable/value pairs to set
+ *   in the environment for the newly created process.
  */
-class Bedtools(protected val args: BedtoolsArgs) extends BDGSparkCommand[BedtoolsArgs] with Logging {
-  val companion = Bedtools
+class BedtoolsFn(
+    val args: BedtoolsFnArgs,
+    val files: Seq[String],
+    val environment: Map[String, String]) extends Function1[FeatureRDD, FeatureRDD] with Logging {
 
-  def run(sc: SparkContext) {
-    var features: FeatureRDD = sc.loadFeatures(args.inputPath)
+  /**
+   * @param args Bedtools function arguments.
+   */
+  def this(args: BedtoolsFnArgs) = this(args, Seq.empty, Map.empty)
 
+  /**
+   * @param args Bedtools function arguments.
+   * @param files Files to make locally available to the commands being run.
+   */
+  def this(args: BedtoolsFnArgs, files: Seq[String]) = this(args, files, Map.empty)
+
+  override def apply(features: FeatureRDD): FeatureRDD = {
     val optA = Option(args.a)
     val optB = Option(args.b)
     require(optA.size + optB.size == 1,
@@ -114,9 +115,56 @@ class Bedtools(protected val args: BedtoolsArgs) extends BDGSparkCommand[Bedtool
       )
     }
 
+    log.info("Piping {} to bedtools with command: {} files: {} environment: {}",
+      Array(features, bedtoolsCommand, files, environment))
+
     implicit val tFormatter = BEDInFormatter
     implicit val uFormatter = new BEDOutFormatter
-    val pipedFeatures: FeatureRDD = features.pipe(bedtoolsCommand)
+    features.pipe(bedtoolsCommand, files, environment)
+  }
+}
+
+object Bedtools extends BDGCommandCompanion {
+  val commandName = "bedtools"
+  val commandDescription = "ADAM Pipe API wrapper for Bedtools intersect."
+
+  def apply(cmdLine: Array[String]) = {
+    new Bedtools(Args4j[BedtoolsArgs](cmdLine))
+  }
+}
+
+/**
+ * Bedtools command line arguments.
+ */
+class BedtoolsArgs extends BedtoolsFnArgs with ADAMSaveAnyArgs with ParquetArgs {
+  @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe from.", index = 0)
+  var inputPath: String = null
+
+  @Argument(required = true, metaVar = "OUTPUT", usage = "Location to pipe to.", index = 1)
+  var outputPath: String = null
+
+  @Args4jOption(required = false, name = "-single", usage = "Saves OUTPUT as single file.")
+  var asSingleFile: Boolean = false
+
+  @Args4jOption(required = false, name = "-disable_fast_concat", usage = "Disables the parallel file concatenation engine.")
+  var disableFastConcat: Boolean = false
+
+  @Args4jOption(required = false, name = "-defer_merging", usage = "Defers merging single file output.")
+  var deferMerging: Boolean = false
+
+  // must be defined due to ADAMSaveAnyArgs, but unused here
+  var sortFastqOutput: Boolean = false
+}
+
+/**
+ * Bedtools command line wrapper.
+ */
+class Bedtools(protected val args: BedtoolsArgs) extends BDGSparkCommand[BedtoolsArgs] with Logging {
+  val companion = Bedtools
+
+  override def run(sc: SparkContext) {
+    val features = sc.loadFeatures(args.inputPath)
+    val pipedFeatures = new BedtoolsFn(args).apply(features)
 
     pipedFeatures.save(args.outputPath,
       asSingleFile = args.asSingleFile,

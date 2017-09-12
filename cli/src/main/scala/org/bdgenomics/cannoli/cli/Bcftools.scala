@@ -19,7 +19,6 @@ package org.bdgenomics.cannoli.cli
 
 import htsjdk.samtools.ValidationStringency
 import org.apache.spark.SparkContext
-import org.bdgenomics.adam.models.VariantContext
 import org.bdgenomics.adam.rdd.ADAMContext._
 import org.bdgenomics.adam.rdd.ADAMSaveAnyArgs
 import org.bdgenomics.adam.rdd.variant.{
@@ -31,22 +30,10 @@ import org.bdgenomics.utils.cli._
 import org.bdgenomics.utils.misc.Logging
 import org.kohsuke.args4j.{ Argument, Option => Args4jOption }
 
-object Bcftools extends BDGCommandCompanion {
-  val commandName = "bcftools"
-  val commandDescription = "ADAM Pipe API wrapper for BCFtools norm."
-
-  def apply(cmdLine: Array[String]) = {
-    new Bcftools(Args4j[BcftoolsArgs](cmdLine))
-  }
-}
-
-class BcftoolsArgs extends Args4jBase with ADAMSaveAnyArgs with ParquetArgs {
-  @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe from, in VCF format.", index = 0)
-  var inputPath: String = null
-
-  @Argument(required = true, metaVar = "OUTPUT", usage = "Location to pipe to, in VCF format.", index = 1)
-  var outputPath: String = null
-
+/**
+ * Bcftools function arguments.
+ */
+class BcftoolsFnArgs extends Args4jBase {
   @Args4jOption(required = false, name = "-bcftools_path", usage = "Path to the BCFtools executable. Defaults to bcftools.")
   var bcftoolsPath: String = "bcftools"
 
@@ -58,35 +45,38 @@ class BcftoolsArgs extends Args4jBase with ADAMSaveAnyArgs with ParquetArgs {
 
   @Args4jOption(required = false, name = "-use_docker", usage = "If true, uses Docker to launch BCFtools. If false, uses the BCFtools executable path.")
   var useDocker: Boolean = false
-
-  @Args4jOption(required = false, name = "-single", usage = "Saves OUTPUT as single file.")
-  var asSingleFile: Boolean = false
-
-  @Args4jOption(required = false, name = "-defer_merging", usage = "Defers merging single file output.")
-  var deferMerging: Boolean = false
-
-  @Args4jOption(required = false, name = "-disable_fast_concat", usage = "Disables the parallel file concatenation engine.")
-  var disableFastConcat: Boolean = false
-
-  @Args4jOption(required = false, name = "-stringency", usage = "Stringency level for various checks; can be SILENT, LENIENT, or STRICT. Defaults to STRICT.")
-  var stringency: String = "STRICT"
-
-  // must be defined due to ADAMSaveAnyArgs, but unused here
-  var sortFastqOutput: Boolean = false
 }
 
 /**
- * Bcftools.
+ * Bcftools wrapper as a function VariantContextRDD &rarr; VariantContextRDD,
+ * for use in cannoli-shell or notebooks.
+ *
+ * @param args Bcftools function arguments.
+ * @param files Files to make locally available to the commands being run.
+ * @param environment A map containing environment variable/value pairs to set
+ *   in the environment for the newly created process.
+ * @param sc Spark context.
  */
-class Bcftools(protected val args: BcftoolsArgs) extends BDGSparkCommand[BcftoolsArgs] with Logging {
-  val companion = Bcftools
-  val stringency: ValidationStringency = ValidationStringency.valueOf(args.stringency)
+class BcftoolsFn(
+    val args: BcftoolsFnArgs,
+    val files: Seq[String],
+    val environment: Map[String, String],
+    val sc: SparkContext) extends Function1[VariantContextRDD, VariantContextRDD] with Logging {
 
-  def run(sc: SparkContext) {
-    val input: VariantContextRDD = sc.loadVcf(args.inputPath, stringency = stringency)
+  /**
+   * @param args Bcftools function arguments.
+   * @param sc Spark context.
+   */
+  def this(args: BcftoolsFnArgs, sc: SparkContext) = this(args, Seq.empty, Map.empty, sc)
 
-    implicit val tFormatter = VCFInFormatter
-    implicit val uFormatter = new VCFOutFormatter(sc.hadoopConfiguration)
+  /**
+   * @param args Bcftools function arguments.
+   * @param files Files to make locally available to the commands being run.
+   * @param sc Spark context.
+   */
+  def this(args: BcftoolsFnArgs, files: Seq[String], sc: SparkContext) = this(args, files, Map.empty, sc)
+
+  override def apply(variantContexts: VariantContextRDD): VariantContextRDD = {
 
     val bcftoolsCommand = if (args.useDocker) {
       Seq("docker",
@@ -105,9 +95,61 @@ class Bcftools(protected val args: BcftoolsArgs) extends BDGSparkCommand[Bcftool
         args.referencePath)
     }
 
-    val output: VariantContextRDD = input.pipe[VariantContext, VariantContextRDD, VCFInFormatter](bcftoolsCommand)
-      .transform(_.cache())
+    log.info("Piping {} to bcftools with command: {} files: {} environment: {}",
+      Array(variantContexts, bcftoolsCommand, files, environment))
 
-    output.saveAsVcf(args, stringency)
+    implicit val tFormatter = VCFInFormatter
+    implicit val uFormatter = new VCFOutFormatter(sc.hadoopConfiguration)
+
+    variantContexts.pipe(bcftoolsCommand, files, environment)
+  }
+}
+
+object Bcftools extends BDGCommandCompanion {
+  val commandName = "bcftools"
+  val commandDescription = "ADAM Pipe API wrapper for BCFtools norm."
+
+  def apply(cmdLine: Array[String]) = {
+    new Bcftools(Args4j[BcftoolsArgs](cmdLine))
+  }
+}
+
+/**
+ * Bcftools command line arguments.
+ */
+class BcftoolsArgs extends BcftoolsFnArgs with ADAMSaveAnyArgs with ParquetArgs {
+  @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe from, in VCF format.", index = 0)
+  var inputPath: String = null
+
+  @Argument(required = true, metaVar = "OUTPUT", usage = "Location to pipe to, in VCF format.", index = 1)
+  var outputPath: String = null
+
+  @Args4jOption(required = false, name = "-single", usage = "Saves OUTPUT as single file.")
+  var asSingleFile: Boolean = false
+
+  @Args4jOption(required = false, name = "-defer_merging", usage = "Defers merging single file output.")
+  var deferMerging: Boolean = false
+
+  @Args4jOption(required = false, name = "-disable_fast_concat", usage = "Disables the parallel file concatenation engine.")
+  var disableFastConcat: Boolean = false
+
+  @Args4jOption(required = false, name = "-stringency", usage = "Stringency level for various checks; can be SILENT, LENIENT, or STRICT. Defaults to STRICT.")
+  var stringency: String = "STRICT"
+
+  // must be defined due to ADAMSaveAnyArgs, but unused here
+  var sortFastqOutput: Boolean = false
+}
+
+/**
+ * Bcftools command line wrapper.
+ */
+class Bcftools(protected val args: BcftoolsArgs) extends BDGSparkCommand[BcftoolsArgs] with Logging {
+  val companion = Bcftools
+  val stringency: ValidationStringency = ValidationStringency.valueOf(args.stringency)
+
+  def run(sc: SparkContext) {
+    val variantContexts = sc.loadVcf(args.inputPath, stringency = stringency)
+    val pipedVariantContexts = new BcftoolsFn(args, sc).apply(variantContexts)
+    pipedVariantContexts.saveAsVcf(args, stringency)
   }
 }
