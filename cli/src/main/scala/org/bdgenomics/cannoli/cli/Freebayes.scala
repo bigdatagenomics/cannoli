@@ -18,7 +18,9 @@
 package org.bdgenomics.cannoli.cli
 
 import htsjdk.samtools.ValidationStringency
+import htsjdk.variant.vcf.VCFHeaderLine
 import org.apache.spark.SparkContext
+import org.apache.spark.util.CollectionAccumulator
 import org.bdgenomics.adam.models.VariantContext
 import org.bdgenomics.adam.rdd.ADAMContext._
 import org.bdgenomics.adam.rdd.ADAMSaveAnyArgs
@@ -27,6 +29,7 @@ import org.bdgenomics.adam.rdd.variant.{ VariantContextRDD, VCFOutFormatter }
 import org.bdgenomics.utils.cli._
 import org.bdgenomics.utils.misc.Logging
 import org.kohsuke.args4j.{ Argument, Option => Args4jOption }
+import scala.collection.JavaConversions._
 
 object Freebayes extends BDGCommandCompanion {
   val commandName = "freebayes"
@@ -82,8 +85,10 @@ class Freebayes(protected val args: FreebayesArgs) extends BDGSparkCommand[Freeb
   def run(sc: SparkContext) {
     val input: AlignmentRecordRDD = sc.loadAlignments(args.inputPath, stringency = stringency)
 
+    val accumulator: CollectionAccumulator[VCFHeaderLine] = sc.collectionAccumulator("headerLines")
+
     implicit val tFormatter = BAMInFormatter
-    implicit val uFormatter = new VCFOutFormatter(sc.hadoopConfiguration)
+    implicit val uFormatter = new VCFOutFormatter(sc.hadoopConfiguration, Some(accumulator))
 
     val freebayesCommand = if (args.useDocker) {
       Seq("docker",
@@ -104,6 +109,9 @@ class Freebayes(protected val args: FreebayesArgs) extends BDGSparkCommand[Freeb
     val output: VariantContextRDD = input.pipe[VariantContext, VariantContextRDD, BAMInFormatter](freebayesCommand)
       .transform(_.cache())
 
-    output.saveAsVcf(args, stringency)
+    val headerLines = accumulator.value.distinct
+    val updatedHeaders = output.replaceHeaderLines(headerLines)
+
+    updatedHeaders.saveAsVcf(args, stringency)
   }
 }
