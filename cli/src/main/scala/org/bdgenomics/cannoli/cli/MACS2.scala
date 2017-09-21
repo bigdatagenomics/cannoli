@@ -38,7 +38,7 @@ object MACS2 extends BDGCommandCompanion {
   val commandName = "macs2"
   val commandDescription = "ADAM Pipe API wrapper for MACS2."
 
-  def apply(cmdLine: Array[String]) = {
+  def apply(cmdLine: Array[String]) = {    
     new MACS2(Args4j[MACS2Args](cmdLine))
   }
 }
@@ -52,9 +52,6 @@ class MACS2Args extends Args4jBase with ADAMSaveAnyArgs with ParquetArgs {
 
   @Argument(required = true, metaVar = "OUTPUT", usage = "Location to pipe to.", index = 2)
   var outputPath: String = null
-
-  @Args4jOption(required = true, name = "-macs2_output", usage = "Folder in which MACS2 output is saved.")
-  var macs2OutputPath: String = null
 
   @Args4jOption(required = false, name = "-single", usage = "Saves OUTPUT as single file.")
   var asSingleFile: Boolean = false
@@ -80,23 +77,28 @@ class MACS2(protected val args: MACS2Args) extends BDGSparkCommand[MACS2Args] wi
   val stringency = ValidationStringency.valueOf(args.stringency)
 
   def run(sc: SparkContext) {
-    val MACS2Command = "/home/eecs/gunjan/cannoli/run-macs2.sh " + args.macs2OutputPath
-    val inputFiles = args.inputPath.split(",")
-    val input = sc.parallelize(inputFiles, inputFiles.length)
-    val outputFiles = input.pipe(MACS2Command)
-
-    var output: FeatureRDD = null
-    for (file <- outputFiles.collect()) {
-      val features = sc.loadFeatures(file)
-      output = if (output != null) {
-        features.union(output)
-      } else {
-        features
-      }
+    val MACS2Command = "/home/eecs/gunjan/cannoli/run-macs2.sh"
+    if (args.inputPath.endsWith(".bed")) {
+      val input: FeatureRDD = sc.loadFeatures(args.inputPath)
+      //input = input.transform(_.repartition(20))
+      implicit val tFormatter = BEDInFormatter
+      implicit val uFormatter = new BEDOutFormatter
+      print(input.rdd.getNumPartitions)
+      val output: FeatureRDD = input.pipe(MACS2Command)
+      output.save(args.outputPath,
+        asSingleFile = args.asSingleFile,
+        disableFastConcat = args.disableFastConcat)
+    } else {
+      var input: AlignmentRecordRDD = sc.loadAlignments(args.inputPath)
+      //input = input.transform(_.repartition(1))
+      implicit val tFormatter = BAMInFormatter
+      implicit val uFormatter = new BEDOutFormatter
+      print(input.rdd.getNumPartitions)
+      val output: FeatureRDD = input.pipe(MACS2Command)
+      output.save(args.outputPath,
+        asSingleFile = args.asSingleFile,
+        disableFastConcat = args.disableFastConcat)
     }
 
-    output.save(args.outputPath,
-      asSingleFile = args.asSingleFile,
-      disableFastConcat = args.disableFastConcat)
   }
 }
