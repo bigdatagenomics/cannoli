@@ -30,7 +30,7 @@ import org.kohsuke.args4j.{ Argument, Option => Args4jOption }
 
 object Bowtie2 extends BDGCommandCompanion {
   val commandName = "bowtie2"
-  val commandDescription = "ADAM Pipe API wrapper for Bowtie2."
+  val commandDescription = "ADAM Pipe API wrapper for Bowtie 2."
 
   def apply(cmdLine: Array[String]) = {
     new Bowtie2(Args4j[Bowtie2Args](cmdLine))
@@ -43,6 +43,15 @@ class Bowtie2Args extends Args4jBase with ADAMSaveAnyArgs with ParquetArgs {
 
   @Argument(required = true, metaVar = "OUTPUT", usage = "Location to pipe to.", index = 1)
   var outputPath: String = null
+
+  @Args4jOption(required = false, name = "-bowtie2_path", usage = "Path to the Bowtie 2 executable. Defaults to bowtie2.")
+  var bowtie2Path: String = "bowtie2"
+
+  @Args4jOption(required = false, name = "-docker_image", usage = "Docker image to use. Defaults to heuermh/bowtie2.")
+  var dockerImage: String = "heuermh/bowtie2"
+
+  @Args4jOption(required = false, name = "-use_docker", usage = "If true, uses Docker to launch Bowtie 2. If false, uses the Bowtie 2 executable path.")
+  var useDocker: Boolean = false
 
   @Args4jOption(required = true, name = "-bowtie2_index", usage = "Basename of the index for the reference genome, e.g. <bt2-idx> in bowtie2 [options]* -x <bt2-idx>.")
   var indexPath: String = null
@@ -64,7 +73,7 @@ class Bowtie2Args extends Args4jBase with ADAMSaveAnyArgs with ParquetArgs {
 }
 
 /**
- * Bowtie2.
+ * Bowtie 2.
  */
 class Bowtie2(protected val args: Bowtie2Args) extends BDGSparkCommand[Bowtie2Args] with Logging {
   val companion = Bowtie2
@@ -76,10 +85,27 @@ class Bowtie2(protected val args: Bowtie2Args) extends BDGSparkCommand[Bowtie2Ar
     implicit val tFormatter = InterleavedFASTQInFormatter
     implicit val uFormatter = new AnySAMOutFormatter
 
-    val bowtie2Command = "bowtie2 -x " + args.indexPath + " --interleaved -"
+    val bowtie2Command = if (args.useDocker) {
+      Seq("docker",
+        "run",
+        "--interactive",
+        "--rm",
+        args.dockerImage,
+        "bowtie2",
+        "-x",
+        args.indexPath,
+        "--interleaved",
+        "-"
+      ).mkString(" ")
+    } else {
+      Seq(args.bowtie2Path,
+        "-x",
+        args.indexPath,
+        "--interleaved",
+        "-"
+      ).mkString(" ")
+    }
     val output: AlignmentRecordRDD = input.pipe[AlignmentRecord, AlignmentRecordRDD, InterleavedFASTQInFormatter](bowtie2Command)
-      .transform(_.cache())
-
     output.save(args)
   }
 }
