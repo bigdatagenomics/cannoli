@@ -21,7 +21,7 @@ import htsjdk.samtools.ValidationStringency
 import org.apache.spark.SparkContext
 import org.bdgenomics.adam.rdd.ADAMContext._
 import org.bdgenomics.adam.rdd.ADAMSaveAnyArgs
-import org.bdgenomics.adam.rdd.fragment.{ FragmentRDD, Tab5InFormatter }
+import org.bdgenomics.adam.rdd.fragment.{ FragmentRDD, InterleavedFASTQInFormatter }
 import org.bdgenomics.adam.rdd.read.{ AlignmentRecordRDD, AnySAMOutFormatter }
 import org.bdgenomics.formats.avro.AlignmentRecord
 import org.bdgenomics.utils.cli._
@@ -46,6 +46,12 @@ class BowtieArgs extends Args4jBase with ADAMSaveAnyArgs with ParquetArgs {
 
   @Args4jOption(required = false, name = "-bowtie_path", usage = "Path to the Bowtie executable. Defaults to bowtie.")
   var bowtiePath: String = "bowtie"
+
+  @Args4jOption(required = false, name = "-docker_image", usage = "Docker image to use. Defaults to heuermh/bowtie.")
+  var dockerImage: String = "heuermh/bowtie"
+
+  @Args4jOption(required = false, name = "-use_docker", usage = "If true, uses Docker to launch Bowtie. If false, uses the Bowtie executable path.")
+  var useDocker: Boolean = false
 
   @Args4jOption(required = true, name = "-bowtie_index", usage = "Basename of the bowtie index to be searched, e.g. <ebwt> in bowtie [options]* <ebwt> ...")
   var indexPath: String = null
@@ -76,15 +82,30 @@ class Bowtie(protected val args: BowtieArgs) extends BDGSparkCommand[BowtieArgs]
   def run(sc: SparkContext) {
     val input: FragmentRDD = sc.loadFragments(args.inputPath)
 
-    implicit val tFormatter = Tab5InFormatter
+    implicit val tFormatter = InterleavedFASTQInFormatter
     implicit val uFormatter = new AnySAMOutFormatter
 
-    val bowtieCommand = Seq(args.bowtiePath,
-      "-S",
-      args.indexPath,
-      "--12",
-      "-").mkString(" ")
-    val output: AlignmentRecordRDD = input.pipe[AlignmentRecord, AlignmentRecordRDD, Tab5InFormatter](bowtieCommand)
+    val bowtieCommand = if (args.useDocker) {
+      Seq("docker",
+        "run",
+        "--interactive",
+        "--rm",
+        args.dockerImage,
+        "bowtie",
+        "-S",
+        args.indexPath,
+        "--interleaved",
+        "-"
+      ).mkString(" ")
+    } else {
+      Seq(args.bowtiePath,
+        "-S",
+        args.indexPath,
+        "--interleaved",
+        "-"
+      ).mkString(" ")
+    }
+    val output: AlignmentRecordRDD = input.pipe[AlignmentRecord, AlignmentRecordRDD, InterleavedFASTQInFormatter](bowtieCommand)
     output.save(args)
   }
 }
