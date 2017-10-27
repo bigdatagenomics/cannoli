@@ -169,6 +169,7 @@ class Bwa(protected val args: BwaArgs) extends BDGSparkCommand[BwaArgs] with Log
       (filesToMount, Seq(args.dockerCmd,
         "-v", "%s:%s".format(mountpoint, mountpoint),
         "run",
+        "--rm",
         args.dockerImage,
         "mem",
         "-t", "1",

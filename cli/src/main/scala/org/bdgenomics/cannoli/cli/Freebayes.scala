@@ -88,6 +88,7 @@ class Freebayes(protected val args: FreebayesArgs) extends BDGSparkCommand[Freeb
     val freebayesCommand = if (args.useDocker) {
       Seq("docker",
         "run",
+        "--rm",
         args.dockerImage,
         "freebayes",
         "--fasta-reference",
