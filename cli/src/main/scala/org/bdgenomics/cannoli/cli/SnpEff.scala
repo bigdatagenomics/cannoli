@@ -91,6 +91,7 @@ class SnpEff(protected val args: SnpEffArgs) extends BDGSparkCommand[SnpEffArgs]
     val snpEffCommand = if (args.useDocker) {
       Seq("docker",
         "run",
+        "--rm",
         args.dockerImage,
         "snpeff",
         "-download",

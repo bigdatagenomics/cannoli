@@ -93,6 +93,7 @@ class Bedtools(protected val args: BedtoolsArgs) extends BDGSparkCommand[Bedtool
     val bedtoolsCommand = if (args.useDocker) {
       Seq("docker",
         "run",
+        "--rm",
         args.dockerImage,
         "bedtools",
         "intersect",
