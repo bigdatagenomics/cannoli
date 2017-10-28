@@ -24,11 +24,12 @@ Note the ```--``` argument separator between Spark arguments and Cannoli command
 ```
 $ ./bin/cannoli-submit --help
 
-                             
-                         |   o
-   -   -   |-  |-    -   +
-  |   | |  | | | |  | |  |   |
-   -   --            -   -   -
+                              _ _ 
+                             | (_)
+   ___ __ _ _ __  _ __   ___ | |_ 
+  / __/ _` | '_ \| '_ \ / _ \| | |
+ | (_| (_| | | | | | | | (_) | | |
+  \___\__,_|_| |_|_| |_|\___/|_|_|
 
 Usage: cannoli-submit [<spark-args> --] <cannoli-args>
 
@@ -44,6 +45,7 @@ CANNOLI
 
 CANNOLI TOOLS
      interleaveFastq : Interleaves two FASTQ files.
+         sampleReads : Sample reads from interleaved FASTQ format.
 ```
 
 

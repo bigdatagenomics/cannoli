@@ -52,11 +52,13 @@ private class InitArgs extends Args4jBase with ParquetArgs {}
 class Cannoli @Inject() (commandGroups: List[CommandGroup]) extends Logging {
 
   private def printLogo() {
-    print("\n\n")
-    println("""                         |   o
-               *   -   -   |-  |-    -   +
-               *  |   | |  | | | |  | |  |   |
-               *   -   --            -   -   -""".stripMargin('*'))
+    print("\n")
+    println("""                              _ _ 
+      *                             | (_)
+      *   ___ __ _ _ __  _ __   ___ | |_ 
+      *  / __/ _` | '_ \| '_ \ / _ \| | |
+      * | (_| (_| | | | | | | | (_) | | |
+      *  \___\__,_|_| |_|_| |_|\___/|_|_|""".stripMargin('*'))
   }
 
   private def printVersion() {
