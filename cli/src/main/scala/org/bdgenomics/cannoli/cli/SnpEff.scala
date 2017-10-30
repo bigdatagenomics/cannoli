@@ -47,11 +47,11 @@ class SnpEffArgs extends Args4jBase with ADAMSaveAnyArgs with ParquetArgs {
   @Argument(required = true, metaVar = "OUTPUT", usage = "Location to pipe to, in VCF format.", index = 1)
   var outputPath: String = null
 
-  @Args4jOption(required = true, name = "-database", usage = "SnpEff database name. Defaults to GRCh38.82.")
-  var snpEffDatabase: String = "GRCh38.82"
+  @Args4jOption(required = false, name = "-database", usage = "SnpEff database name. Defaults to GRCh38.86.")
+  var snpEffDatabase: String = "GRCh38.86"
 
-  @Args4jOption(required = false, name = "-snpeff_path", usage = "Path to the SnpEff executable. Defaults to snpeff.")
-  var snpEffPath: String = "snpeff"
+  @Args4jOption(required = false, name = "-snpeff_path", usage = "Path to the SnpEff executable. Defaults to snpEff.")
+  var snpEffPath: String = "snpEff"
 
   @Args4jOption(required = false, name = "-docker_image", usage = "Docker image to use. Defaults to heuermh/snpeff.")
   var dockerImage: String = "heuermh/snpeff"
@@ -92,7 +92,7 @@ class SnpEff(protected val args: SnpEffArgs) extends BDGSparkCommand[SnpEffArgs]
       Seq("docker",
         "run",
         args.dockerImage,
-        "snpeff",
+        "snpEff",
         "-download",
         args.snpEffDatabase).mkString(" ")
     } else {
