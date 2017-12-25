@@ -83,7 +83,7 @@ class Freebayes(protected val args: FreebayesArgs) extends BDGSparkCommand[Freeb
     val input: AlignmentRecordRDD = sc.loadAlignments(args.inputPath, stringency = stringency)
 
     implicit val tFormatter = BAMInFormatter
-    implicit val uFormatter = new VCFOutFormatter
+    implicit val uFormatter = new VCFOutFormatter(sc.hadoopConfiguration)
 
     val freebayesCommand = if (args.useDocker) {
       Seq("docker",

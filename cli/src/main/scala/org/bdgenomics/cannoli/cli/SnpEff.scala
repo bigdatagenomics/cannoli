@@ -86,7 +86,7 @@ class SnpEff(protected val args: SnpEffArgs) extends BDGSparkCommand[SnpEffArgs]
     val input: VariantContextRDD = sc.loadVcf(args.inputPath, stringency)
 
     implicit val tFormatter = VCFInFormatter
-    implicit val uFormatter = new VCFOutFormatter
+    implicit val uFormatter = new VCFOutFormatter(sc.hadoopConfiguration)
 
     val snpEffCommand = if (args.useDocker) {
       Seq("docker",
