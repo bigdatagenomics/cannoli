@@ -47,8 +47,8 @@ class Bowtie2Args extends Args4jBase with ADAMSaveAnyArgs with ParquetArgs {
   @Args4jOption(required = false, name = "-bowtie2_path", usage = "Path to the Bowtie 2 executable. Defaults to bowtie2.")
   var bowtie2Path: String = "bowtie2"
 
-  @Args4jOption(required = false, name = "-docker_image", usage = "Docker image to use. Defaults to heuermh/bowtie2.")
-  var dockerImage: String = "heuermh/bowtie2"
+  @Args4jOption(required = false, name = "-docker_image", usage = "Docker image to use. Defaults to quay.io/biocontainers/bowtie2.")
+  var dockerImage: String = "quay.io/biocontainers/bowtie2"
 
   @Args4jOption(required = false, name = "-use_docker", usage = "If true, uses Docker to launch Bowtie 2. If false, uses the Bowtie 2 executable path.")
   var useDocker: Boolean = false
