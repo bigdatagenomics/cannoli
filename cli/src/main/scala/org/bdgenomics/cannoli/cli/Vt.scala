@@ -86,7 +86,7 @@ class Vt(protected val args: VtArgs) extends BDGSparkCommand[VtArgs] with Loggin
     val input = sc.loadVcf(args.inputPath, stringency = stringency)
 
     implicit val tFormatter = VCFInFormatter
-    implicit val uFormatter = new VCFOutFormatter
+    implicit val uFormatter = new VCFOutFormatter(sc.hadoopConfiguration)
 
     val vtCommand = if (args.useDocker) {
       Seq("docker",
