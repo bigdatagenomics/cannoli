@@ -73,8 +73,8 @@ class BwaArgs extends Args4jBase with ADAMSaveAnyArgs with ParquetArgs {
   @Args4jOption(required = false, name = "-sequence_dictionary", usage = "Path to the sequence dictionary.")
   var sequenceDictionary: String = _
 
-  @Args4jOption(required = false, name = "-docker_image", usage = "Docker image to use. Defaults to quay.io/ucsc_cgl/bwa:0.7.12--256539928ea162949d8a65ca5c79a72ef557ce7c.")
-  var dockerImage: String = "quay.io/ucsc_cgl/bwa:0.7.12--256539928ea162949d8a65ca5c79a72ef557ce7c"
+  @Args4jOption(required = false, name = "-docker_image", usage = "Docker image to use. Defaults to quay.io/biocontainers/bwa:0.7.17--pl5.22.0_0.")
+  var dockerImage: String = "quay.io/biocontainers/bwa:0.7.17--pl5.22.0_0"
 
   @Args4jOption(required = false, name = "-use_docker", usage = "If true, uses Docker to launch BWA. If false, uses the BWA executable path.")
   var useDocker: Boolean = false

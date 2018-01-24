@@ -50,8 +50,8 @@ class FreebayesArgs extends Args4jBase with ADAMSaveAnyArgs with ParquetArgs {
   @Args4jOption(required = true, name = "-freebayes_reference", usage = "Reference sequence for analysis. An index file (.fai) will be created if none exists.")
   var referencePath: String = null
 
-  @Args4jOption(required = false, name = "-docker_image", usage = "Docker image to use. Defaults to heuermh/freebayes.")
-  var dockerImage: String = "heuermh/freebayes"
+  @Args4jOption(required = false, name = "-docker_image", usage = "Docker image to use. Defaults to quay.io/biocontainers/freebayes:1.1.0.46--htslib1.6_2.")
+  var dockerImage: String = "quay.io/biocontainers/freebayes:1.1.0.46--htslib1.6_2"
 
   @Args4jOption(required = false, name = "-use_docker", usage = "If true, uses Docker to launch Freebayes. If false, uses the Freebayes executable path.")
   var useDocker: Boolean = false

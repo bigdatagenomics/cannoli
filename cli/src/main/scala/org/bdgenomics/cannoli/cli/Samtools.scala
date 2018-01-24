@@ -50,8 +50,8 @@ class SamtoolsArgs extends Args4jBase with ADAMSaveAnyArgs with ParquetArgs {
   @Args4jOption(required = true, name = "-samtools_reference", usage = "Reference sequence for analysis. An index file (.fai) will be created if none exists.")
   var referencePath: String = null
 
-  @Args4jOption(required = false, name = "-docker_image", usage = "Docker image to use. Defaults to heuermh/samtools.")
-  var dockerImage: String = "heuermh/samtools"
+  @Args4jOption(required = false, name = "-docker_image", usage = "Docker image to use. Defaults to quay.io/biocontainers/samtools:1.6--0.")
+  var dockerImage: String = "quay.io/biocontainers/samtools:1.6--0"
 
   @Args4jOption(required = false, name = "-use_docker", usage = "If true, uses Docker to launch samtools. If false, uses the samtools executable path.")
   var useDocker: Boolean = false

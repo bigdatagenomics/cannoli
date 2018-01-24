@@ -53,8 +53,8 @@ class SnpEffArgs extends Args4jBase with ADAMSaveAnyArgs with ParquetArgs {
   @Args4jOption(required = false, name = "-snpeff_path", usage = "Path to the SnpEff executable. Defaults to snpEff.")
   var snpEffPath: String = "snpEff"
 
-  @Args4jOption(required = false, name = "-docker_image", usage = "Docker image to use. Defaults to heuermh/snpeff.")
-  var dockerImage: String = "heuermh/snpeff"
+  @Args4jOption(required = false, name = "-docker_image", usage = "Docker image to use. Defaults to quay.io/biocontainers/snpeff:4.3.1t--0.")
+  var dockerImage: String = "quay.io/biocontainers/snpeff:4.3.1t--0"
 
   @Args4jOption(required = false, name = "-use_docker", usage = "If true, uses Docker to launch SnpEff. If false, uses the SnpEff executable path.")
   var useDocker: Boolean = false

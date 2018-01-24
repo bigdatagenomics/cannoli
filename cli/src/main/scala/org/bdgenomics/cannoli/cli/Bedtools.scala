@@ -57,8 +57,8 @@ class BedtoolsArgs extends Args4jBase with ADAMSaveAnyArgs with ParquetArgs {
   @Args4jOption(required = false, name = "-bedtools_path", usage = "Path to the Bedtools executable. Defaults to bedtools.")
   var bedtoolsPath: String = "bedtools"
 
-  @Args4jOption(required = false, name = "-docker_image", usage = "Docker image to use. Defaults to heuermh/bedtools.")
-  var dockerImage: String = "heuermh/bedtools"
+  @Args4jOption(required = false, name = "-docker_image", usage = "Docker image to use. Defaults to quay.io/biocontainers/bedtools:2.27.1--0.")
+  var dockerImage: String = "quay.io/biocontainers/bedtools:2.27.1--0"
 
   @Args4jOption(required = false, name = "-use_docker", usage = "If true, uses Docker to launch Bedtools. If false, uses the Bedtools executable path.")
   var useDocker: Boolean = false
