@@ -86,7 +86,7 @@ class Bcftools(protected val args: BcftoolsArgs) extends BDGSparkCommand[Bcftool
     val input: VariantContextRDD = sc.loadVcf(args.inputPath, stringency = stringency)
 
     implicit val tFormatter = VCFInFormatter
-    implicit val uFormatter = new VCFOutFormatter
+    implicit val uFormatter = new VCFOutFormatter(sc.hadoopConfiguration)
 
     val bcftoolsCommand = if (args.useDocker) {
       Seq("docker",

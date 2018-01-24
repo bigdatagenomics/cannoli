@@ -83,7 +83,7 @@ class Samtools(protected val args: SamtoolsArgs) extends BDGSparkCommand[Samtool
     val input: AlignmentRecordRDD = sc.loadAlignments(args.inputPath, stringency = stringency)
 
     implicit val tFormatter = BAMInFormatter
-    implicit val uFormatter = new VCFOutFormatter
+    implicit val uFormatter = new VCFOutFormatter(sc.hadoopConfiguration)
 
     val samtoolsCommand = if (args.useDocker) {
       Seq("docker",
