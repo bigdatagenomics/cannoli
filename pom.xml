@@ -8,7 +8,7 @@
   </parent>
 
   <groupId>org.bdgenomics.cannoli</groupId>
-  <artifactId>cannoli-parent_2.10</artifactId>
+  <artifactId>cannoli-parent_2.11</artifactId>
   <version>0.1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Cannoli_${scala.version.prefix}</name>
@@ -18,8 +18,8 @@
 
   <properties>
     <adam.version>0.23.0</adam.version>
-    <scala.version>2.10.6</scala.version>
-    <scala.version.prefix>2.10</scala.version.prefix>
+    <scala.version>2.11.8</scala.version>
+    <scala.version.prefix>2.11</scala.version.prefix>
     <spark.version>1.6.3</spark.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.build.targetEncoding>UTF-8</project.build.targetEncoding>
