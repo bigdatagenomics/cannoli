@@ -3,12 +3,12 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.bdgenomics.cannoli</groupId>
-    <artifactId>cannoli-parent_2.10</artifactId>
+    <artifactId>cannoli-parent-spark2_2.11</artifactId>
     <version>0.1.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <artifactId>cannoli-core_2.10</artifactId>
+  <artifactId>cannoli-core-spark2_2.11</artifactId>
   <packaging>jar</packaging>
   <name>Cannoli_${scala.version.prefix}: Core</name>
 
@@ -49,12 +49,12 @@
     </dependency>
     <dependency>
       <groupId>org.bdgenomics.adam</groupId>
-      <artifactId>adam-core_${scala.version.prefix}</artifactId>
+      <artifactId>adam-core-spark2_${scala.version.prefix}</artifactId>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.bdgenomics.utils</groupId>
-      <artifactId>utils-misc_${scala.version.prefix}</artifactId>
+      <artifactId>utils-misc-spark2_${scala.version.prefix}</artifactId>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>

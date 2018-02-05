@@ -3,12 +3,12 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.bdgenomics.cannoli</groupId>
-    <artifactId>cannoli-parent_2.10</artifactId>
+    <artifactId>cannoli-parent-spark2_2.11</artifactId>
     <version>0.1.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <artifactId>cannoli-assembly_2.10</artifactId>
+  <artifactId>cannoli-assembly-spark2_2.11</artifactId>
   <packaging>jar</packaging>
   <name>Cannoli_${scala.version.prefix}: Assembly</name>
   <properties>
@@ -52,7 +52,7 @@
   <dependencies>
     <dependency>
       <groupId>org.bdgenomics.cannoli</groupId>
-      <artifactId>cannoli-cli_${scala.version.prefix}</artifactId>
+      <artifactId>cannoli-cli-spark2_${scala.version.prefix}</artifactId>
       <scope>compile</scope>
     </dependency>
   </dependencies>
