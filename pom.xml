@@ -8,7 +8,7 @@
   </parent>
 
   <groupId>org.bdgenomics.cannoli</groupId>
-  <artifactId>cannoli-parent_2.10</artifactId>
+  <artifactId>cannoli-parent-spark2_2.11</artifactId>
   <version>0.2.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Cannoli_${scala.version.prefix}</name>
@@ -17,10 +17,10 @@
   <inceptionYear>2017</inceptionYear>
 
   <properties>
-    <adam.version>0.23.0</adam.version>
-    <scala.version>2.10.6</scala.version>
-    <scala.version.prefix>2.10</scala.version.prefix>
-    <spark.version>1.6.3</spark.version>
+    <adam.version>0.24.0-SNAPSHOT</adam.version>
+    <scala.version>2.11.12</scala.version>
+    <scala.version.prefix>2.11</scala.version.prefix>
+    <spark.version>2.2.1</spark.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.build.targetEncoding>UTF-8</project.build.targetEncoding>
     <maven.enforcer.maven-version>[3.1.1,)</maven.enforcer.maven-version>
@@ -349,27 +349,27 @@
     <dependencies>
       <dependency>
         <groupId>org.bdgenomics.adam</groupId>
-        <artifactId>adam-core_${scala.version.prefix}</artifactId>
+        <artifactId>adam-core-spark2_${scala.version.prefix}</artifactId>
         <version>${adam.version}</version>
       </dependency>
       <dependency>
         <groupId>org.bdgenomics.adam</groupId>
-        <artifactId>adam-cli_${scala.version.prefix}</artifactId>
+        <artifactId>adam-cli-spark2_${scala.version.prefix}</artifactId>
         <version>${adam.version}</version>
       </dependency>
       <dependency>
         <groupId>org.bdgenomics.cannoli</groupId>
-        <artifactId>cannoli-core_${scala.version.prefix}</artifactId>
+        <artifactId>cannoli-core-spark2_${scala.version.prefix}</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.bdgenomics.cannoli</groupId>
-        <artifactId>cannoli-cli_${scala.version.prefix}</artifactId>
+        <artifactId>cannoli-cli-spark2_${scala.version.prefix}</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.bdgenomics.utils</groupId>
-        <artifactId>utils-misc_${scala.version.prefix}</artifactId>
+        <artifactId>utils-misc-spark2_${scala.version.prefix}</artifactId>
         <version>${utils.version}</version>
         <type>test-jar</type>
       </dependency>
