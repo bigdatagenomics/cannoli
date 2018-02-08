@@ -27,6 +27,7 @@
     <maven.enforcer.jdk-version>[1.8,)</maven.enforcer.jdk-version>
     <maven.compile.source>1.8</maven.compile.source>
     <maven.compile.target>1.8</maven.compile.target>
+    <hadoop.version>2.7.3</hadoop.version>
     <scoverage.plugin.version>1.1.1</scoverage.plugin.version>
     <utils.version>0.2.13</utils.version>
   </properties>
@@ -348,6 +349,38 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
+        <groupId>org.apache.hadoop</groupId>
+        <artifactId>hadoop-client</artifactId>
+        <version>${hadoop.version}</version>
+        <scope>provided</scope>
+        <exclusions>
+          <exclusion>
+            <groupId>asm</groupId>
+            <artifactId>asm</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.jboss.netty</groupId>
+            <artifactId>netty</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.sonatype.sisu.inject</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
         <groupId>org.bdgenomics.adam</groupId>
         <artifactId>adam-core-spark2_${scala.version.prefix}</artifactId>
         <version>${adam.version}</version>
@@ -378,6 +411,14 @@
         <artifactId>spark-core_${scala.version.prefix}</artifactId>
         <version>${spark.version}</version>
         <exclusions>
+          <exclusion>
+            <groupId>org.apache.avro</groupId>
+            <artifactId>avro</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.avro</groupId>
+            <artifactId>avro-mapred</artifactId>
+          </exclusion>
           <exclusion>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-client</artifactId>
