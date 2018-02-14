@@ -79,6 +79,9 @@ class BwaArgs extends Args4jBase with ADAMSaveAnyArgs with ParquetArgs {
   @Args4jOption(required = false, name = "-use_docker", usage = "If true, uses Docker to launch BWA. If false, uses the BWA executable path.")
   var useDocker: Boolean = false
 
+  @Args4jOption(required = false, name = "-use_singularity", usage = "If true, uses Singularity to run a Docker image, to launch BWA.")
+  var useSingularity: Boolean = false
+
   @Args4jOption(required = false, name = "-docker_cmd", usage = "The docker command to run. Defaults to 'docker'.")
   var dockerCmd: String = "docker"
 
@@ -177,6 +180,29 @@ class Bwa(protected val args: BwaArgs) extends BDGSparkCommand[BwaArgs] with Log
         "-p",
         indexPath,
         "-").mkString(" "))
+    } else if (args.useSingularity) {
+      val (mountpoint, indexPath, filesToMount) = if (args.addIndices) {
+        ("$root", "$0", getIndexPaths(args.indexPath))
+      } else {
+        (Path.getPathWithoutSchemeAndAuthority(new Path(args.indexPath).getParent()).toString,
+          args.indexPath,
+          Seq.empty)
+      }
+
+      (filesToMount, Seq("singularity",
+        "-q",
+        "exec",
+        "-B",
+        "%s:%s".format(mountpoint, "/mnt/"),
+        "docker://" + args.dockerImage,
+        "bwa",
+        "mem",
+        "-t", "1",
+        "-R", s"@RG\\tID:${sample}\\tLB:${sample}\\tPL:ILLUMINA\\tPU:0\\tSM:${sample}",
+        "-p",
+        "/mnt/" + Path.getPathWithoutSchemeAndAuthority(new Path(args.indexPath)).getName,
+        "-").mkString(" "))
+
     } else {
       val (indexPath, filesToMount) = if (args.addIndices) {
         ("$0", getIndexPaths(args.indexPath))
