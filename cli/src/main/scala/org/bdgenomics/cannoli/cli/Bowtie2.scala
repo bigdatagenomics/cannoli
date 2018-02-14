@@ -18,29 +18,41 @@
 package org.bdgenomics.cannoli.cli
 
 import htsjdk.samtools.ValidationStringency
+import org.apache.hadoop.fs.{ FileSystem, Path }
 import org.apache.spark.SparkContext
 import org.bdgenomics.adam.rdd.ADAMContext._
 import org.bdgenomics.adam.rdd.ADAMSaveAnyArgs
 import org.bdgenomics.adam.rdd.fragment.{ FragmentRDD, InterleavedFASTQInFormatter }
 import org.bdgenomics.adam.rdd.read.{ AlignmentRecordRDD, AnySAMOutFormatter }
+import org.bdgenomics.cannoli.builder.CommandBuilders
 import org.bdgenomics.utils.cli._
 import org.bdgenomics.utils.misc.Logging
 import org.kohsuke.args4j.{ Argument, Option => Args4jOption }
+import scala.collection.JavaConversions._
 
 /**
  * Bowtie 2 function arguments.
  */
 class Bowtie2FnArgs extends Args4jBase {
-  @Args4jOption(required = false, name = "-bowtie2_path", usage = "Path to the Bowtie 2 executable. Defaults to bowtie2.")
-  var bowtie2Path: String = "bowtie2"
+  @Args4jOption(required = false, name = "-executable", usage = "Path to the Bowtie 2 executable. Defaults to bowtie2.")
+  var executable: String = "bowtie2"
 
-  @Args4jOption(required = false, name = "-docker_image", usage = "Docker image to use. Defaults to quay.io/biocontainers/bowtie2:2.3.4--py27pl5.22.0_0.")
-  var dockerImage: String = "quay.io/biocontainers/bowtie2:2.3.4--py27pl5.22.0_0"
+  @Args4jOption(required = false, name = "-image", usage = "Container image to use. Defaults to quay.io/biocontainers/bowtie2:2.3.4--py27pl5.22.0_0.")
+  var image: String = "quay.io/biocontainers/bowtie2:2.3.4--py27pl5.22.0_0"
 
-  @Args4jOption(required = false, name = "-use_docker", usage = "If true, uses Docker to launch Bowtie 2. If false, uses the Bowtie 2 executable path.")
+  @Args4jOption(required = false, name = "-sudo", usage = "Run via sudo.")
+  var sudo: Boolean = false
+
+  @Args4jOption(required = false, name = "-add_files", usage = "If true, use the SparkFiles mechanism to distribute files to executors.")
+  var addFiles: Boolean = false
+
+  @Args4jOption(required = false, name = "-use_docker", usage = "If true, uses Docker to launch Bowtie 2.")
   var useDocker: Boolean = false
 
-  @Args4jOption(required = true, name = "-bowtie2_index", usage = "Basename of the index for the reference genome, e.g. <bt2-idx> in bowtie2 [options]* -x <bt2-idx>.")
+  @Args4jOption(required = false, name = "-use_singularity", usage = "If true, uses Singularity to launch Bowtie 2.")
+  var useSingularity: Boolean = false
+
+  @Args4jOption(required = true, name = "-index", usage = "Basename of the index for the reference genome, e.g. <bt2-idx> in bowtie2 [options]* -x <bt2-idx>.")
   var indexPath: String = null
 }
 
@@ -49,56 +61,45 @@ class Bowtie2FnArgs extends Args4jBase {
  * for use in cannoli-shell or notebooks.
  *
  * @param args Bowtie 2 function arguments.
- * @param files Files to make locally available to the commands being run.
- * @param environment A map containing environment variable/value pairs to set
- *   in the environment for the newly created process.
+ * @param sc Spark context.
  */
 class Bowtie2Fn(
     val args: Bowtie2FnArgs,
-    val files: Seq[String],
-    val environment: Map[String, String]) extends Function1[FragmentRDD, AlignmentRecordRDD] with Logging {
-
-  /**
-   * @param args Bowtie 2 function arguments.
-   */
-  def this(args: Bowtie2FnArgs) = this(args, Seq.empty, Map.empty)
-
-  /**
-   * @param args Bowtie 2 function arguments.
-   * @param files Files to make locally available to the commands being run.
-   */
-  def this(args: Bowtie2FnArgs, files: Seq[String]) = this(args, files, Map.empty)
+    sc: SparkContext) extends CannoliFn[FragmentRDD, AlignmentRecordRDD](sc) with Logging {
 
   override def apply(fragments: FragmentRDD): AlignmentRecordRDD = {
 
-    val bowtie2Command = if (args.useDocker) {
-      Seq("docker",
-        "run",
-        "--interactive",
-        "--rm",
-        args.dockerImage,
-        "bowtie2",
-        "-x",
-        args.indexPath,
-        "--interleaved",
-        "-"
-      )
-    } else {
-      Seq(args.bowtie2Path,
-        "-x",
-        args.indexPath,
-        "--interleaved",
-        "-"
-      )
+    val builder = CommandBuilders.create(args.useDocker, args.useSingularity)
+      .setExecutable(args.executable)
+      .add("-x")
+      .add(if (args.addFiles) "$0" else absolute(args.indexPath))
+      .add("--interleaved")
+      .add("-")
+
+    if (args.addFiles) {
+      // add args.indexPath for "$0"
+      builder.addFile(args.indexPath)
+      // add bowtie2 indexes via globbed index path
+      builder.addFiles(files(args.indexPath + "*.bt2"))
     }
 
-    log.info("Piping {} to bowtie2 with command: {} files: {} environment: {}",
-      Array(fragments, bowtie2Command, files, environment))
+    if (args.useDocker || args.useSingularity) {
+      builder
+        .setImage(args.image)
+        .setSudo(args.sudo)
+        .addMount(if (args.addFiles) "$root" else root(args.indexPath))
+    }
+
+    log.info("Piping {} to bowtie2 with command: {} files: {}",
+      fragments, builder.build(), builder.getFiles())
 
     implicit val tFormatter = InterleavedFASTQInFormatter
     implicit val uFormatter = new AnySAMOutFormatter
 
-    fragments.pipe(bowtie2Command, files, environment)
+    fragments.pipe(
+      cmd = builder.build(),
+      files = builder.getFiles()
+    )
   }
 }
 
@@ -115,10 +116,10 @@ object Bowtie2 extends BDGCommandCompanion {
  * Bowtie 2 command line arguments.
  */
 class Bowtie2Args extends Bowtie2FnArgs with ADAMSaveAnyArgs with ParquetArgs {
-  @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe from, in interleaved FASTQ format.", index = 0)
+  @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe fragments from (e.g. interleaved FASTQ format, .ifq). If extension is not detected, Parquet is assumed.", index = 0)
   var inputPath: String = null
 
-  @Argument(required = true, metaVar = "OUTPUT", usage = "Location to pipe to.", index = 1)
+  @Argument(required = true, metaVar = "OUTPUT", usage = "Location to pipe alignments to (e.g. .bam, .cram, .sam). If extension is not detected, Parquet is assumed.", index = 1)
   var outputPath: String = null
 
   @Args4jOption(required = false, name = "-single", usage = "Saves OUTPUT as single file.")
@@ -146,7 +147,7 @@ class Bowtie2(protected val args: Bowtie2Args) extends BDGSparkCommand[Bowtie2Ar
 
   def run(sc: SparkContext) {
     val fragments = sc.loadFragments(args.inputPath, stringency = stringency)
-    val alignments = new Bowtie2Fn(args).apply(fragments)
+    val alignments = new Bowtie2Fn(args, sc).apply(fragments)
     alignments.save(args)
   }
 }

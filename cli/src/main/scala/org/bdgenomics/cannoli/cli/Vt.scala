@@ -18,6 +18,7 @@
 package org.bdgenomics.cannoli.cli
 
 import htsjdk.samtools.ValidationStringency
+import org.apache.hadoop.fs.{ FileSystem, Path }
 import org.apache.spark.SparkContext
 import org.bdgenomics.adam.rdd.ADAMContext._
 import org.bdgenomics.adam.rdd.ADAMSaveAnyArgs
@@ -26,25 +27,39 @@ import org.bdgenomics.adam.rdd.variant.{
   VCFInFormatter,
   VCFOutFormatter
 }
+import org.bdgenomics.cannoli.builder.CommandBuilders
 import org.bdgenomics.utils.cli._
 import org.bdgenomics.utils.misc.Logging
 import org.kohsuke.args4j.{ Argument, Option => Args4jOption }
+import scala.collection.JavaConversions._
 
 /**
  * Vt function arguments.
  */
 class VtFnArgs extends Args4jBase {
-  @Args4jOption(required = false, name = "-vt_path", usage = "Path to the vt executable. Defaults to vt.")
-  var vtPath: String = "vt"
+  @Args4jOption(required = false, name = "-executable", usage = "Path to the vt executable. Defaults to vt.")
+  var executable: String = "vt"
 
-  @Args4jOption(required = true, name = "-vt_reference", usage = "Reference sequence for analysis.")
+  @Args4jOption(required = false, name = "-image", usage = "Container image to use. Defaults to heuermh/vt.")
+  var image: String = "heuermh/vt"
+
+  @Args4jOption(required = false, name = "-sudo", usage = "Run via sudo.")
+  var sudo: Boolean = false
+
+  @Args4jOption(required = false, name = "-add_files", usage = "If true, use the SparkFiles mechanism to distribute files to executors.")
+  var addFiles: Boolean = false
+
+  @Args4jOption(required = false, name = "-use_docker", usage = "If true, uses Docker to launch vt.")
+  var useDocker: Boolean = false
+
+  @Args4jOption(required = false, name = "-use_singularity", usage = "If true, uses Singularity to launch vt.")
+  var useSingularity: Boolean = false
+
+  @Args4jOption(required = true, name = "-reference", usage = "Reference sequence for analysis.")
   var referencePath: String = null
 
-  @Args4jOption(required = false, name = "-docker_image", usage = "Docker image to use. Defaults to heuermh/vt.")
-  var dockerImage: String = "heuermh/vt"
-
-  @Args4jOption(required = false, name = "-use_docker", usage = "If true, uses Docker to launch vt. If false, uses the vt executable path.")
-  var useDocker: Boolean = false
+  @Args4jOption(required = false, name = "-window", usage = "Window size for local sorting of variants. Defaults to 10000.")
+  var window: Int = _
 }
 
 /**
@@ -52,58 +67,42 @@ class VtFnArgs extends Args4jBase {
  * for use in cannoli-shell or notebooks.
  *
  * @param args Vt function arguments.
- * @param files Files to make locally available to the commands being run.
- * @param environment A map containing environment variable/value pairs to set
- *   in the environment for the newly created process.
  * @param sc Spark context.
  */
 class VtFn(
     val args: VtFnArgs,
-    val files: Seq[String],
-    val environment: Map[String, String],
-    val sc: SparkContext) extends Function1[VariantContextRDD, VariantContextRDD] with Logging {
-
-  /**
-   * @param args Vt function arguments.
-   * @param sc Spark context.
-   */
-  def this(args: VtFnArgs, sc: SparkContext) = this(args, Seq.empty, Map.empty, sc)
-
-  /**
-   * @param args Vt function arguments.
-   * @param files Files to make locally available to the commands being run.
-   * @param sc Spark context.
-   */
-  def this(args: VtFnArgs, files: Seq[String], sc: SparkContext) = this(args, files, Map.empty, sc)
+    sc: SparkContext) extends CannoliFn[VariantContextRDD, VariantContextRDD](sc) with Logging {
 
   override def apply(variantContexts: VariantContextRDD): VariantContextRDD = {
 
-    val vtCommand = if (args.useDocker) {
-      Seq("docker",
-        "run",
-        "--interactive",
-        "--rm",
-        args.dockerImage,
-        "vt",
-        "normalize",
-        "-",
-        "-r",
-        args.referencePath)
-    } else {
-      Seq(args.vtPath,
-        "normalize",
-        "-",
-        "-r",
-        args.referencePath)
+    var builder = CommandBuilders.create(args.useDocker, args.useSingularity)
+      .setExecutable(args.executable)
+      .add("normalize")
+      .add("-")
+      .add("-r")
+      .add(if (args.addFiles) "$0" else absolute(args.referencePath))
+
+    Option(args.window).foreach(i => builder.add("-w").add(i.toString))
+
+    if (args.addFiles) builder.addFile(args.referencePath)
+
+    if (args.useDocker || args.useSingularity) {
+      builder
+        .setImage(args.image)
+        .setSudo(args.sudo)
+        .addMount(if (args.addFiles) "$root" else root(args.referencePath))
     }
 
-    log.info("Piping {} to vt with command: {} files: {} environment: {}",
-      Array(variantContexts, vtCommand, files, environment))
+    log.info("Piping {} to vt with command: {} files: {}",
+      variantContexts, builder.build(), builder.getFiles())
 
     implicit val tFormatter = VCFInFormatter
     implicit val uFormatter = new VCFOutFormatter(sc.hadoopConfiguration)
 
-    variantContexts.pipe(vtCommand, files, environment)
+    variantContexts.pipe(
+      cmd = builder.build(),
+      files = builder.getFiles()
+    )
   }
 }
 

@@ -25,10 +25,12 @@ import org.bdgenomics.adam.rdd.ADAMContext._
 import org.bdgenomics.adam.rdd.ADAMSaveAnyArgs
 import org.bdgenomics.adam.rdd.fragment.{ FragmentRDD, InterleavedFASTQInFormatter }
 import org.bdgenomics.adam.rdd.read.{ AlignmentRecordRDD, AnySAMOutFormatter }
+import org.bdgenomics.cannoli.builder.CommandBuilders
 import org.bdgenomics.cannoli.util.QuerynameGrouper
 import org.bdgenomics.utils.cli._
 import org.bdgenomics.utils.misc.Logging
 import org.kohsuke.args4j.{ Argument, Option => Args4jOption }
+import scala.collection.JavaConversions._
 
 /**
  * Bwa function arguments.
@@ -37,23 +39,26 @@ class BwaFnArgs extends Args4jBase {
   @Argument(required = true, metaVar = "SAMPLE", usage = "Sample ID.", index = 2)
   var sample: String = null
 
-  @Args4jOption(required = true, name = "-index", usage = "Path to the bwa index to be searched, e.g. <ebwt> in bwa [options]* <ebwt> ...")
+  @Args4jOption(required = true, name = "-index", usage = "Path to the BWA index to be searched, e.g. <idxbase> in bwa [options]* <idxbase>.")
   var indexPath: String = null
 
-  @Args4jOption(required = false, name = "-bwa_path", usage = "Path to the BWA executable. Defaults to bwa.")
-  var bwaPath: String = "bwa"
+  @Args4jOption(required = false, name = "-executable", usage = "Path to the BWA executable. Defaults to bwa.")
+  var executable: String = "bwa"
 
-  @Args4jOption(required = false, name = "-docker_image", usage = "Docker image to use. Defaults to quay.io/biocontainers/bwa:0.7.17--pl5.22.0_0.")
-  var dockerImage: String = "quay.io/biocontainers/bwa:0.7.17--pl5.22.0_0"
+  @Args4jOption(required = false, name = "-image", usage = "Container image to use. Defaults to quay.io/biocontainers/bwa:0.7.17--pl5.22.0_0.")
+  var image: String = "quay.io/biocontainers/bwa:0.7.17--pl5.22.0_0"
 
-  @Args4jOption(required = false, name = "-use_docker", usage = "If true, uses Docker to launch BWA. If false, uses the BWA executable path.")
+  @Args4jOption(required = false, name = "-sudo", usage = "Run via sudo.")
+  var sudo: Boolean = false
+
+  @Args4jOption(required = false, name = "-add_files", usage = "If true, use the SparkFiles mechanism to distribute files to executors.")
+  var addFiles: Boolean = false
+
+  @Args4jOption(required = false, name = "-use_docker", usage = "If true, uses Docker to launch BWA.")
   var useDocker: Boolean = false
 
-  @Args4jOption(required = false, name = "-docker_cmd", usage = "The docker command to run. Defaults to 'docker'.")
-  var dockerCmd: String = "docker"
-
-  @Args4jOption(required = false, name = "-add_indices", usage = "Adds index files via SparkFiles mechanism.")
-  var addIndices: Boolean = false
+  @Args4jOption(required = false, name = "-use_singularity", usage = "If true, uses Singularity to launch BWA.")
+  var useSingularity: Boolean = false
 }
 
 /**
@@ -61,29 +66,11 @@ class BwaFnArgs extends Args4jBase {
  * for use in cannoli-shell or notebooks.
  *
  * @param args Bwa function arguments.
- * @param files Files to make locally available to the commands being run.
- * @param environment A map containing environment variable/value pairs to set
- *   in the environment for the newly created process.
  * @param sc Spark context.
  */
 class BwaFn(
     val args: BwaFnArgs,
-    val files: Seq[String],
-    val environment: Map[String, String],
-    val sc: SparkContext) extends Function1[FragmentRDD, AlignmentRecordRDD] with Logging {
-
-  /**
-   * @param args Bwa function arguments.
-   * @param sc Spark context.
-   */
-  def this(args: BwaFnArgs, sc: SparkContext) = this(args, Seq.empty, Map.empty, sc)
-
-  /**
-   * @param args Bwa function arguments.
-   * @param files Files to make locally available to the commands being run.
-   * @param sc Spark context.
-   */
-  def this(args: BwaFnArgs, files: Seq[String], sc: SparkContext) = this(args, files, Map.empty, sc)
+    sc: SparkContext) extends CannoliFn[FragmentRDD, AlignmentRecordRDD](sc) with Logging {
 
   override def apply(fragments: FragmentRDD): AlignmentRecordRDD = {
     val sample = args.sample
@@ -105,7 +92,7 @@ class BwaFn(
       }
 
       def optionalPath(ext: String): Option[String] = {
-        val path = new Path(fastaPath, ext)
+        val path = new Path(fastaPath + ext)
         val fs = path.getFileSystem(sc.hadoopConfiguration)
         if (fs.exists(path)) {
           Some(canonicalizePath(fs, path))
@@ -126,49 +113,38 @@ class BwaFn(
       pathsWithScheme ++ optionalPathsWithScheme
     }
 
-    val (filesToAdd, bwaCommand) = if (args.useDocker) {
-      val (mountpoint, indexPath, filesToMount) = if (args.addIndices) {
-        ("$root", "$0", getIndexPaths(args.indexPath))
-      } else {
-        (Path.getPathWithoutSchemeAndAuthority(new Path(args.indexPath).getParent()).toString,
-          args.indexPath,
-          Seq.empty)
-      }
+    var builder = CommandBuilders.create(args.useDocker, args.useSingularity)
+      .setExecutable(args.executable)
+      .add("mem")
+      .add("-t")
+      .add("1")
+      .add("-R")
+      .add(s"@RG\\tID:${sample}\\tLB:${sample}\\tPL:ILLUMINA\\tPU:0\\tSM:${sample}")
+      .add("-p")
+      .add(if (args.addFiles) "$0" else args.indexPath)
+      .add("-")
 
-      (filesToMount, Seq(args.dockerCmd,
-        "-v", "%s:%s".format(mountpoint, mountpoint),
-        "run",
-        "--rm",
-        args.dockerImage,
-        "mem",
-        "-t", "1",
-        "-R", s"@RG\\tID:${sample}\\tLB:${sample}\\tPL:ILLUMINA\\tPU:0\\tSM:${sample}",
-        "-p",
-        indexPath,
-        "-"))
-    } else {
-      val (indexPath, filesToMount) = if (args.addIndices) {
-        ("$0", getIndexPaths(args.indexPath))
-      } else {
-        (args.indexPath, Seq.empty)
-      }
-
-      (filesToMount, Seq(args.bwaPath,
-        "mem",
-        "-t", "1",
-        "-R", s"@RG\\tID:${sample}\\tLB:${sample}\\tPL:ILLUMINA\\tPU:0\\tSM:${sample}",
-        "-p",
-        args.indexPath,
-        "-"))
+    if (args.addFiles) {
+      getIndexPaths(args.indexPath).foreach(builder.addFile(_))
     }
 
-    log.info("Piping {} to bwa with command: {} files: {} environment: {}",
-      Array(fragments, bwaCommand, files, environment))
+    if (args.useDocker || args.useSingularity) {
+      builder
+        .setImage(args.image)
+        .setSudo(args.sudo)
+        .addMount(if (args.addFiles) "$root" else root(args.indexPath))
+    }
+
+    log.info("Piping {} to bwa with command: {} files: {}",
+      fragments, builder.build(), builder.getFiles())
 
     implicit val tFormatter = InterleavedFASTQInFormatter
     implicit val uFormatter = new AnySAMOutFormatter
 
-    fragments.pipe(bwaCommand, files, environment)
+    fragments.pipe(
+      cmd = builder.build(),
+      files = builder.getFiles()
+    )
   }
 }
 
