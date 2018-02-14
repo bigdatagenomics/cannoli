@@ -18,6 +18,7 @@
 package org.bdgenomics.cannoli.cli
 
 import htsjdk.samtools.ValidationStringency
+import org.apache.hadoop.fs.{ FileSystem, Path }
 import org.apache.spark.SparkContext
 import org.bdgenomics.adam.rdd.ADAMContext._
 import org.bdgenomics.adam.rdd.ADAMSaveAnyArgs
@@ -26,25 +27,36 @@ import org.bdgenomics.adam.rdd.variant.{
   VCFInFormatter,
   VCFOutFormatter
 }
+import org.bdgenomics.cannoli.builder.CommandBuilders
 import org.bdgenomics.utils.cli._
 import org.bdgenomics.utils.misc.Logging
 import org.kohsuke.args4j.{ Argument, Option => Args4jOption }
+import scala.collection.JavaConversions._
 
 /**
  * Bcftools function arguments.
  */
 class BcftoolsFnArgs extends Args4jBase {
-  @Args4jOption(required = false, name = "-bcftools_path", usage = "Path to the BCFtools executable. Defaults to bcftools.")
-  var bcftoolsPath: String = "bcftools"
+  @Args4jOption(required = false, name = "-executable", usage = "Path to the BCFtools executable. Defaults to bcftools.")
+  var executable: String = "bcftools"
 
-  @Args4jOption(required = true, name = "-bcftools_reference", usage = "Reference sequence for analysis. An index file (.fai) will be created if none exists.")
-  var referencePath: String = null
+  @Args4jOption(required = false, name = "-image", usage = "Container image to use. Defaults to quay.io/biocontainers/bcftools:1.6--0.")
+  var image: String = "quay.io/biocontainers/bcftools:1.6--0"
 
-  @Args4jOption(required = false, name = "-docker_image", usage = "Docker image to use. Defaults to quay.io/biocontainers/bcftools:1.6--0.")
-  var dockerImage: String = "quay.io/biocontainers/bcftools:1.6--0"
+  @Args4jOption(required = false, name = "-sudo", usage = "Run via sudo.")
+  var sudo: Boolean = false
 
-  @Args4jOption(required = false, name = "-use_docker", usage = "If true, uses Docker to launch BCFtools. If false, uses the BCFtools executable path.")
+  @Args4jOption(required = false, name = "-add_files", usage = "If true, use the SparkFiles mechanism to distribute files to executors.")
+  var addFiles: Boolean = false
+
+  @Args4jOption(required = false, name = "-use_docker", usage = "If true, uses Docker to launch BCFtools.")
   var useDocker: Boolean = false
+
+  @Args4jOption(required = false, name = "-use_singularity", usage = "If true, uses Singularity to launch BCFtools.")
+  var useSingularity: Boolean = false
+
+  @Args4jOption(required = true, name = "-reference", usage = "Reference sequence for analysis. An index file (.fai) will be created if none exists.")
+  var referencePath: String = null
 }
 
 /**
@@ -52,56 +64,42 @@ class BcftoolsFnArgs extends Args4jBase {
  * for use in cannoli-shell or notebooks.
  *
  * @param args Bcftools function arguments.
- * @param files Files to make locally available to the commands being run.
- * @param environment A map containing environment variable/value pairs to set
- *   in the environment for the newly created process.
  * @param sc Spark context.
  */
 class BcftoolsFn(
     val args: BcftoolsFnArgs,
-    val files: Seq[String],
-    val environment: Map[String, String],
-    val sc: SparkContext) extends Function1[VariantContextRDD, VariantContextRDD] with Logging {
-
-  /**
-   * @param args Bcftools function arguments.
-   * @param sc Spark context.
-   */
-  def this(args: BcftoolsFnArgs, sc: SparkContext) = this(args, Seq.empty, Map.empty, sc)
-
-  /**
-   * @param args Bcftools function arguments.
-   * @param files Files to make locally available to the commands being run.
-   * @param sc Spark context.
-   */
-  def this(args: BcftoolsFnArgs, files: Seq[String], sc: SparkContext) = this(args, files, Map.empty, sc)
+    sc: SparkContext) extends CannoliFn[VariantContextRDD, VariantContextRDD](sc) with Logging {
 
   override def apply(variantContexts: VariantContextRDD): VariantContextRDD = {
 
-    val bcftoolsCommand = if (args.useDocker) {
-      Seq("docker",
-        "run",
-        "--interactive",
-        "--rm",
-        args.dockerImage,
-        "bcftools",
-        "norm",
-        "--fasta-ref",
-        args.referencePath)
-    } else {
-      Seq(args.bcftoolsPath,
-        "norm",
-        "--fasta-ref",
-        args.referencePath)
+    val builder = CommandBuilders.create(args.useDocker, args.useSingularity)
+      .setExecutable(args.executable)
+      .add("norm")
+      .add("--fasta-ref")
+      .add(if (args.addFiles) "$0" else absolute(args.referencePath))
+
+    if (args.addFiles) {
+      builder.addFile(args.referencePath)
+      builder.addFile(args.referencePath + ".fai")
     }
 
-    log.info("Piping {} to bcftools with command: {} files: {} environment: {}",
-      Array(variantContexts, bcftoolsCommand, files, environment))
+    if (args.useDocker || args.useSingularity) {
+      builder
+        .setImage(args.image)
+        .setSudo(args.sudo)
+        .addMount(if (args.addFiles) "$root" else root(args.referencePath))
+    }
+
+    log.info("Piping {} to bcftools with command: {} files: {}",
+      variantContexts, builder.build(), builder.getFiles())
 
     implicit val tFormatter = VCFInFormatter
     implicit val uFormatter = new VCFOutFormatter(sc.hadoopConfiguration)
 
-    variantContexts.pipe(bcftoolsCommand, files, environment)
+    variantContexts.pipe(
+      cmd = builder.build(),
+      files = builder.getFiles()
+    )
   }
 }
 

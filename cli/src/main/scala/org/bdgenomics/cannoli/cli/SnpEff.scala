@@ -26,25 +26,33 @@ import org.bdgenomics.adam.rdd.variant.{
   VCFInFormatter,
   VCFOutFormatter
 }
+import org.bdgenomics.cannoli.builder.CommandBuilders
 import org.bdgenomics.utils.cli._
 import org.bdgenomics.utils.misc.Logging
 import org.kohsuke.args4j.{ Argument, Option => Args4jOption }
+import scala.collection.JavaConversions._
 
 /**
  * SnpEff function arguments.
  */
 class SnpEffFnArgs extends Args4jBase {
-  @Args4jOption(required = false, name = "-database", usage = "SnpEff database name. Defaults to GRCh38.86.")
-  var snpEffDatabase: String = "GRCh38.86"
+  @Args4jOption(required = false, name = "-executable", usage = "Path to the SnpEff executable. Defaults to snpEff.")
+  var executable: String = "snpEff"
 
-  @Args4jOption(required = false, name = "-snpeff_path", usage = "Path to the SnpEff executable. Defaults to snpEff.")
-  var snpEffPath: String = "snpEff"
+  @Args4jOption(required = false, name = "-image", usage = "Container image to use. Defaults to quay.io/biocontainers/snpeff:4.3.1t--0.")
+  var image: String = "quay.io/biocontainers/snpeff:4.3.1t--0"
 
-  @Args4jOption(required = false, name = "-docker_image", usage = "Docker image to use. Defaults to quay.io/biocontainers/snpeff:4.3.1t--0.")
-  var dockerImage: String = "quay.io/biocontainers/snpeff:4.3.1t--0"
+  @Args4jOption(required = false, name = "-sudo", usage = "Run via sudo.")
+  var sudo: Boolean = false
 
-  @Args4jOption(required = false, name = "-use_docker", usage = "If true, uses Docker to launch SnpEff. If false, uses the SnpEff executable path.")
+  @Args4jOption(required = false, name = "-use_docker", usage = "If true, uses Docker to launch SnpEff.")
   var useDocker: Boolean = false
+
+  @Args4jOption(required = false, name = "-use_singularity", usage = "If true, uses Singularity to launch SnpEff.")
+  var useSingularity: Boolean = false
+
+  @Args4jOption(required = false, name = "-database", usage = "SnpEff database name. Defaults to GRCh38.86.")
+  var database: String = "GRCh38.86"
 }
 
 /**
@@ -52,53 +60,35 @@ class SnpEffFnArgs extends Args4jBase {
  * for use in cannoli-shell or notebooks.
  *
  * @param args SnpEff function arguments.
- * @param files Files to make locally available to the commands being run.
- * @param environment A map containing environment variable/value pairs to set
- *   in the environment for the newly created process.
  * @param sc Spark context.
  */
 class SnpEffFn(
     val args: SnpEffFnArgs,
-    val files: Seq[String],
-    val environment: Map[String, String],
-    val sc: SparkContext) extends Function1[VariantContextRDD, VariantContextRDD] with Logging {
-
-  /**
-   * @param args SnpEff function arguments.
-   * @param sc Spark context.
-   */
-  def this(args: SnpEffFnArgs, sc: SparkContext) = this(args, Seq.empty, Map.empty, sc)
-
-  /**
-   * @param args SnpEff function arguments.
-   * @param files Files to make locally available to the commands being run.
-   * @param sc Spark context.
-   */
-  def this(args: SnpEffFnArgs, files: Seq[String], sc: SparkContext) = this(args, files, Map.empty, sc)
+    sc: SparkContext) extends CannoliFn[VariantContextRDD, VariantContextRDD](sc) with Logging {
 
   override def apply(variantContexts: VariantContextRDD): VariantContextRDD = {
 
-    val snpEffCommand = if (args.useDocker) {
-      Seq("docker",
-        "run",
-        "--rm",
-        args.dockerImage,
-        "snpEff",
-        "-download",
-        args.snpEffDatabase)
-    } else {
-      Seq(args.snpEffPath,
-        "-download",
-        args.snpEffDatabase)
+    var builder = CommandBuilders.create(args.useDocker, args.useSingularity)
+      .setExecutable(args.executable)
+      .add("-download")
+      .add(args.database)
+
+    if (args.useDocker || args.useSingularity) {
+      builder
+        .setImage(args.image)
+        .setSudo(args.sudo)
     }
 
-    log.info("Piping {} to snpEff with command: {} files: {} environment: {}",
-      Array(variantContexts, snpEffCommand, files, environment))
+    log.info("Piping {} to snpEff with command: {} files: {}",
+      variantContexts, builder.build(), builder.getFiles())
 
     implicit val tFormatter = VCFInFormatter
     implicit val uFormatter = new VCFOutFormatter(sc.hadoopConfiguration)
 
-    variantContexts.pipe(snpEffCommand, files, environment)
+    variantContexts.pipe(
+      cmd = builder.build(),
+      files = builder.getFiles()
+    )
   }
 }
 
