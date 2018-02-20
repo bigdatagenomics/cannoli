@@ -176,7 +176,7 @@ class Bwa(protected val args: BwaArgs) extends BDGSparkCommand[BwaArgs] with Log
         "-R", s"@RG\\tID:${sample}\\tLB:${sample}\\tPL:ILLUMINA\\tPU:0\\tSM:${sample}",
         "-p",
         indexPath,
-        "-").mkString(" "))
+        "-"))
     } else {
       val (indexPath, filesToMount) = if (args.addIndices) {
         ("$0", getIndexPaths(args.indexPath))
@@ -190,7 +190,7 @@ class Bwa(protected val args: BwaArgs) extends BDGSparkCommand[BwaArgs] with Log
         "-R", s"@RG\\tID:${sample}\\tLB:${sample}\\tPL:ILLUMINA\\tPU:0\\tSM:${sample}",
         "-p",
         args.indexPath,
-        "-").mkString(" "))
+        "-"))
     }
 
     val output: AlignmentRecordRDD = input.pipe[AlignmentRecord, AlignmentRecordRDD, InterleavedFASTQInFormatter](bwaCommand)

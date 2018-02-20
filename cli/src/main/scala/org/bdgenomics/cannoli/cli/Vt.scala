@@ -98,13 +98,13 @@ class Vt(protected val args: VtArgs) extends BDGSparkCommand[VtArgs] with Loggin
         "normalize",
         "-",
         "-r",
-        args.referencePath).mkString(" ")
+        args.referencePath)
     } else {
       Seq(args.vtPath,
         "normalize",
         "-",
         "-r",
-        args.referencePath).mkString(" ")
+        args.referencePath)
     }
 
     val output: VariantContextRDD = input.pipe[VariantContext, VariantContextRDD, VCFInFormatter](vtCommand)

@@ -96,14 +96,14 @@ class Bowtie(protected val args: BowtieArgs) extends BDGSparkCommand[BowtieArgs]
         args.indexPath,
         "--interleaved",
         "-"
-      ).mkString(" ")
+      )
     } else {
       Seq(args.bowtiePath,
         "-S",
         args.indexPath,
         "--interleaved",
         "-"
-      ).mkString(" ")
+      )
     }
     val output: AlignmentRecordRDD = input.pipe[AlignmentRecord, AlignmentRecordRDD, InterleavedFASTQInFormatter](bowtieCommand)
     output.save(args)

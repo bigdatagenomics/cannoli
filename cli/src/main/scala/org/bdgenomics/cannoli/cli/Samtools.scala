@@ -97,7 +97,7 @@ class Samtools(protected val args: SamtoolsArgs) extends BDGSparkCommand[Samtool
         "--reference",
         args.referencePath,
         "-v",
-        "-u").mkString(" ")
+        "-u")
     } else {
       Seq(args.samtoolsPath,
         "mpileup",
@@ -105,7 +105,7 @@ class Samtools(protected val args: SamtoolsArgs) extends BDGSparkCommand[Samtool
         "--reference",
         args.referencePath,
         "-v",
-        "-u").mkString(" ")
+        "-u")
     }
 
     val output: VariantContextRDD = input.pipe[VariantContext, VariantContextRDD, BAMInFormatter](samtoolsCommand)

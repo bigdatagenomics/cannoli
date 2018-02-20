@@ -98,12 +98,12 @@ class Freebayes(protected val args: FreebayesArgs) extends BDGSparkCommand[Freeb
         "freebayes",
         "--fasta-reference",
         args.referencePath,
-        "--stdin").mkString(" ")
+        "--stdin")
     } else {
       Seq(args.freebayesPath,
         "--fasta-reference",
         args.referencePath,
-        "--stdin").mkString(" ")
+        "--stdin")
     }
 
     val output: VariantContextRDD = input.pipe[VariantContext, VariantContextRDD, BAMInFormatter](freebayesCommand)
