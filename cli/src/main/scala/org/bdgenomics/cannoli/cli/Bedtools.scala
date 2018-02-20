@@ -102,7 +102,7 @@ class Bedtools(protected val args: BedtoolsArgs) extends BDGSparkCommand[Bedtool
         "-b",
         optB.getOrElse("stdin"),
         if (args.sorted) "-sorted" else ""
-      ).mkString(" ")
+      )
     } else {
       Seq(args.bedtoolsPath,
         "intersect",
@@ -111,7 +111,7 @@ class Bedtools(protected val args: BedtoolsArgs) extends BDGSparkCommand[Bedtool
         "-b",
         optB.getOrElse("stdin"),
         if (args.sorted) "-sorted" else ""
-      ).mkString(" ")
+      )
     }
 
     implicit val tFormatter = BEDInFormatter

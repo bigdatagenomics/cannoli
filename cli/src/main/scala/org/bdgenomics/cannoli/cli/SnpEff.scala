@@ -95,11 +95,11 @@ class SnpEff(protected val args: SnpEffArgs) extends BDGSparkCommand[SnpEffArgs]
         args.dockerImage,
         "snpEff",
         "-download",
-        args.snpEffDatabase).mkString(" ")
+        args.snpEffDatabase)
     } else {
       Seq(args.snpEffPath,
         "-download",
-        args.snpEffDatabase).mkString(" ")
+        args.snpEffDatabase)
     }
 
     val output: VariantContextRDD = input.pipe[VariantContext, VariantContextRDD, VCFInFormatter](snpEffCommand)

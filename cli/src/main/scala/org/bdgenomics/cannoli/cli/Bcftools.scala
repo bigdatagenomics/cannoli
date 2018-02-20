@@ -97,12 +97,12 @@ class Bcftools(protected val args: BcftoolsArgs) extends BDGSparkCommand[Bcftool
         "bcftools",
         "norm",
         "--fasta-ref",
-        args.referencePath).mkString(" ")
+        args.referencePath)
     } else {
       Seq(args.bcftoolsPath,
         "norm",
         "--fasta-ref",
-        args.referencePath).mkString(" ")
+        args.referencePath)
     }
 
     val output: VariantContextRDD = input.pipe[VariantContext, VariantContextRDD, VCFInFormatter](bcftoolsCommand)
