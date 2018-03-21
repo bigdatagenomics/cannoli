@@ -27,6 +27,7 @@ import org.bdgenomics.adam.rdd.ADAMContext._
 import org.bdgenomics.adam.rdd.ADAMSaveAnyArgs
 import org.bdgenomics.adam.rdd.read.{ AlignmentRecordRDD, BAMInFormatter }
 import org.bdgenomics.adam.rdd.variant.{ VariantContextRDD, VCFOutFormatter }
+import org.bdgenomics.adam.sql.{ VariantContext => VariantContextProduct }
 import org.bdgenomics.adam.util.FileExtensions._
 import org.bdgenomics.cannoli.builder.CommandBuilders
 import org.bdgenomics.utils.cli._
@@ -111,7 +112,7 @@ class FreebayesFn(
     implicit val tFormatter = BAMInFormatter
     implicit val uFormatter = new VCFOutFormatter(sc.hadoopConfiguration, Some(accumulator))
 
-    val variantContexts = alignments.pipe[VariantContext, VariantContextRDD, BAMInFormatter](
+    val variantContexts = alignments.pipe[VariantContext, VariantContextProduct, VariantContextRDD, BAMInFormatter](
       cmd = builder.build(),
       files = builder.getFiles()
     )

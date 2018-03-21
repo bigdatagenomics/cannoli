@@ -19,6 +19,7 @@ package org.bdgenomics.cannoli.cli
 
 import htsjdk.samtools.ValidationStringency
 import org.apache.spark.SparkContext
+import org.bdgenomics.adam.models.VariantContext
 import org.bdgenomics.adam.rdd.ADAMContext._
 import org.bdgenomics.adam.rdd.ADAMSaveAnyArgs
 import org.bdgenomics.adam.rdd.variant.{
@@ -26,6 +27,7 @@ import org.bdgenomics.adam.rdd.variant.{
   VCFInFormatter,
   VCFOutFormatter
 }
+import org.bdgenomics.adam.sql.{ VariantContext => VariantContextProduct }
 import org.bdgenomics.cannoli.builder.CommandBuilders
 import org.bdgenomics.utils.cli._
 import org.bdgenomics.utils.misc.Logging
@@ -85,7 +87,7 @@ class SnpEffFn(
     implicit val tFormatter = VCFInFormatter
     implicit val uFormatter = new VCFOutFormatter(sc.hadoopConfiguration)
 
-    variantContexts.pipe(
+    variantContexts.pipe[VariantContext, VariantContextProduct, VariantContextRDD, VCFInFormatter](
       cmd = builder.build(),
       files = builder.getFiles()
     )
