@@ -25,8 +25,10 @@ import org.bdgenomics.adam.rdd.ADAMContext._
 import org.bdgenomics.adam.rdd.ADAMSaveAnyArgs
 import org.bdgenomics.adam.rdd.fragment.{ FragmentRDD, InterleavedFASTQInFormatter }
 import org.bdgenomics.adam.rdd.read.{ AlignmentRecordRDD, AnySAMOutFormatter }
+import org.bdgenomics.adam.sql.{ AlignmentRecord => AlignmentRecordProduct }
 import org.bdgenomics.cannoli.builder.CommandBuilders
 import org.bdgenomics.cannoli.util.QuerynameGrouper
+import org.bdgenomics.formats.avro.AlignmentRecord
 import org.bdgenomics.utils.cli._
 import org.bdgenomics.utils.misc.Logging
 import org.kohsuke.args4j.{ Argument, Option => Args4jOption }
@@ -141,7 +143,7 @@ class BwaFn(
     implicit val tFormatter = InterleavedFASTQInFormatter
     implicit val uFormatter = new AnySAMOutFormatter
 
-    fragments.pipe(
+    fragments.pipe[AlignmentRecord, AlignmentRecordProduct, AlignmentRecordRDD, InterleavedFASTQInFormatter](
       cmd = builder.build(),
       files = builder.getFiles()
     )
