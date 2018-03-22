@@ -23,10 +23,12 @@ import org.apache.spark.SparkContext
 import org.bdgenomics.adam.models.VariantContext
 import org.bdgenomics.adam.rdd.ADAMContext._
 import org.bdgenomics.adam.rdd.ADAMSaveAnyArgs
-import org.bdgenomics.adam.rdd.read.{ AlignmentRecordRDD, BAMInFormatter }
-import org.bdgenomics.adam.rdd.variant.{ VariantContextRDD, VCFOutFormatter }
+import org.bdgenomics.adam.rdd.variant.{
+  VariantContextRDD,
+  VCFInFormatter,
+  VCFOutFormatter
+}
 import org.bdgenomics.adam.sql.{ VariantContext => VariantContextProduct }
-import org.bdgenomics.adam.util.FileExtensions._
 import org.bdgenomics.cannoli.builder.CommandBuilders
 import org.bdgenomics.utils.cli._
 import org.bdgenomics.utils.misc.Logging
@@ -34,14 +36,14 @@ import org.kohsuke.args4j.{ Argument, Option => Args4jOption }
 import scala.collection.JavaConversions._
 
 /**
- * Samtools function arguments.
+ * Vt normalize function arguments.
  */
-class SamtoolsFnArgs extends Args4jBase {
-  @Args4jOption(required = false, name = "-executable", usage = "Path to the samtools executable. Defaults to samtools.")
-  var executable: String = "samtools"
+class VtNormalizeFnArgs extends Args4jBase {
+  @Args4jOption(required = false, name = "-executable", usage = "Path to the vt executable. Defaults to vt.")
+  var executable: String = "vt"
 
-  @Args4jOption(required = false, name = "-docker_image", usage = "Container image to use. Defaults to quay.io/biocontainers/samtools:1.6--0.")
-  var image: String = "quay.io/biocontainers/samtools:1.6--0"
+  @Args4jOption(required = false, name = "-image", usage = "Container image to use. Defaults to heuermh/vt.")
+  var image: String = "heuermh/vt"
 
   @Args4jOption(required = false, name = "-sudo", usage = "Run via sudo.")
   var sudo: Boolean = false
@@ -49,42 +51,42 @@ class SamtoolsFnArgs extends Args4jBase {
   @Args4jOption(required = false, name = "-add_files", usage = "If true, use the SparkFiles mechanism to distribute files to executors.")
   var addFiles: Boolean = false
 
-  @Args4jOption(required = false, name = "-use_docker", usage = "If true, uses Docker to launch samtools.")
+  @Args4jOption(required = false, name = "-use_docker", usage = "If true, uses Docker to launch vt.")
   var useDocker: Boolean = false
 
-  @Args4jOption(required = false, name = "-use_singularity", usage = "If true, uses Singularity to launch samtools.")
+  @Args4jOption(required = false, name = "-use_singularity", usage = "If true, uses Singularity to launch vt.")
   var useSingularity: Boolean = false
 
-  @Args4jOption(required = true, name = "-reference", usage = "Reference sequence for analysis. An index file (.fai) will be created if none exists.")
+  @Args4jOption(required = true, name = "-reference", usage = "Reference sequence for analysis.")
   var referencePath: String = null
+
+  @Args4jOption(required = false, name = "-window", usage = "Window size for local sorting of variants. Defaults to 10000.")
+  var window: Int = _
 }
 
 /**
- * Samtools wrapper as a function AlignmentRecordRDD &rarr; VariantContextRDD,
+ * Vt normalize wrapper as a function VariantContextRDD &rarr; VariantContextRDD,
  * for use in cannoli-shell or notebooks.
  *
- * @param args Samtools function arguments.
+ * @param args Vt normalize function arguments.
  * @param sc Spark context.
  */
-class SamtoolsFn(
-    val args: SamtoolsFnArgs,
-    sc: SparkContext) extends CannoliFn[AlignmentRecordRDD, VariantContextRDD](sc) with Logging {
+class VtNormalizeFn(
+    val args: VtNormalizeFnArgs,
+    sc: SparkContext) extends CannoliFn[VariantContextRDD, VariantContextRDD](sc) with Logging {
 
-  override def apply(alignments: AlignmentRecordRDD): VariantContextRDD = {
+  override def apply(variantContexts: VariantContextRDD): VariantContextRDD = {
 
-    val builder = CommandBuilders.create(args.useDocker, args.useSingularity)
+    var builder = CommandBuilders.create(args.useDocker, args.useSingularity)
       .setExecutable(args.executable)
-      .add("mpileup")
+      .add("normalize")
       .add("-")
-      .add("--reference")
+      .add("-r")
       .add(if (args.addFiles) "$0" else absolute(args.referencePath))
-      .add("-v")
-      .add("-u")
 
-    if (args.addFiles) {
-      builder.addFile(args.referencePath)
-      builder.addFile(args.referencePath + ".fai")
-    }
+    Option(args.window).foreach(i => builder.add("-w").add(i.toString))
+
+    if (args.addFiles) builder.addFile(args.referencePath)
 
     if (args.useDocker || args.useSingularity) {
       builder
@@ -93,36 +95,36 @@ class SamtoolsFn(
         .addMount(if (args.addFiles) "$root" else root(args.referencePath))
     }
 
-    log.info("Piping {} to samtools with command: {} files: {}",
-      alignments, builder.build(), builder.getFiles())
+    log.info("Piping {} to vt with command: {} files: {}",
+      variantContexts, builder.build(), builder.getFiles())
 
-    implicit val tFormatter = BAMInFormatter
+    implicit val tFormatter = VCFInFormatter
     implicit val uFormatter = new VCFOutFormatter(sc.hadoopConfiguration)
 
-    alignments.pipe[VariantContext, VariantContextProduct, VariantContextRDD, BAMInFormatter](
+    variantContexts.pipe[VariantContext, VariantContextProduct, VariantContextRDD, VCFInFormatter](
       cmd = builder.build(),
       files = builder.getFiles()
     )
   }
 }
 
-object Samtools extends BDGCommandCompanion {
-  val commandName = "samtools"
-  val commandDescription = "ADAM Pipe API wrapper for samtools mpileup."
+object VtNormalize extends BDGCommandCompanion {
+  val commandName = "vtNormalize"
+  val commandDescription = "ADAM Pipe API wrapper for vt normalize."
 
   def apply(cmdLine: Array[String]) = {
-    new Samtools(Args4j[SamtoolsArgs](cmdLine))
+    new VtNormalize(Args4j[VtNormalizeArgs](cmdLine))
   }
 }
 
 /**
- * Samtools command line arguments.
+ * Vt normalize command line arguments.
  */
-class SamtoolsArgs extends SamtoolsFnArgs with ADAMSaveAnyArgs with ParquetArgs {
-  @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe alignment records from (e.g. .bam, .cram, .sam). If extension is not detected, Parquet is assumed.", index = 0)
+class VtNormalizeArgs extends VtNormalizeFnArgs with ADAMSaveAnyArgs with ParquetArgs {
+  @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe from, in VCF format.", index = 0)
   var inputPath: String = null
 
-  @Argument(required = true, metaVar = "OUTPUT", usage = "Location to pipe genotypes to (e.g. .vcf, .vcf.gz, .vcf.bgz). If extension is not detected, Parquet is assumed.", index = 1)
+  @Argument(required = true, metaVar = "OUTPUT", usage = "Location to pipe to, in VCF format.", index = 1)
   var outputPath: String = null
 
   @Args4jOption(required = false, name = "-single", usage = "Saves OUTPUT as single file.")
@@ -142,26 +144,15 @@ class SamtoolsArgs extends SamtoolsFnArgs with ADAMSaveAnyArgs with ParquetArgs 
 }
 
 /**
- * Samtools command line wrapper.
+ * Vt normalize command line wrapper.
  */
-class Samtools(protected val args: SamtoolsArgs) extends BDGSparkCommand[SamtoolsArgs] with Logging {
-  val companion = Samtools
+class VtNormalize(protected val args: VtNormalizeArgs) extends BDGSparkCommand[VtNormalizeArgs] with Logging {
+  val companion = VtNormalize
   val stringency: ValidationStringency = ValidationStringency.valueOf(args.stringency)
 
   def run(sc: SparkContext) {
-    val alignments = sc.loadAlignments(args.inputPath, stringency = stringency)
-    val variantContexts = new SamtoolsFn(args, sc).apply(alignments)
-
-    if (isVcfExt(args.outputPath)) {
-      variantContexts.saveAsVcf(
-        args.inputPath,
-        asSingleFile = args.asSingleFile,
-        deferMerging = args.deferMerging,
-        disableFastConcat = args.disableFastConcat,
-        stringency
-      )
-    } else {
-      variantContexts.toGenotypes.saveAsParquet(args)
-    }
+    val variantContexts = sc.loadVcf(args.inputPath, stringency = stringency)
+    val pipedVariantContexts = new VtNormalizeFn(args, sc).apply(variantContexts)
+    pipedVariantContexts.saveAsVcf(args, stringency)
   }
 }

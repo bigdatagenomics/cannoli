@@ -23,12 +23,10 @@ import org.apache.spark.SparkContext
 import org.bdgenomics.adam.models.VariantContext
 import org.bdgenomics.adam.rdd.ADAMContext._
 import org.bdgenomics.adam.rdd.ADAMSaveAnyArgs
-import org.bdgenomics.adam.rdd.variant.{
-  VariantContextRDD,
-  VCFInFormatter,
-  VCFOutFormatter
-}
+import org.bdgenomics.adam.rdd.read.{ AlignmentRecordRDD, BAMInFormatter }
+import org.bdgenomics.adam.rdd.variant.{ VariantContextRDD, VCFOutFormatter }
 import org.bdgenomics.adam.sql.{ VariantContext => VariantContextProduct }
+import org.bdgenomics.adam.util.FileExtensions._
 import org.bdgenomics.cannoli.builder.CommandBuilders
 import org.bdgenomics.utils.cli._
 import org.bdgenomics.utils.misc.Logging
@@ -36,14 +34,14 @@ import org.kohsuke.args4j.{ Argument, Option => Args4jOption }
 import scala.collection.JavaConversions._
 
 /**
- * Bcftools function arguments.
+ * Samtools mpileup function arguments.
  */
-class BcftoolsFnArgs extends Args4jBase {
-  @Args4jOption(required = false, name = "-executable", usage = "Path to the BCFtools executable. Defaults to bcftools.")
-  var executable: String = "bcftools"
+class SamtoolsMpileupFnArgs extends Args4jBase {
+  @Args4jOption(required = false, name = "-executable", usage = "Path to the samtools executable. Defaults to samtools.")
+  var executable: String = "samtools"
 
-  @Args4jOption(required = false, name = "-image", usage = "Container image to use. Defaults to quay.io/biocontainers/bcftools:1.6--0.")
-  var image: String = "quay.io/biocontainers/bcftools:1.6--0"
+  @Args4jOption(required = false, name = "-docker_image", usage = "Container image to use. Defaults to quay.io/biocontainers/samtools:1.6--0.")
+  var image: String = "quay.io/biocontainers/samtools:1.6--0"
 
   @Args4jOption(required = false, name = "-sudo", usage = "Run via sudo.")
   var sudo: Boolean = false
@@ -51,10 +49,10 @@ class BcftoolsFnArgs extends Args4jBase {
   @Args4jOption(required = false, name = "-add_files", usage = "If true, use the SparkFiles mechanism to distribute files to executors.")
   var addFiles: Boolean = false
 
-  @Args4jOption(required = false, name = "-use_docker", usage = "If true, uses Docker to launch BCFtools.")
+  @Args4jOption(required = false, name = "-use_docker", usage = "If true, uses Docker to launch samtools.")
   var useDocker: Boolean = false
 
-  @Args4jOption(required = false, name = "-use_singularity", usage = "If true, uses Singularity to launch BCFtools.")
+  @Args4jOption(required = false, name = "-use_singularity", usage = "If true, uses Singularity to launch samtools.")
   var useSingularity: Boolean = false
 
   @Args4jOption(required = true, name = "-reference", usage = "Reference sequence for analysis. An index file (.fai) will be created if none exists.")
@@ -62,23 +60,26 @@ class BcftoolsFnArgs extends Args4jBase {
 }
 
 /**
- * Bcftools wrapper as a function VariantContextRDD &rarr; VariantContextRDD,
+ * Samtools mpileup wrapper as a function AlignmentRecordRDD &rarr; VariantContextRDD,
  * for use in cannoli-shell or notebooks.
  *
- * @param args Bcftools function arguments.
+ * @param args Samtools mpileup function arguments.
  * @param sc Spark context.
  */
-class BcftoolsFn(
-    val args: BcftoolsFnArgs,
-    sc: SparkContext) extends CannoliFn[VariantContextRDD, VariantContextRDD](sc) with Logging {
+class SamtoolsMpileupFn(
+    val args: SamtoolsMpileupFnArgs,
+    sc: SparkContext) extends CannoliFn[AlignmentRecordRDD, VariantContextRDD](sc) with Logging {
 
-  override def apply(variantContexts: VariantContextRDD): VariantContextRDD = {
+  override def apply(alignments: AlignmentRecordRDD): VariantContextRDD = {
 
     val builder = CommandBuilders.create(args.useDocker, args.useSingularity)
       .setExecutable(args.executable)
-      .add("norm")
-      .add("--fasta-ref")
+      .add("mpileup")
+      .add("-")
+      .add("--reference")
       .add(if (args.addFiles) "$0" else absolute(args.referencePath))
+      .add("-v")
+      .add("-u")
 
     if (args.addFiles) {
       builder.addFile(args.referencePath)
@@ -92,36 +93,36 @@ class BcftoolsFn(
         .addMount(if (args.addFiles) "$root" else root(args.referencePath))
     }
 
-    log.info("Piping {} to bcftools with command: {} files: {}",
-      variantContexts, builder.build(), builder.getFiles())
+    log.info("Piping {} to samtools with command: {} files: {}",
+      alignments, builder.build(), builder.getFiles())
 
-    implicit val tFormatter = VCFInFormatter
+    implicit val tFormatter = BAMInFormatter
     implicit val uFormatter = new VCFOutFormatter(sc.hadoopConfiguration)
 
-    variantContexts.pipe[VariantContext, VariantContextProduct, VariantContextRDD, VCFInFormatter](
+    alignments.pipe[VariantContext, VariantContextProduct, VariantContextRDD, BAMInFormatter](
       cmd = builder.build(),
       files = builder.getFiles()
     )
   }
 }
 
-object Bcftools extends BDGCommandCompanion {
-  val commandName = "bcftools"
-  val commandDescription = "ADAM Pipe API wrapper for BCFtools norm."
+object SamtoolsMpileup extends BDGCommandCompanion {
+  val commandName = "samtoolsMpileup"
+  val commandDescription = "ADAM Pipe API wrapper for samtools mpileup."
 
   def apply(cmdLine: Array[String]) = {
-    new Bcftools(Args4j[BcftoolsArgs](cmdLine))
+    new SamtoolsMpileup(Args4j[SamtoolsMpileupArgs](cmdLine))
   }
 }
 
 /**
- * Bcftools command line arguments.
+ * Samtools mpileup command line arguments.
  */
-class BcftoolsArgs extends BcftoolsFnArgs with ADAMSaveAnyArgs with ParquetArgs {
-  @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe from, in VCF format.", index = 0)
+class SamtoolsMpileupArgs extends SamtoolsMpileupFnArgs with ADAMSaveAnyArgs with ParquetArgs {
+  @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe alignment records from (e.g. .bam, .cram, .sam). If extension is not detected, Parquet is assumed.", index = 0)
   var inputPath: String = null
 
-  @Argument(required = true, metaVar = "OUTPUT", usage = "Location to pipe to, in VCF format.", index = 1)
+  @Argument(required = true, metaVar = "OUTPUT", usage = "Location to pipe genotypes to (e.g. .vcf, .vcf.gz, .vcf.bgz). If extension is not detected, Parquet is assumed.", index = 1)
   var outputPath: String = null
 
   @Args4jOption(required = false, name = "-single", usage = "Saves OUTPUT as single file.")
@@ -141,15 +142,26 @@ class BcftoolsArgs extends BcftoolsFnArgs with ADAMSaveAnyArgs with ParquetArgs 
 }
 
 /**
- * Bcftools command line wrapper.
+ * Samtools mpileup command line wrapper.
  */
-class Bcftools(protected val args: BcftoolsArgs) extends BDGSparkCommand[BcftoolsArgs] with Logging {
-  val companion = Bcftools
+class SamtoolsMpileup(protected val args: SamtoolsMpileupArgs) extends BDGSparkCommand[SamtoolsMpileupArgs] with Logging {
+  val companion = SamtoolsMpileup
   val stringency: ValidationStringency = ValidationStringency.valueOf(args.stringency)
 
   def run(sc: SparkContext) {
-    val variantContexts = sc.loadVcf(args.inputPath, stringency = stringency)
-    val pipedVariantContexts = new BcftoolsFn(args, sc).apply(variantContexts)
-    pipedVariantContexts.saveAsVcf(args, stringency)
+    val alignments = sc.loadAlignments(args.inputPath, stringency = stringency)
+    val variantContexts = new SamtoolsMpileupFn(args, sc).apply(alignments)
+
+    if (isVcfExt(args.outputPath)) {
+      variantContexts.saveAsVcf(
+        args.inputPath,
+        asSingleFile = args.asSingleFile,
+        deferMerging = args.deferMerging,
+        disableFastConcat = args.disableFastConcat,
+        stringency
+      )
+    } else {
+      variantContexts.toGenotypes.saveAsParquet(args)
+    }
   }
 }
