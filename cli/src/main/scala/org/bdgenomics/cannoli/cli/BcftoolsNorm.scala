@@ -36,14 +36,14 @@ import org.kohsuke.args4j.{ Argument, Option => Args4jOption }
 import scala.collection.JavaConversions._
 
 /**
- * Vt function arguments.
+ * Bcftools norm function arguments.
  */
-class VtFnArgs extends Args4jBase {
-  @Args4jOption(required = false, name = "-executable", usage = "Path to the vt executable. Defaults to vt.")
-  var executable: String = "vt"
+class BcftoolsNormFnArgs extends Args4jBase {
+  @Args4jOption(required = false, name = "-executable", usage = "Path to the BCFtools executable. Defaults to bcftools.")
+  var executable: String = "bcftools"
 
-  @Args4jOption(required = false, name = "-image", usage = "Container image to use. Defaults to heuermh/vt.")
-  var image: String = "heuermh/vt"
+  @Args4jOption(required = false, name = "-image", usage = "Container image to use. Defaults to quay.io/biocontainers/bcftools:1.6--0.")
+  var image: String = "quay.io/biocontainers/bcftools:1.6--0"
 
   @Args4jOption(required = false, name = "-sudo", usage = "Run via sudo.")
   var sudo: Boolean = false
@@ -51,42 +51,39 @@ class VtFnArgs extends Args4jBase {
   @Args4jOption(required = false, name = "-add_files", usage = "If true, use the SparkFiles mechanism to distribute files to executors.")
   var addFiles: Boolean = false
 
-  @Args4jOption(required = false, name = "-use_docker", usage = "If true, uses Docker to launch vt.")
+  @Args4jOption(required = false, name = "-use_docker", usage = "If true, uses Docker to launch BCFtools.")
   var useDocker: Boolean = false
 
-  @Args4jOption(required = false, name = "-use_singularity", usage = "If true, uses Singularity to launch vt.")
+  @Args4jOption(required = false, name = "-use_singularity", usage = "If true, uses Singularity to launch BCFtools.")
   var useSingularity: Boolean = false
 
-  @Args4jOption(required = true, name = "-reference", usage = "Reference sequence for analysis.")
+  @Args4jOption(required = true, name = "-reference", usage = "Reference sequence for analysis. An index file (.fai) will be created if none exists.")
   var referencePath: String = null
-
-  @Args4jOption(required = false, name = "-window", usage = "Window size for local sorting of variants. Defaults to 10000.")
-  var window: Int = _
 }
 
 /**
- * Vt wrapper as a function VariantContextRDD &rarr; VariantContextRDD,
+ * Bcftools norm wrapper as a function VariantContextRDD &rarr; VariantContextRDD,
  * for use in cannoli-shell or notebooks.
  *
- * @param args Vt function arguments.
+ * @param args Bcftools norm function arguments.
  * @param sc Spark context.
  */
-class VtFn(
-    val args: VtFnArgs,
+class BcftoolsNormFn(
+    val args: BcftoolsNormFnArgs,
     sc: SparkContext) extends CannoliFn[VariantContextRDD, VariantContextRDD](sc) with Logging {
 
   override def apply(variantContexts: VariantContextRDD): VariantContextRDD = {
 
-    var builder = CommandBuilders.create(args.useDocker, args.useSingularity)
+    val builder = CommandBuilders.create(args.useDocker, args.useSingularity)
       .setExecutable(args.executable)
-      .add("normalize")
-      .add("-")
-      .add("-r")
+      .add("norm")
+      .add("--fasta-ref")
       .add(if (args.addFiles) "$0" else absolute(args.referencePath))
 
-    Option(args.window).foreach(i => builder.add("-w").add(i.toString))
-
-    if (args.addFiles) builder.addFile(args.referencePath)
+    if (args.addFiles) {
+      builder.addFile(args.referencePath)
+      builder.addFile(args.referencePath + ".fai")
+    }
 
     if (args.useDocker || args.useSingularity) {
       builder
@@ -95,7 +92,7 @@ class VtFn(
         .addMount(if (args.addFiles) "$root" else root(args.referencePath))
     }
 
-    log.info("Piping {} to vt with command: {} files: {}",
+    log.info("Piping {} to bcftools with command: {} files: {}",
       variantContexts, builder.build(), builder.getFiles())
 
     implicit val tFormatter = VCFInFormatter
@@ -108,19 +105,19 @@ class VtFn(
   }
 }
 
-object Vt extends BDGCommandCompanion {
-  val commandName = "vt"
-  val commandDescription = "ADAM Pipe API wrapper for vt normalize."
+object BcftoolsNorm extends BDGCommandCompanion {
+  val commandName = "bcftoolsNorm"
+  val commandDescription = "ADAM Pipe API wrapper for BCFtools norm."
 
   def apply(cmdLine: Array[String]) = {
-    new Vt(Args4j[VtArgs](cmdLine))
+    new BcftoolsNorm(Args4j[BcftoolsNormArgs](cmdLine))
   }
 }
 
 /**
- * Vt command line arguments.
+ * Bcftools norm command line arguments.
  */
-class VtArgs extends VtFnArgs with ADAMSaveAnyArgs with ParquetArgs {
+class BcftoolsNormArgs extends BcftoolsNormFnArgs with ADAMSaveAnyArgs with ParquetArgs {
   @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe from, in VCF format.", index = 0)
   var inputPath: String = null
 
@@ -144,15 +141,15 @@ class VtArgs extends VtFnArgs with ADAMSaveAnyArgs with ParquetArgs {
 }
 
 /**
- * Vt command line wrapper.
+ * Bcftools norm command line wrapper.
  */
-class Vt(protected val args: VtArgs) extends BDGSparkCommand[VtArgs] with Logging {
-  val companion = Vt
+class BcftoolsNorm(protected val args: BcftoolsNormArgs) extends BDGSparkCommand[BcftoolsNormArgs] with Logging {
+  val companion = BcftoolsNorm
   val stringency: ValidationStringency = ValidationStringency.valueOf(args.stringency)
 
   def run(sc: SparkContext) {
     val variantContexts = sc.loadVcf(args.inputPath, stringency = stringency)
-    val pipedVariantContexts = new VtFn(args, sc).apply(variantContexts)
+    val pipedVariantContexts = new BcftoolsNormFn(args, sc).apply(variantContexts)
     pipedVariantContexts.saveAsVcf(args, stringency)
   }
 }

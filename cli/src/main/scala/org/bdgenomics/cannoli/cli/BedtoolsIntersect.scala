@@ -36,9 +36,9 @@ import org.kohsuke.args4j.{ Argument, Option => Args4jOption }
 import scala.collection.JavaConversions._
 
 /**
- * Bedtools function arguments.
+ * Bedtools intersect function arguments.
  */
-class BedtoolsFnArgs extends Args4jBase {
+class BedtoolsIntersectFnArgs extends Args4jBase {
   @Args4jOption(required = false, name = "-a", usage = "Bedtools intersect -a option. One of {-a,-b} should be left unspecified to accept piped input.")
   var a: String = null
 
@@ -68,22 +68,22 @@ class BedtoolsFnArgs extends Args4jBase {
 }
 
 /**
- * Bedtools wrapper as a function FeatureRDD &rarr; FeatureRDD,
+ * Bedtools intersect wrapper as a function FeatureRDD &rarr; FeatureRDD,
  * for use in cannoli-shell or notebooks.
  *
  * <code>
- * val args = new BedtoolsFnArgs()
+ * val args = new BedtoolsIntersectFnArgs()
  * args.b = "foo.bed"
  * args.useDocker = true
  * val features = ...
- * val pipedFeatures = new BedtoolsFn(args, sc).apply(features)
+ * val pipedFeatures = new BedtoolsIntersectFn(args, sc).apply(features)
  * </code>
  *
- * @param args Bedtools function arguments.
+ * @param args Bedtools intersect function arguments.
  * @param sc Spark context.
  */
-class BedtoolsFn(
-    val args: BedtoolsFnArgs,
+class BedtoolsIntersectFn(
+    val args: BedtoolsIntersectFnArgs,
     sc: SparkContext) extends CannoliFn[FeatureRDD, FeatureRDD](sc) with Logging {
 
   override def apply(features: FeatureRDD): FeatureRDD = {
@@ -125,19 +125,19 @@ class BedtoolsFn(
   }
 }
 
-object Bedtools extends BDGCommandCompanion {
-  val commandName = "bedtools"
+object BedtoolsIntersect extends BDGCommandCompanion {
+  val commandName = "bedtoolsIntersect"
   val commandDescription = "ADAM Pipe API wrapper for Bedtools intersect."
 
   def apply(cmdLine: Array[String]) = {
-    new Bedtools(Args4j[BedtoolsArgs](cmdLine))
+    new BedtoolsIntersect(Args4j[BedtoolsIntersectArgs](cmdLine))
   }
 }
 
 /**
- * Bedtools command line arguments.
+ * Bedtools intersect command line arguments.
  */
-class BedtoolsArgs extends BedtoolsFnArgs with ADAMSaveAnyArgs with ParquetArgs {
+class BedtoolsIntersectArgs extends BedtoolsIntersectFnArgs with ADAMSaveAnyArgs with ParquetArgs {
   @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe features from (e.g., .bed, .gff/.gtf, .gff3, .interval_list, .narrowPeak). If extension is not detected, Parquet is assumed.", index = 0)
   var inputPath: String = null
 
@@ -164,10 +164,10 @@ class BedtoolsArgs extends BedtoolsFnArgs with ADAMSaveAnyArgs with ParquetArgs 
 }
 
 /**
- * Bedtools command line wrapper.
+ * Bedtools intersect command line wrapper.
  */
-class Bedtools(protected val args: BedtoolsArgs) extends BDGSparkCommand[BedtoolsArgs] with Logging {
-  val companion = Bedtools
+class BedtoolsIntersect(protected val args: BedtoolsIntersectArgs) extends BDGSparkCommand[BedtoolsIntersectArgs] with Logging {
+  val companion = BedtoolsIntersect
 
   override def run(sc: SparkContext) {
     val projection = Projection(
@@ -184,7 +184,7 @@ class Bedtools(protected val args: BedtoolsArgs) extends BDGSparkCommand[Bedtool
       optMinPartitions = Option(args.partitions),
       optProjection = if (args.limitProjection) Some(projection) else None
     )
-    val pipedFeatures = new BedtoolsFn(args, sc).apply(features)
+    val pipedFeatures = new BedtoolsIntersectFn(args, sc).apply(features)
 
     pipedFeatures.save(args.outputPath,
       asSingleFile = args.asSingleFile,

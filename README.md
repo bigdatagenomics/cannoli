@@ -36,12 +36,15 @@ Usage: cannoli-submit [<spark-args> --] <cannoli-args>
 Choose one of the following commands:
 
 CANNOLI
-            bedtools : ADAM Pipe API wrapper for Bedtools intersect.
+        bcftoolsNorm : ADAM Pipe API wrapper for BCFtools norm.
+   bedtoolsIntersect : ADAM Pipe API wrapper for Bedtools intersect.
               bowtie : ADAM Pipe API wrapper for Bowtie.
-             bowtie2 : ADAM Pipe API wrapper for Bowtie2.
+             bowtie2 : ADAM Pipe API wrapper for Bowtie 2.
                  bwa : ADAM Pipe API wrapper for BWA.
            freebayes : ADAM Pipe API wrapper for Freebayes.
+     samtoolsMpileup : ADAM Pipe API wrapper for samtools mpileup.
               snpEff : ADAM Pipe API wrapper for SnpEff.
+         vtNormalize : ADAM Pipe API wrapper for vt normalize.
 
 CANNOLI TOOLS
      interleaveFastq : Interleaves two FASTQ files.
@@ -65,7 +68,7 @@ $ ./bin/cannoli-submit \
     -add_indices
 ```
 
-or can be run using Docker.
+or can be run using Docker
 
 ```
 $ ./bin/cannoli-submit \
@@ -79,6 +82,24 @@ $ ./bin/cannoli-submit \
     -sequence_dictionary hg38.dict \
     -fragments \
     -use_docker \
-    -docker_image quay.io/ucsc_cgl/bwa:0.7.12--256539928ea162949d8a65ca5c79a72ef557ce7c \
+    -image quay.io/ucsc_cgl/bwa:0.7.12--256539928ea162949d8a65ca5c79a72ef557ce7c \
+    -add_indices
+```
+
+or can be run using Singularity
+
+```
+$ ./bin/cannoli-submit \
+    <spark-args>
+    -- \
+    bwa \
+    sample.unaligned.fragments.adam \
+    sample.bwa.hg38.alignments.adam \
+    sample \
+    -index hg38.fa \
+    -sequence_dictionary hg38.dict \
+    -fragments \
+    -use_singularity \
+    -image quay.io/ucsc_cgl/bwa:0.7.12--256539928ea162949d8a65ca5c79a72ef557ce7c \
     -add_indices
 ```
