@@ -284,7 +284,7 @@ public abstract class CommandBuilder implements Serializable {
     /**
      * Add the specified mount point to the map of mount points for this command builder.
      *
-     * @param source mount point source and target, must not be null
+     * @param mount mount point source and target, must not be null
      * @return this command builder
      */
     public final CommandBuilder addMount(final String mount) {
@@ -309,6 +309,7 @@ public abstract class CommandBuilder implements Serializable {
      * Add the specified mount points to the map of mount points for this command builder.
      *
      * @param mounts mount points to add, must not be null
+     * @return this command builder
      */
     public final CommandBuilder addMounts(final Map<String, String> mounts) {
         checkNotNull(mounts);
