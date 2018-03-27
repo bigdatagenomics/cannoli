@@ -36,6 +36,7 @@ object Cannoli {
     Freebayes,
     SamtoolsMpileup,
     SnpEff,
+    Vep,
     VtNormalize)),
     CommandGroup("CANNOLI TOOLS", List(InterleaveFastq,
       SampleReads)))
