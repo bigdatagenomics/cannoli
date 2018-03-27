@@ -64,10 +64,12 @@ class SamtoolsMpileupFnArgs extends Args4jBase {
  * for use in cannoli-shell or notebooks.
  *
  * @param args Samtools mpileup function arguments.
+ * @param stringency Validation stringency. Defaults to ValidationStringency.LENIENT.
  * @param sc Spark context.
  */
 class SamtoolsMpileupFn(
     val args: SamtoolsMpileupFnArgs,
+    val stringency: ValidationStringency = ValidationStringency.LENIENT,
     sc: SparkContext) extends CannoliFn[AlignmentRecordRDD, VariantContextRDD](sc) with Logging {
 
   override def apply(alignments: AlignmentRecordRDD): VariantContextRDD = {
@@ -97,7 +99,7 @@ class SamtoolsMpileupFn(
       alignments, builder.build(), builder.getFiles())
 
     implicit val tFormatter = BAMInFormatter
-    implicit val uFormatter = new VCFOutFormatter(sc.hadoopConfiguration)
+    implicit val uFormatter = new VCFOutFormatter(sc.hadoopConfiguration, stringency)
 
     alignments.pipe[VariantContext, VariantContextProduct, VariantContextRDD, BAMInFormatter](
       cmd = builder.build(),
@@ -150,7 +152,7 @@ class SamtoolsMpileup(protected val args: SamtoolsMpileupArgs) extends BDGSparkC
 
   def run(sc: SparkContext) {
     val alignments = sc.loadAlignments(args.inputPath, stringency = stringency)
-    val variantContexts = new SamtoolsMpileupFn(args, sc).apply(alignments)
+    val variantContexts = new SamtoolsMpileupFn(args, stringency, sc).apply(alignments)
 
     if (isVcfExt(args.outputPath)) {
       variantContexts.saveAsVcf(

@@ -72,10 +72,12 @@ class FreebayesFnArgs extends Args4jBase {
  * for use in cannoli-shell or notebooks.
  *
  * @param args Freebayes function arguments.
+ * @param stringency Validation stringency. Defaults to ValidationStringency.LENIENT.
  * @param sc Spark context.
  */
 class FreebayesFn(
     val args: FreebayesFnArgs,
+    val stringency: ValidationStringency = ValidationStringency.LENIENT,
     sc: SparkContext) extends CannoliFn[AlignmentRecordRDD, VariantContextRDD](sc) with Logging {
 
   override def apply(alignments: AlignmentRecordRDD): VariantContextRDD = {
@@ -110,7 +112,7 @@ class FreebayesFn(
     val accumulator: CollectionAccumulator[VCFHeaderLine] = sc.collectionAccumulator("headerLines")
 
     implicit val tFormatter = BAMInFormatter
-    implicit val uFormatter = new VCFOutFormatter(sc.hadoopConfiguration, Some(accumulator))
+    implicit val uFormatter = new VCFOutFormatter(sc.hadoopConfiguration, stringency, Some(accumulator))
 
     val variantContexts = alignments.pipe[VariantContext, VariantContextProduct, VariantContextRDD, BAMInFormatter](
       cmd = builder.build(),
@@ -166,7 +168,7 @@ class Freebayes(protected val args: FreebayesArgs) extends BDGSparkCommand[Freeb
 
   def run(sc: SparkContext) {
     val alignments = sc.loadAlignments(args.inputPath, stringency = stringency)
-    val variantContexts = new FreebayesFn(args, sc).apply(alignments)
+    val variantContexts = new FreebayesFn(args, stringency, sc).apply(alignments)
 
     if (isVcfExt(args.outputPath)) {
       variantContexts.saveAsVcf(

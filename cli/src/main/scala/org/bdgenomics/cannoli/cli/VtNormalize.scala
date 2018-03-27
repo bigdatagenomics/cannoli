@@ -69,10 +69,12 @@ class VtNormalizeFnArgs extends Args4jBase {
  * for use in cannoli-shell or notebooks.
  *
  * @param args Vt normalize function arguments.
+ * @param stringency Validation stringency. Defaults to ValidationStringency.LENIENT.
  * @param sc Spark context.
  */
 class VtNormalizeFn(
     val args: VtNormalizeFnArgs,
+    val stringency: ValidationStringency = ValidationStringency.LENIENT,
     sc: SparkContext) extends CannoliFn[VariantContextRDD, VariantContextRDD](sc) with Logging {
 
   override def apply(variantContexts: VariantContextRDD): VariantContextRDD = {
@@ -99,7 +101,7 @@ class VtNormalizeFn(
       variantContexts, builder.build(), builder.getFiles())
 
     implicit val tFormatter = VCFInFormatter
-    implicit val uFormatter = new VCFOutFormatter(sc.hadoopConfiguration)
+    implicit val uFormatter = new VCFOutFormatter(sc.hadoopConfiguration, stringency)
 
     variantContexts.pipe[VariantContext, VariantContextProduct, VariantContextRDD, VCFInFormatter](
       cmd = builder.build(),
@@ -152,7 +154,7 @@ class VtNormalize(protected val args: VtNormalizeArgs) extends BDGSparkCommand[V
 
   def run(sc: SparkContext) {
     val variantContexts = sc.loadVcf(args.inputPath, stringency = stringency)
-    val pipedVariantContexts = new VtNormalizeFn(args, sc).apply(variantContexts)
+    val pipedVariantContexts = new VtNormalizeFn(args, stringency, sc).apply(variantContexts)
     pipedVariantContexts.saveAsVcf(args, stringency)
   }
 }
