@@ -62,10 +62,12 @@ class SnpEffFnArgs extends Args4jBase {
  * for use in cannoli-shell or notebooks.
  *
  * @param args SnpEff function arguments.
+ * @param stringency Validation stringency. Defaults to ValidationStringency.LENIENT.
  * @param sc Spark context.
  */
 class SnpEffFn(
     val args: SnpEffFnArgs,
+    val stringency: ValidationStringency = ValidationStringency.LENIENT,
     sc: SparkContext) extends CannoliFn[VariantContextRDD, VariantContextRDD](sc) with Logging {
 
   override def apply(variantContexts: VariantContextRDD): VariantContextRDD = {
@@ -85,7 +87,7 @@ class SnpEffFn(
       variantContexts, builder.build(), builder.getFiles())
 
     implicit val tFormatter = VCFInFormatter
-    implicit val uFormatter = new VCFOutFormatter(sc.hadoopConfiguration)
+    implicit val uFormatter = new VCFOutFormatter(sc.hadoopConfiguration, stringency)
 
     variantContexts.pipe[VariantContext, VariantContextProduct, VariantContextRDD, VCFInFormatter](
       cmd = builder.build(),
@@ -138,7 +140,7 @@ class SnpEff(protected val args: SnpEffArgs) extends BDGSparkCommand[SnpEffArgs]
 
   def run(sc: SparkContext) {
     val variantContexts = sc.loadVcf(args.inputPath, stringency = stringency)
-    val pipedVariantContexts = new SnpEffFn(args, sc).apply(variantContexts)
+    val pipedVariantContexts = new SnpEffFn(args, stringency, sc).apply(variantContexts)
     pipedVariantContexts.saveAsVcf(args, stringency)
   }
 }
