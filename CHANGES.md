@@ -1,6 +1,44 @@
 # Cannoli Changelog #
 
 
+### Version 0.2.0 ###
+
+**Closed issues:**
+
+ - Update ADAM dependency version to 0.24.0. [\#118](https://github.com/bigdatagenomics/cannoli/issues/118)
+ - Javadoc error and warnings [\#115](https://github.com/bigdatagenomics/cannoli/issues/115)
+ - Update pipe method calls due to latest ADAM 0.24.0 snapshot [\#114](https://github.com/bigdatagenomics/cannoli/issues/114)
+ - Split commands with subcommands into separate Cannoli CLI classes [\#110](https://github.com/bigdatagenomics/cannoli/issues/110)
+ - Jenkins build failing due to upstream changes. [\#108](https://github.com/bigdatagenomics/cannoli/issues/108)
+ - Provide functions for use in cannoli-shell or notebooks. [\#104](https://github.com/bigdatagenomics/cannoli/issues/104)
+ - Error running BWA with Docker [\#103](https://github.com/bigdatagenomics/cannoli/issues/103)
+ - Allow use of Singularity instead of Docker [\#98](https://github.com/bigdatagenomics/cannoli/issues/98)
+ - Bump ADAM dependency version to 0.24.0-SNAPSHOT. [\#95](https://github.com/bigdatagenomics/cannoli/issues/95)
+ - Drop support for Scala 2.10 and Spark 1.x. [\#94](https://github.com/bigdatagenomics/cannoli/issues/94)
+ - Tidy up FreeBayes [\#67](https://github.com/bigdatagenomics/cannoli/issues/67)
+ - Support loading reference files from HDFS/other file system [\#50](https://github.com/bigdatagenomics/cannoli/issues/50)
+ - Attributes from freebayes header missing from variants and genotypes [\#43](https://github.com/bigdatagenomics/cannoli/issues/43)
+ - Factor out docker/mapping code [\#34](https://github.com/bigdatagenomics/cannoli/issues/34)
+ - Add wrappers for GMAP and GSNAP aligners [\#29](https://github.com/bigdatagenomics/cannoli/issues/29)
+ - Jenkins failures due to missing publish_scaladoc.sh [\#21](https://github.com/bigdatagenomics/cannoli/issues/21)
+
+**Merged and closed pull requests:**
+
+ - [CANNOLI-118] Update ADAM dependency version to 0.24.0. [\#121](https://github.com/bigdatagenomics/cannoli/pull/121) ([heuermh](https://github.com/heuermh))
+ - [CANNOLI-110] Split commands with subcommands into separate Cannoli CLI classes. [\#117](https://github.com/bigdatagenomics/cannoli/pull/117) ([heuermh](https://github.com/heuermh))
+ - [CANNOLI-115] Fix javadoc error and warnings. [\#116](https://github.com/bigdatagenomics/cannoli/pull/116) ([heuermh](https://github.com/heuermh))
+ - [CANNOLI-108] Command argument to pipe is now Seq[String]. [\#109](https://github.com/bigdatagenomics/cannoli/pull/109) ([heuermh](https://github.com/heuermh))
+ - [CANNOLI-98] Adding container builder. [\#107](https://github.com/bigdatagenomics/cannoli/pull/107) ([heuermh](https://github.com/heuermh))
+ - Allow Singularity to run containers [\#106](https://github.com/bigdatagenomics/cannoli/pull/106) ([jpdna](https://github.com/jpdna))
+ - [CANNOLI-95] Bump ADAM dependency version to 0.24.0-SNAPSHOT [\#102](https://github.com/bigdatagenomics/cannoli/pull/102) ([heuermh](https://github.com/heuermh))
+ - [CANNOLI-94] Dropping support for Scala 2.10 and Spark 1.x. [\#101](https://github.com/bigdatagenomics/cannoli/pull/101) ([heuermh](https://github.com/heuermh))
+ - [CANNOLI-94][CANNOLI-95] Drop support for Scala 2.10 and Spark 1.x. [\#100](https://github.com/bigdatagenomics/cannoli/pull/100) ([heuermh](https://github.com/heuermh))
+ - [CANNOLI-43] Use accumulator for VCF header lines. [\#72](https://github.com/bigdatagenomics/cannoli/pull/72) ([heuermh](https://github.com/heuermh))
+ - [CANNOLI-104] Provide functions for use in cannoli-shell or notebooks. [\#69](https://github.com/bigdatagenomics/cannoli/pull/69) ([heuermh](https://github.com/heuermh))
+ - Add CannoliCommand and CannoliAlignerCommand. [\#54](https://github.com/bigdatagenomics/cannoli/pull/54) ([heuermh](https://github.com/heuermh))
+ - [CANNOLI-29] Add minimal GMAP and GSNAP wrappers. [\#32](https://github.com/bigdatagenomics/cannoli/pull/32) ([heuermh](https://github.com/heuermh))
+
+
 ### Version 0.1.0 ###
 
 **Closed issues:**
