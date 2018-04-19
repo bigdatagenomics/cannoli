@@ -1,6 +1,10 @@
 # cannoli
 Big Data Genomics ADAM Pipe API wrappers for bioinformatics tools.  Apache 2 licensed.
 
+[![Build Status](https://img.shields.io/jenkins/s/https/amplab.cs.berkeley.edu/jenkins/view/Big%20Data%20Genomics/job/cannoli.svg)](https://amplab.cs.berkeley.edu/jenkins/view/Big%20Data%20Genomics/job/cannoli/)
+[![Maven Central](https://img.shields.io/maven-central/v/org.bdgenomics.cannoli/cannoli-parent-spark2_2.11.svg?maxAge=600)](http://search.maven.org/#search%7Cga%7C1%7Corg.bdgenomics.cannoli)
+[![API Documentation](http://javadoc.io/badge/org.bdgenomics.cannoli/cannoli-cli-spark2_2.11.svg?color=brightgreen&label=scaladoc)](http://javadoc.io/doc/org.bdgenomics.cannoli/cannoli-core-spark2_2.11)
+
 ![cannoli project logo](https://github.com/heuermh/cannoli/raw/master/images/cannoli-shells.jpg)
 
 ### Hacking cannoli
