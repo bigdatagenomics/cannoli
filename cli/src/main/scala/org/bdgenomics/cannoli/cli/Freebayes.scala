@@ -18,23 +18,14 @@
 package org.bdgenomics.cannoli.cli
 
 import htsjdk.samtools.ValidationStringency
-import htsjdk.variant.vcf.VCFHeaderLine
-import org.apache.hadoop.fs.{ FileSystem, Path }
 import org.apache.spark.SparkContext
-import org.apache.spark.util.CollectionAccumulator
-import org.bdgenomics.adam.models.VariantContext
 import org.bdgenomics.adam.rdd.ADAMContext._
 import org.bdgenomics.adam.rdd.ADAMSaveAnyArgs
-import org.bdgenomics.adam.rdd.read.{ AlignmentRecordRDD, BAMInFormatter }
-import org.bdgenomics.adam.rdd.variant.{ VariantContextRDD, VCFOutFormatter }
-import org.bdgenomics.adam.sql.{ VariantContext => VariantContextProduct }
 import org.bdgenomics.adam.util.FileExtensions._
 import org.bdgenomics.cannoli.{ Freebayes => FreebayesFn, FreebayesArgs => FreebayesFnArgs }
-import org.bdgenomics.cannoli.builder.CommandBuilders
 import org.bdgenomics.utils.cli._
 import org.bdgenomics.utils.misc.Logging
 import org.kohsuke.args4j.{ Argument, Option => Args4jOption }
-import scala.collection.JavaConversions._
 
 object Freebayes extends BDGCommandCompanion {
   val commandName = "freebayes"

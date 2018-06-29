@@ -17,17 +17,13 @@
  */
 package org.bdgenomics.cannoli
 
-import htsjdk.samtools.ValidationStringency
 import org.apache.hadoop.fs.{ FileSystem, Path }
 import org.apache.spark.SparkContext
-import org.bdgenomics.adam.models.{ RecordGroup, RecordGroupDictionary }
 import org.bdgenomics.adam.rdd.ADAMContext._
-import org.bdgenomics.adam.rdd.ADAMSaveAnyArgs
 import org.bdgenomics.adam.rdd.fragment.{ FragmentRDD, InterleavedFASTQInFormatter }
 import org.bdgenomics.adam.rdd.read.{ AlignmentRecordRDD, AnySAMOutFormatter }
 import org.bdgenomics.adam.sql.{ AlignmentRecord => AlignmentRecordProduct }
 import org.bdgenomics.cannoli.builder.CommandBuilders
-import org.bdgenomics.cannoli.util.QuerynameGrouper
 import org.bdgenomics.formats.avro.AlignmentRecord
 import org.bdgenomics.utils.cli._
 import org.bdgenomics.utils.misc.Logging
@@ -115,7 +111,7 @@ class Bwa(
       pathsWithScheme ++ optionalPathsWithScheme
     }
 
-    var builder = CommandBuilders.create(args.useDocker, args.useSingularity)
+    val builder = CommandBuilders.create(args.useDocker, args.useSingularity)
       .setExecutable(args.executable)
       .add("mem")
       .add("-t")
