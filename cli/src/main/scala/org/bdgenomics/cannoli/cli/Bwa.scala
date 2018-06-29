@@ -26,6 +26,7 @@ import org.bdgenomics.adam.rdd.ADAMSaveAnyArgs
 import org.bdgenomics.adam.rdd.fragment.{ FragmentRDD, InterleavedFASTQInFormatter }
 import org.bdgenomics.adam.rdd.read.{ AlignmentRecordRDD, AnySAMOutFormatter }
 import org.bdgenomics.adam.sql.{ AlignmentRecord => AlignmentRecordProduct }
+import org.bdgenomics.cannoli.{ Bwa => BwaFn, BwaArgs => BwaFnArgs }
 import org.bdgenomics.cannoli.builder.CommandBuilders
 import org.bdgenomics.cannoli.util.QuerynameGrouper
 import org.bdgenomics.formats.avro.AlignmentRecord
@@ -33,122 +34,6 @@ import org.bdgenomics.utils.cli._
 import org.bdgenomics.utils.misc.Logging
 import org.kohsuke.args4j.{ Argument, Option => Args4jOption }
 import scala.collection.JavaConversions._
-
-/**
- * Bwa function arguments.
- */
-class BwaFnArgs extends Args4jBase {
-  @Argument(required = true, metaVar = "SAMPLE", usage = "Sample ID.", index = 2)
-  var sample: String = null
-
-  @Args4jOption(required = true, name = "-index", usage = "Path to the BWA index to be searched, e.g. <idxbase> in bwa [options]* <idxbase>.")
-  var indexPath: String = null
-
-  @Args4jOption(required = false, name = "-executable", usage = "Path to the BWA executable. Defaults to bwa.")
-  var executable: String = "bwa"
-
-  @Args4jOption(required = false, name = "-image", usage = "Container image to use. Defaults to quay.io/biocontainers/bwa:0.7.17--pl5.22.0_0.")
-  var image: String = "quay.io/biocontainers/bwa:0.7.17--pl5.22.0_0"
-
-  @Args4jOption(required = false, name = "-sudo", usage = "Run via sudo.")
-  var sudo: Boolean = false
-
-  @Args4jOption(required = false, name = "-add_files", usage = "If true, use the SparkFiles mechanism to distribute files to executors.")
-  var addFiles: Boolean = false
-
-  @Args4jOption(required = false, name = "-use_docker", usage = "If true, uses Docker to launch BWA.")
-  var useDocker: Boolean = false
-
-  @Args4jOption(required = false, name = "-use_singularity", usage = "If true, uses Singularity to launch BWA.")
-  var useSingularity: Boolean = false
-}
-
-/**
- * Bwa wrapper as a function FragmentRDD &rarr; AlignmentRecordRDD,
- * for use in cannoli-shell or notebooks.
- *
- * @param args Bwa function arguments.
- * @param sc Spark context.
- */
-class BwaFn(
-    val args: BwaFnArgs,
-    sc: SparkContext) extends CannoliFn[FragmentRDD, AlignmentRecordRDD](sc) with Logging {
-
-  override def apply(fragments: FragmentRDD): AlignmentRecordRDD = {
-    val sample = args.sample
-
-    def getIndexPaths(fastaPath: String): Seq[String] = {
-      val requiredExtensions = Seq("",
-        ".amb",
-        ".ann",
-        ".bwt",
-        ".pac",
-        ".sa")
-      val optionalExtensions = Seq(".alt")
-
-      // oddly, the hadoop fs apis don't seem to have a way to do this?
-      def canonicalizePath(fs: FileSystem, path: Path): String = {
-        val fsUri = fs.getUri()
-        new Path(fsUri.getScheme, fsUri.getAuthority,
-          Path.getPathWithoutSchemeAndAuthority(path).toString).toString
-      }
-
-      def optionalPath(ext: String): Option[String] = {
-        val path = new Path(fastaPath + ext)
-        val fs = path.getFileSystem(sc.hadoopConfiguration)
-        if (fs.exists(path)) {
-          Some(canonicalizePath(fs, path))
-        } else {
-          None
-        }
-      }
-
-      val pathsWithScheme = requiredExtensions.map(ext => {
-        optionalPath(ext).getOrElse({
-          throw new IllegalStateException(
-            "Required index file %s%s does not exist.".format(fastaPath, ext))
-        })
-      })
-
-      val optionalPathsWithScheme = optionalExtensions.flatMap(optionalPath)
-
-      pathsWithScheme ++ optionalPathsWithScheme
-    }
-
-    var builder = CommandBuilders.create(args.useDocker, args.useSingularity)
-      .setExecutable(args.executable)
-      .add("mem")
-      .add("-t")
-      .add("1")
-      .add("-R")
-      .add(s"@RG\\tID:${sample}\\tLB:${sample}\\tPL:ILLUMINA\\tPU:0\\tSM:${sample}")
-      .add("-p")
-      .add(if (args.addFiles) "$0" else args.indexPath)
-      .add("-")
-
-    if (args.addFiles) {
-      getIndexPaths(args.indexPath).foreach(builder.addFile(_))
-    }
-
-    if (args.useDocker || args.useSingularity) {
-      builder
-        .setImage(args.image)
-        .setSudo(args.sudo)
-        .addMount(if (args.addFiles) "$root" else root(args.indexPath))
-    }
-
-    log.info("Piping {} to bwa with command: {} files: {}",
-      fragments, builder.build(), builder.getFiles())
-
-    implicit val tFormatter = InterleavedFASTQInFormatter
-    implicit val uFormatter = new AnySAMOutFormatter
-
-    fragments.pipe[AlignmentRecord, AlignmentRecordProduct, AlignmentRecordRDD, InterleavedFASTQInFormatter](
-      cmd = builder.build(),
-      files = builder.getFiles()
-    )
-  }
-}
 
 object Bwa extends BDGCommandCompanion {
   val commandName = "bwa"
