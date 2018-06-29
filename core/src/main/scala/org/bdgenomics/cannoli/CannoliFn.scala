@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bdgenomics.cannoli.cli
+package org.bdgenomics.cannoli
 
 import java.io.FileNotFoundException
 import org.apache.hadoop.fs.{ Path, PathFilter }
