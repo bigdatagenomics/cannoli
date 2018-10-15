@@ -40,8 +40,8 @@ class BcftoolsNormArgs extends Args4jBase {
   @Args4jOption(required = false, name = "-executable", usage = "Path to the BCFtools executable. Defaults to bcftools.")
   var executable: String = "bcftools"
 
-  @Args4jOption(required = false, name = "-image", usage = "Container image to use. Defaults to quay.io/biocontainers/bcftools:1.6--0.")
-  var image: String = "quay.io/biocontainers/bcftools:1.6--0"
+  @Args4jOption(required = false, name = "-image", usage = "Container image to use. Defaults to quay.io/biocontainers/bcftools:1.9--h4da6232_0.")
+  var image: String = "quay.io/biocontainers/bcftools:1.9--h4da6232_0"
 
   @Args4jOption(required = false, name = "-sudo", usage = "Run via sudo.")
   var sudo: Boolean = false
