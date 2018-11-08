@@ -38,7 +38,7 @@ private[util] class QuerynameGroupingIterator(
 
     val readsInFragment = ListBuffer.empty[AlignmentRecord]
     val readName = bufferedIter.head.getReadName
-    val optFragmentSize = Option(bufferedIter.head.getInferredInsertSize)
+    val optInsertSize = Option(bufferedIter.head.getInferredInsertSize)
       .map(_.toInt)
 
     @tailrec def fillList() {
@@ -54,11 +54,11 @@ private[util] class QuerynameGroupingIterator(
     fillList()
 
     val fb = Fragment.newBuilder
-      .setReadName(readName)
+      .setName(readName)
       .setAlignments(readsInFragment)
 
     // set the insert size if known
-    optFragmentSize.foreach(fs => fb.setFragmentSize(fs))
+    optInsertSize.foreach(fs => fb.setInsertSize(fs))
 
     fb.build
   }

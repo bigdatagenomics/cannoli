@@ -129,7 +129,7 @@ class Cannoli @Inject() (commandGroups: List[CommandGroup]) extends Logging {
  * Cannoli module, binds the default list of command groups.
  */
 class CannoliModule extends AbstractModule with ScalaModule {
-  def configure() {
+  override def configure() {
     bind[List[CommandGroup]].toInstance(Cannoli.defaultCommandGroups)
   }
 }
