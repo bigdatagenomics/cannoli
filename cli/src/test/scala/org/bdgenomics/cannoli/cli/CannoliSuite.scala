@@ -97,7 +97,7 @@ class CannoliSuite extends FunSuite {
     val stream = new ByteArrayOutputStream()
     Console.withOut(stream) {
       val module = new AbstractModule with ScalaModule {
-        def configure() = {
+        override def configure() = {
           bind[List[CommandGroup]].toInstance(List(CommandGroup("SINGLE COMMAND GROUP", List(Freebayes))))
         }
       }
@@ -115,7 +115,7 @@ class CannoliSuite extends FunSuite {
     val stream = new ByteArrayOutputStream()
     Console.withOut(stream) {
       val module = new AbstractModule with ScalaModule {
-        def configure() = {
+        override def configure() = {
           bind[List[CommandGroup]].toInstance(defaultCommandGroups.union(List(CommandGroup("NEW COMMAND GROUP", List(Freebayes)))))
         }
       }

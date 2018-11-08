@@ -342,7 +342,12 @@
   </build>
   <dependencyManagement>
     <dependencies>
-      <dependency>
+     <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>27.0-jre</version>
+     </dependency>
+     <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
         <version>${junit.version}</version>

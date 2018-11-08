@@ -73,8 +73,8 @@ class QuerynameGroupingIteratorSuite extends FunSuite {
     assert(readNames.count(_ == "read1") === 1)
     assert(readNames.count(_ == "read2") === 2)
     assert(readNames.count(_ == "read3") === 3)
-    val read2Opt = fragments.find(_.getReadName == "read2")
+    val read2Opt = fragments.find(_.getName == "read2")
     assert(read2Opt.isDefined)
-    read2Opt.foreach(r => assert(r.getFragmentSize === 100))
+    read2Opt.foreach(r => assert(r.getInsertSize === 100))
   }
 }
