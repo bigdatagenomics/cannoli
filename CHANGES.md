@@ -1,5 +1,32 @@
 # Cannoli Changelog #
 
+### Version 0.3.0 ###
+
+**Closed issues:**
+
+ - Add implicit methods that attach to source RDD [\#131](https://github.com/bigdatagenomics/cannoli/issues/131)
+ - Flip function and command line class names around [\#130](https://github.com/bigdatagenomics/cannoli/issues/130)
+ - Add API documentation link and badge [\#128](https://github.com/bigdatagenomics/cannoli/issues/128)
+ - Add homebrew formula at brewsci/homebrew-bio [\#124](https://github.com/bigdatagenomics/cannoli/issues/124)
+ - Add bioconda recipe [\#123](https://github.com/bigdatagenomics/cannoli/issues/123)
+ - Support validation stringency in out formatters [\#122](https://github.com/bigdatagenomics/cannoli/issues/122)
+ - Add Ensembl Variant Effect Predictor (VEP) for variant annotation [\#112](https://github.com/bigdatagenomics/cannoli/issues/112)
+ - Add Minimap2 for alignment [\#111](https://github.com/bigdatagenomics/cannoli/issues/111)
+
+**Merged and closed pull requests:**
+
+ - Update release script for changelog. [\#143](https://github.com/bigdatagenomics/cannoli/pull/143) ([heuermh](https://github.com/heuermh))
+ - [CANNOLI-141] Update ADAM dependency to 0.25.0. [\#142](https://github.com/bigdatagenomics/cannoli/pull/142) ([heuermh](https://github.com/heuermh))
+ - Update default docker image for bowtie2. [\#140](https://github.com/bigdatagenomics/cannoli/pull/140) ([heuermh](https://github.com/heuermh))
+ - [CANNOLI-138] Update Cannoli per latest ADAM snapshot changes. [\#139](https://github.com/bigdatagenomics/cannoli/pull/139) ([heuermh](https://github.com/heuermh))
+ - [CANNOLI-131] Add implicits on Cannoli function source data sets. [\#133](https://github.com/bigdatagenomics/cannoli/pull/133) ([heuermh](https://github.com/heuermh))
+ - [CANNOLI-130] Extract function classes to core package. [\#132](https://github.com/bigdatagenomics/cannoli/pull/132) ([heuermh](https://github.com/heuermh))
+ - [CANNOLI-128] Adding API documentation link and badge. [\#129](https://github.com/bigdatagenomics/cannoli/pull/129) ([heuermh](https://github.com/heuermh))
+ - [CANNOLI-112]  Adding Ensembl Variant Effect Predictor (VEP) for variant annotation [\#127](https://github.com/bigdatagenomics/cannoli/pull/127) ([heuermh](https://github.com/heuermh))
+ - [CANNOLI-122] Support validation stringency in out formatters. [\#126](https://github.com/bigdatagenomics/cannoli/pull/126) ([heuermh](https://github.com/heuermh))
+ - [CANNOLI-111] Adding Minimap2 for alignment. [\#119](https://github.com/bigdatagenomics/cannoli/pull/119) ([heuermh](https://github.com/heuermh))
+
+
 
 ### Version 0.2.0 ###
 
