@@ -1,23 +1,24 @@
 #!/bin/sh
 
 # do we have enough arguments?
-if [ $# < 3 ]; then
+if [ $# < 4 ]; then
     echo "Usage:"
     echo
-    echo "./release.sh <release version> <development version>"
+    echo "./release.sh <release version> <development version> <milestone id>"
     exit 1
 fi
 
 # pick arguments
 release=$1
 devel=$2
+milestone=$3
 
 # get current branch
 branch=$(git status -bs | awk '{ print $2 }' | awk -F'.' '{ print $1 }' | head -n 1)
 
-# manually edit and commit changelog changes
-#./scripts/changelog.sh $1 | tee CHANGES.md
-#git commit -a -m "Modifying changelog."
+# update changelog per Github milestone
+mvn com.github.heuermh.maven.plugin.changes:github-changes-maven-plugin:1.0:github-changes -DmilestoneId=${milestone}
+git commit -a -m "Modifying changelog."
 
 commit=$(git log --pretty=format:"%H" | head -n 1)
 echo "releasing from ${commit} on branch ${branch}"
@@ -26,9 +27,7 @@ git push origin ${branch}
 
 # do spark 2, scala 2.11 release
 git checkout -b maint_spark2_2.11-${release} ${branch}
-./scripts/move_to_spark_2.sh
-./scripts/move_to_scala_2.11.sh
-git commit -a -m "Modifying pom.xml files for Spark 2, Scala 2.11 release."
+
 mvn --batch-mode \
   -P distribution \
   -Dresume=false \
