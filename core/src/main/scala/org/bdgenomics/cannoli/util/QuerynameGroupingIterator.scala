@@ -38,7 +38,7 @@ private[util] class QuerynameGroupingIterator(
 
     val readsInFragment = ListBuffer.empty[AlignmentRecord]
     val readName = bufferedIter.head.getReadName
-    val optInsertSize = Option(bufferedIter.head.getInferredInsertSize)
+    val optInsertSize = Option(bufferedIter.head.getInsertSize)
       .map(_.toInt)
 
     @tailrec def fillList() {

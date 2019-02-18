@@ -21,8 +21,8 @@ import htsjdk.samtools.ValidationStringency
 import org.apache.spark.SparkContext
 import org.bdgenomics.adam.models.VariantContext
 import org.bdgenomics.adam.rdd.ADAMContext._
-import org.bdgenomics.adam.rdd.read.{ AlignmentRecordRDD, BAMInFormatter }
-import org.bdgenomics.adam.rdd.variant.{ VariantContextRDD, VCFOutFormatter }
+import org.bdgenomics.adam.rdd.read.{ AlignmentRecordDataset, BAMInFormatter }
+import org.bdgenomics.adam.rdd.variant.{ VariantContextDataset, VCFOutFormatter }
 import org.bdgenomics.adam.sql.{ VariantContext => VariantContextProduct }
 import org.bdgenomics.cannoli.builder.CommandBuilders
 import org.bdgenomics.utils.cli._
@@ -57,7 +57,7 @@ class SamtoolsMpileupArgs extends Args4jBase {
 }
 
 /**
- * Samtools mpileup wrapper as a function AlignmentRecordRDD &rarr; VariantContextRDD,
+ * Samtools mpileup wrapper as a function AlignmentRecordDataset &rarr; VariantContextDataset,
  * for use in cannoli-shell or notebooks.
  *
  * @param args Samtools mpileup function arguments.
@@ -67,9 +67,9 @@ class SamtoolsMpileupArgs extends Args4jBase {
 class SamtoolsMpileup(
     val args: SamtoolsMpileupArgs,
     val stringency: ValidationStringency = ValidationStringency.LENIENT,
-    sc: SparkContext) extends CannoliFn[AlignmentRecordRDD, VariantContextRDD](sc) with Logging {
+    sc: SparkContext) extends CannoliFn[AlignmentRecordDataset, VariantContextDataset](sc) with Logging {
 
-  override def apply(alignments: AlignmentRecordRDD): VariantContextRDD = {
+  override def apply(alignments: AlignmentRecordDataset): VariantContextDataset = {
 
     val builder = CommandBuilders.create(args.useDocker, args.useSingularity)
       .setExecutable(args.executable)
@@ -98,7 +98,7 @@ class SamtoolsMpileup(
     implicit val tFormatter = BAMInFormatter
     implicit val uFormatter = new VCFOutFormatter(sc.hadoopConfiguration, stringency)
 
-    alignments.pipe[VariantContext, VariantContextProduct, VariantContextRDD, BAMInFormatter](
+    alignments.pipe[VariantContext, VariantContextProduct, VariantContextDataset, BAMInFormatter](
       cmd = builder.build(),
       files = builder.getFiles()
     )

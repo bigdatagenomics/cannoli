@@ -22,7 +22,7 @@ import org.apache.spark.SparkContext
 import org.bdgenomics.adam.models.VariantContext
 import org.bdgenomics.adam.rdd.ADAMContext._
 import org.bdgenomics.adam.rdd.variant.{
-  VariantContextRDD,
+  VariantContextDataset,
   VCFInFormatter,
   VCFOutFormatter
 }
@@ -60,7 +60,7 @@ class BcftoolsNormArgs extends Args4jBase {
 }
 
 /**
- * Bcftools norm wrapper as a function VariantContextRDD &rarr; VariantContextRDD,
+ * Bcftools norm wrapper as a function VariantContextDataset &rarr; VariantContextDataset,
  * for use in cannoli-shell or notebooks.
  *
  * @param args Bcftools norm function arguments.
@@ -70,9 +70,9 @@ class BcftoolsNormArgs extends Args4jBase {
 class BcftoolsNorm(
     val args: BcftoolsNormArgs,
     val stringency: ValidationStringency = ValidationStringency.LENIENT,
-    sc: SparkContext) extends CannoliFn[VariantContextRDD, VariantContextRDD](sc) with Logging {
+    sc: SparkContext) extends CannoliFn[VariantContextDataset, VariantContextDataset](sc) with Logging {
 
-  override def apply(variantContexts: VariantContextRDD): VariantContextRDD = {
+  override def apply(variantContexts: VariantContextDataset): VariantContextDataset = {
 
     val builder = CommandBuilders.create(args.useDocker, args.useSingularity)
       .setExecutable(args.executable)
@@ -98,7 +98,7 @@ class BcftoolsNorm(
     implicit val tFormatter = VCFInFormatter
     implicit val uFormatter = new VCFOutFormatter(sc.hadoopConfiguration, stringency)
 
-    variantContexts.pipe[VariantContext, VariantContextProduct, VariantContextRDD, VCFInFormatter](
+    variantContexts.pipe[VariantContext, VariantContextProduct, VariantContextDataset, VCFInFormatter](
       cmd = builder.build(),
       files = builder.getFiles()
     )
