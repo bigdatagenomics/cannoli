@@ -51,11 +51,11 @@ class QuerynameGroupingIteratorSuite extends FunSuite {
       .build, AlignmentRecord.newBuilder
       .setReadName("read2")
       .setReadInFragment(0)
-      .setInferredInsertSize(100L)
+      .setInsertSize(100L)
       .build, AlignmentRecord.newBuilder
       .setReadName("read2")
       .setReadInFragment(1)
-      .setInferredInsertSize(100L)
+      .setInsertSize(100L)
       .build, AlignmentRecord.newBuilder
       .setReadName("read3")
       .setReadInFragment(0)

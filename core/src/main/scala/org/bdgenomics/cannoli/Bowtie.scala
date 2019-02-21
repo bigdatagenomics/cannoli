@@ -19,8 +19,8 @@ package org.bdgenomics.cannoli
 
 import org.apache.spark.SparkContext
 import org.bdgenomics.adam.rdd.ADAMContext._
-import org.bdgenomics.adam.rdd.fragment.{ FragmentRDD, InterleavedFASTQInFormatter }
-import org.bdgenomics.adam.rdd.read.{ AlignmentRecordRDD, AnySAMOutFormatter }
+import org.bdgenomics.adam.rdd.fragment.{ FragmentDataset, InterleavedFASTQInFormatter }
+import org.bdgenomics.adam.rdd.read.{ AlignmentRecordDataset, AnySAMOutFormatter }
 import org.bdgenomics.adam.sql.{ AlignmentRecord => AlignmentRecordProduct }
 import org.bdgenomics.cannoli.builder.CommandBuilders
 import org.bdgenomics.formats.avro.AlignmentRecord
@@ -56,7 +56,7 @@ class BowtieArgs extends Args4jBase {
 }
 
 /**
- * Bowtie wrapper as a function FragmentRDD &rarr; AlignmentRecordRDD,
+ * Bowtie wrapper as a function FragmentDataset &rarr; AlignmentRecordDataset,
  * for use in cannoli-shell or notebooks.
  *
  * @param args Bowtie function arguments.
@@ -64,9 +64,9 @@ class BowtieArgs extends Args4jBase {
  */
 class Bowtie(
     val args: BowtieArgs,
-    sc: SparkContext) extends CannoliFn[FragmentRDD, AlignmentRecordRDD](sc) with Logging {
+    sc: SparkContext) extends CannoliFn[FragmentDataset, AlignmentRecordDataset](sc) with Logging {
 
-  override def apply(fragments: FragmentRDD): AlignmentRecordRDD = {
+  override def apply(fragments: FragmentDataset): AlignmentRecordDataset = {
 
     val builder = CommandBuilders.create(args.useDocker, args.useSingularity)
       .setExecutable(args.executable)
@@ -95,7 +95,7 @@ class Bowtie(
     implicit val tFormatter = InterleavedFASTQInFormatter
     implicit val uFormatter = new AnySAMOutFormatter
 
-    fragments.pipe[AlignmentRecord, AlignmentRecordProduct, AlignmentRecordRDD, InterleavedFASTQInFormatter](
+    fragments.pipe[AlignmentRecord, AlignmentRecordProduct, AlignmentRecordDataset, InterleavedFASTQInFormatter](
       cmd = builder.build(),
       files = builder.getFiles()
     )

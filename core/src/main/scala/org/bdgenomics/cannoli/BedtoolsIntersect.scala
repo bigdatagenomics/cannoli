@@ -20,7 +20,7 @@ package org.bdgenomics.cannoli
 import org.apache.spark.SparkContext
 import org.bdgenomics.adam.rdd.ADAMContext._
 import org.bdgenomics.adam.rdd.feature.{
-  FeatureRDD,
+  FeatureDataset,
   BEDInFormatter,
   BEDOutFormatter
 }
@@ -65,7 +65,7 @@ class BedtoolsIntersectArgs extends Args4jBase {
 }
 
 /**
- * Bedtools intersect wrapper as a function FeatureRDD &rarr; FeatureRDD,
+ * Bedtools intersect wrapper as a function FeatureDataset &rarr; FeatureDataset,
  * for use in cannoli-shell or notebooks.
  *
  * <code>
@@ -81,9 +81,9 @@ class BedtoolsIntersectArgs extends Args4jBase {
  */
 class BedtoolsIntersect(
     val args: BedtoolsIntersectArgs,
-    sc: SparkContext) extends CannoliFn[FeatureRDD, FeatureRDD](sc) with Logging {
+    sc: SparkContext) extends CannoliFn[FeatureDataset, FeatureDataset](sc) with Logging {
 
-  override def apply(features: FeatureRDD): FeatureRDD = {
+  override def apply(features: FeatureDataset): FeatureDataset = {
     val optA = Option(args.a)
     val optB = Option(args.b)
     require(optA.size + optB.size == 1,
@@ -115,7 +115,7 @@ class BedtoolsIntersect(
     implicit val tFormatter = BEDInFormatter
     implicit val uFormatter = new BEDOutFormatter
 
-    features.pipe[Feature, FeatureProduct, FeatureRDD, BEDInFormatter](
+    features.pipe[Feature, FeatureProduct, FeatureDataset, BEDInFormatter](
       cmd = builder.build(),
       files = builder.getFiles()
     )

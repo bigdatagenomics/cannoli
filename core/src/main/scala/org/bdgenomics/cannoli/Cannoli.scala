@@ -18,152 +18,152 @@
 package org.bdgenomics.cannoli
 
 import htsjdk.samtools.ValidationStringency
-import org.bdgenomics.adam.rdd.feature.FeatureRDD
-import org.bdgenomics.adam.rdd.fragment.FragmentRDD
-import org.bdgenomics.adam.rdd.read.AlignmentRecordRDD
-import org.bdgenomics.adam.rdd.variant.VariantContextRDD
+import org.bdgenomics.adam.rdd.feature.FeatureDataset
+import org.bdgenomics.adam.rdd.fragment.FragmentDataset
+import org.bdgenomics.adam.rdd.read.AlignmentRecordDataset
+import org.bdgenomics.adam.rdd.variant.VariantContextDataset
 
 /**
  * Implicits on Cannoli function source data sets.
  */
 object Cannoli {
-  implicit class CannoliAlignmentRecordRDD(rdd: AlignmentRecordRDD) {
+  implicit class CannoliAlignmentRecordDataset(alignments: AlignmentRecordDataset) {
 
     /**
-     * Call variants from the alignments in this AlignmentRecordRDD with freebayes via Cannoli.
+     * Call variants from the alignments in this AlignmentRecordDataset with freebayes via Cannoli.
      *
      * @param args Freebayes function arguments.
      * @param stringency Validation stringency. Defaults to ValidationStringency.LENIENT.
-     * @return VariantContextRDD.
+     * @return VariantContextDataset.
      */
     def callVariantsWithFreebayes(
       args: FreebayesArgs,
-      stringency: ValidationStringency = ValidationStringency.LENIENT): VariantContextRDD = {
-      new Freebayes(args, stringency, rdd.rdd.context).apply(rdd)
+      stringency: ValidationStringency = ValidationStringency.LENIENT): VariantContextDataset = {
+      new Freebayes(args, stringency, alignments.rdd.context).apply(alignments)
     }
 
     /**
-     * Call variants from the alignments in this AlignmentRecordRDD with samtools mpileup via Cannoli.
+     * Call variants from the alignments in this AlignmentRecordDataset with samtools mpileup via Cannoli.
      *
      * @param args Samtools mpileup function arguments.
      * @param stringency Validation stringency. Defaults to ValidationStringency.LENIENT.
-     * @return VariantContextRDD.
+     * @return VariantContextDataset.
      */
     def callVariantsWithSamtoolsMpileup(
       args: SamtoolsMpileupArgs,
-      stringency: ValidationStringency = ValidationStringency.LENIENT): VariantContextRDD = {
-      new SamtoolsMpileup(args, stringency, rdd.rdd.context).apply(rdd)
+      stringency: ValidationStringency = ValidationStringency.LENIENT): VariantContextDataset = {
+      new SamtoolsMpileup(args, stringency, alignments.rdd.context).apply(alignments)
     }
   }
 
-  implicit class CannoliFeatureRDD(rdd: FeatureRDD) {
+  implicit class CannoliFeatureDataset(features: FeatureDataset) {
 
     /**
-     * Intersect the features in this FeatureRDD with bedtools via Cannoli.
+     * Intersect the features in this FeatureDataset with bedtools via Cannoli.
      *
      * @param args Bedtools intersect function arguments.
-     * @return FeatureRDD.
+     * @return FeatureDataset.
      */
-    def intersectWithBedtools(args: BedtoolsIntersectArgs): FeatureRDD = {
-      new BedtoolsIntersect(args, rdd.rdd.context).apply(rdd)
+    def intersectWithBedtools(args: BedtoolsIntersectArgs): FeatureDataset = {
+      new BedtoolsIntersect(args, features.rdd.context).apply(features)
     }
   }
 
-  implicit class CannoliFragmentRDD(rdd: FragmentRDD) {
+  implicit class CannoliFragmentDataset(fragments: FragmentDataset) {
 
     /**
-     * Align the reads in this FragmentRDD with bowtie via Cannoli.
+     * Align the reads in this FragmentDataset with bowtie via Cannoli.
      *
      * @param args Bowtie function arguments.
-     * @return AlignmentRecordRDD.
+     * @return AlignmentRecordDataset.
      */
-    def alignWithBowtie(args: BowtieArgs): AlignmentRecordRDD = {
-      new Bowtie(args, rdd.rdd.context).apply(rdd)
+    def alignWithBowtie(args: BowtieArgs): AlignmentRecordDataset = {
+      new Bowtie(args, fragments.rdd.context).apply(fragments)
     }
 
     /**
-     * Align the reads in this FragmentRDD with bowtie2 via Cannoli.
+     * Align the reads in this FragmentDataset with bowtie2 via Cannoli.
      *
      * @param args Bowtie2 function arguments.
-     * @return AlignmentRecordRDD.
+     * @return AlignmentRecordDataset.
      */
-    def alignWithBowtie2(args: Bowtie2Args): AlignmentRecordRDD = {
-      new Bowtie2(args, rdd.rdd.context).apply(rdd)
+    def alignWithBowtie2(args: Bowtie2Args): AlignmentRecordDataset = {
+      new Bowtie2(args, fragments.rdd.context).apply(fragments)
     }
 
     /**
-     * Align the reads in this FragmentRDD with bwa via Cannoli.
+     * Align the reads in this FragmentDataset with bwa via Cannoli.
      *
      * @param args Bwa function arguments.
-     * @return AlignmentRecordRDD.
+     * @return AlignmentRecordDataset.
      */
-    def alignWithBwa(args: BwaArgs): AlignmentRecordRDD = {
-      new Bwa(args, rdd.rdd.context).apply(rdd)
+    def alignWithBwa(args: BwaArgs): AlignmentRecordDataset = {
+      new Bwa(args, fragments.rdd.context).apply(fragments)
     }
 
     /**
-     * Align the reads in this FragmentRDD with minimap2 via Cannoli.
+     * Align the reads in this FragmentDataset with minimap2 via Cannoli.
      *
      * @param args Minimap2 function arguments.
-     * @return AlignmentRecordRDD.
+     * @return AlignmentRecordDataset.
      */
-    def alignWithMinimap2(args: Minimap2Args): AlignmentRecordRDD = {
-      new Minimap2(args, rdd.rdd.context).apply(rdd)
+    def alignWithMinimap2(args: Minimap2Args): AlignmentRecordDataset = {
+      new Minimap2(args, fragments.rdd.context).apply(fragments)
     }
   }
 
-  implicit class CannoliVariantContextRDD(rdd: VariantContextRDD) {
+  implicit class CannoliVariantContextDataset(vcs: VariantContextDataset) {
 
     /**
-     * Annotate the variant contexts in this VariantContextRDD with SnpEff via Cannoli.
+     * Annotate the variant contexts in this VariantContextDataset with SnpEff via Cannoli.
      *
      * @param args SnpEff function arguments.
      * @param stringency Validation stringency. Defaults to ValidationStringency.LENIENT.
-     * @return VariantContextRDD.
+     * @return VariantContextDataset.
      */
     def annotateWithSnpEff(
       args: SnpEffArgs,
-      stringency: ValidationStringency = ValidationStringency.LENIENT): VariantContextRDD = {
-      new SnpEff(args, stringency, rdd.rdd.context).apply(rdd)
+      stringency: ValidationStringency = ValidationStringency.LENIENT): VariantContextDataset = {
+      new SnpEff(args, stringency, vcs.rdd.context).apply(vcs)
     }
 
     /**
-     * Annotate the variant contexts in this VariantContextRDD with Ensembl VEP via Cannoli.
+     * Annotate the variant contexts in this VariantContextDataset with Ensembl VEP via Cannoli.
      *
      * @param args Vep function arguments.
      * @param stringency Validation stringency. Defaults to ValidationStringency.LENIENT.
-     * @return VariantContextRDD.
+     * @return VariantContextDataset.
      */
     def annotateWithVep(
       args: VepArgs,
-      stringency: ValidationStringency = ValidationStringency.LENIENT): VariantContextRDD = {
-      new Vep(args, stringency, rdd.rdd.context).apply(rdd)
+      stringency: ValidationStringency = ValidationStringency.LENIENT): VariantContextDataset = {
+      new Vep(args, stringency, vcs.rdd.context).apply(vcs)
     }
 
     /**
-     * Normalize the variant contexts in this VariantContextRDD with bcftools norm via Cannoli.
+     * Normalize the variant contexts in this VariantContextDataset with bcftools norm via Cannoli.
      *
      * @param args Bcftools norm function arguments.
      * @param stringency Validation stringency. Defaults to ValidationStringency.LENIENT.
-     * @return VariantContextRDD.
+     * @return VariantContextDataset.
      */
     def normalizeWithBcftools(
       args: BcftoolsNormArgs,
-      stringency: ValidationStringency = ValidationStringency.LENIENT): VariantContextRDD = {
-      new BcftoolsNorm(args, stringency, rdd.rdd.context).apply(rdd)
+      stringency: ValidationStringency = ValidationStringency.LENIENT): VariantContextDataset = {
+      new BcftoolsNorm(args, stringency, vcs.rdd.context).apply(vcs)
     }
 
     /**
-     * Normalize the variant contexts in this VariantContextRDD with vt normalize via Cannoli.
+     * Normalize the variant contexts in this VariantContextDataset with vt normalize via Cannoli.
      *
      * @param args Vt normalize function arguments.
      * @param stringency Validation stringency. Defaults to ValidationStringency.LENIENT.
-     * @return VariantContextRDD.
+     * @return VariantContextDataset.
      */
     def normalizeWithVt(
       args: VtNormalizeArgs,
-      stringency: ValidationStringency = ValidationStringency.LENIENT): VariantContextRDD = {
-      new VtNormalize(args, stringency, rdd.rdd.context).apply(rdd)
+      stringency: ValidationStringency = ValidationStringency.LENIENT): VariantContextDataset = {
+      new VtNormalize(args, stringency, vcs.rdd.context).apply(vcs)
     }
   }
 }

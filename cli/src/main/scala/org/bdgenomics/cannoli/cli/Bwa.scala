@@ -19,11 +19,11 @@ package org.bdgenomics.cannoli.cli
 
 import htsjdk.samtools.ValidationStringency
 import org.apache.spark.SparkContext
-import org.bdgenomics.adam.models.{ RecordGroup, RecordGroupDictionary }
+import org.bdgenomics.adam.models.{ ReadGroup, ReadGroupDictionary }
 import org.bdgenomics.adam.rdd.ADAMContext._
 import org.bdgenomics.adam.rdd.ADAMSaveAnyArgs
-import org.bdgenomics.adam.rdd.fragment.FragmentRDD
-import org.bdgenomics.adam.rdd.read.AlignmentRecordRDD
+import org.bdgenomics.adam.rdd.fragment.FragmentDataset
+import org.bdgenomics.adam.rdd.read.AlignmentRecordDataset
 import org.bdgenomics.cannoli.{ Bwa => BwaFn, BwaArgs => BwaFnArgs }
 import org.bdgenomics.cannoli.util.QuerynameGrouper
 import org.bdgenomics.utils.cli._
@@ -89,7 +89,7 @@ class Bwa(protected val args: BwaArgs) extends BDGSparkCommand[BwaArgs] with Log
       "-single and -fragments are mutually exclusive.")
     require(!(args.forceLoadIfastq && args.forceLoadParquet),
       "-force_load_ifastq and -force_load_parquet are mutually exclusive.")
-    val input: FragmentRDD = if (args.forceLoadIfastq) {
+    val input: FragmentDataset = if (args.forceLoadIfastq) {
       sc.loadInterleavedFastqAsFragments(args.inputPath)
     } else if (args.forceLoadParquet) {
       sc.loadParquetFragments(args.inputPath)
@@ -99,8 +99,8 @@ class Bwa(protected val args: BwaArgs) extends BDGSparkCommand[BwaArgs] with Log
 
     val sample = args.sample
 
-    val output: AlignmentRecordRDD = new BwaFn(args, sc).apply(input)
-      .replaceRecordGroups(RecordGroupDictionary(Seq(RecordGroup(sample, sample))))
+    val output: AlignmentRecordDataset = new BwaFn(args, sc).apply(input)
+      .replaceReadGroups(ReadGroupDictionary(Seq(ReadGroup(sample, sample))))
 
     val outputMaybeWithSequences = Option(args.sequenceDictionary).fold(output)(sdPath => {
       val sequences = sc.loadSequenceDictionary(sdPath)

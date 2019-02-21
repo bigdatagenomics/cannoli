@@ -75,7 +75,7 @@ class BedtoolsIntersect(protected val args: BedtoolsIntersectArgs) extends BDGSp
 
   override def run(sc: SparkContext) {
     val projection = Projection(
-      FeatureField.contigName,
+      FeatureField.referenceName,
       FeatureField.start,
       FeatureField.end,
       FeatureField.name,
