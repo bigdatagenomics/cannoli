@@ -1,5 +1,25 @@
 # Cannoli Changelog #
 
+### Version 0.4.0 ###
+
+**Closed issues:**
+
+ - Bump ADAM dependency to version 0.26.0. [\#152](https://github.com/bigdatagenomics/cannoli/issues/152)
+ - Unit tests fail due to surefire plugin issue with Debian/Ubuntu Java8 [\#149](https://github.com/bigdatagenomics/cannoli/issues/149)
+ - Error concerning Read names while running Cannoli [\#148](https://github.com/bigdatagenomics/cannoli/issues/148)
+ - Update homebrew formula to version 0.3.0 [\#146](https://github.com/bigdatagenomics/cannoli/issues/146)
+ - Single_end_reads [\#125](https://github.com/bigdatagenomics/cannoli/issues/125)
+ - Support GFF3 in addition to BED for Bedtools command [\#113](https://github.com/bigdatagenomics/cannoli/issues/113)
+
+**Merged and closed pull requests:**
+
+ - [CANNOLI-152] Bump ADAM dependency to version 0.26.0 [\#153](https://github.com/bigdatagenomics/cannoli/pull/153) ([heuermh](https://github.com/heuermh))
+ - Use build-helper-maven-plugin for build timestamp [\#151](https://github.com/bigdatagenomics/cannoli/pull/151) ([heuermh](https://github.com/heuermh))
+ - [CANNOLI-149] Update maven-surefire-plugin version to 3.0.0-M1. [\#150](https://github.com/bigdatagenomics/cannoli/pull/150) ([heuermh](https://github.com/heuermh))
+ - Update default docker images. [\#147](https://github.com/bigdatagenomics/cannoli/pull/147) ([heuermh](https://github.com/heuermh))
+ - Add section on using Cannoli interactively from cannoli-shell. [\#144](https://github.com/bigdatagenomics/cannoli/pull/144) ([heuermh](https://github.com/heuermh))
+
+
 ### Version 0.3.0 ###
 
 **Closed issues:**
