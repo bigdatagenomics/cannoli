@@ -36,8 +36,8 @@ class Minimap2Args extends Args4jBase {
   @Args4jOption(required = false, name = "-executable", usage = "Path to the Minimap2 executable. Defaults to minimap2.")
   var executable: String = "minimap2"
 
-  @Args4jOption(required = false, name = "-image", usage = "Container image to use. Defaults to quay.io/biocontainers/minimap2:2.14--ha92aebf_0.")
-  var image: String = "quay.io/biocontainers/minimap2:2.14--ha92aebf_0"
+  @Args4jOption(required = false, name = "-image", usage = "Container image to use. Defaults to quay.io/biocontainers/minimap2:2.16--h84994c4_1.")
+  var image: String = "quay.io/biocontainers/minimap2:2.16--h84994c4_1"
 
   @Args4jOption(required = false, name = "-sudo", usage = "Run via sudo.")
   var sudo: Boolean = false
@@ -59,6 +59,9 @@ class Minimap2Args extends Args4jBase {
 
   @Args4jOption(required = false, name = "-seed", usage = "Integer seed for randomizing equally best hits. Minimap2 hashes seed and read name when choosing between equally best hits. Defaults to 42.")
   var seed: Integer = 42
+
+  @Args4jOption(required = false, name = "-minimap2_args", usage = "Additional arguments for Minimap2, must be double-quoted, e.g. -minimap2_args=\"-N 42 --splice\"")
+  var minimap2Args: String = null
 }
 
 /**
@@ -81,6 +84,10 @@ class Minimap2(
       .add(args.preset)
       .add("--seed")
       .add(args.seed.toString)
+
+    Option(args.minimap2Args).foreach(builder.add(_))
+
+    builder
       .add(if (args.addFiles) "$0" else absolute(args.indexPath))
       .add("-")
 
