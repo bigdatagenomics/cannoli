@@ -17,10 +17,10 @@
   <inceptionYear>2017</inceptionYear>
 
   <properties>
-    <adam.version>0.26.0</adam.version>
+    <adam.version>0.27.0-SNAPSHOT</adam.version>
     <scala.version>2.11.12</scala.version>
     <scala.version.prefix>2.11</scala.version.prefix>
-    <spark.version>2.3.2</spark.version>
+    <spark.version>2.3.3</spark.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.build.targetEncoding>UTF-8</project.build.targetEncoding>
     <maven.enforcer.maven-version>[3.1.1,)</maven.enforcer.maven-version>
@@ -128,7 +128,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <version>2.10.4</version>
+          <version>3.1.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -345,7 +345,7 @@
      <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
-        <version>27.0-jre</version>
+        <version>27.0.1-jre</version>
      </dependency>
      <dependency>
         <groupId>junit</groupId>
@@ -513,7 +513,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
-            <version>2.10.4</version>
+            <version>3.1.0</version>
             <executions>
               <execution>
                 <id>attach-javadocs</id>
@@ -579,7 +579,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
-            <version>2.10.4</version>
+            <version>3.1.0</version>
             <executions>
               <execution>
                 <id>attach-javadocs</id>
