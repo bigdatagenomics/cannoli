@@ -31,7 +31,7 @@ import org.kohsuke.args4j.{ Argument, Option => Args4jOption }
 
 object BcftoolsNorm extends BDGCommandCompanion {
   val commandName = "bcftoolsNorm"
-  val commandDescription = "ADAM Pipe API wrapper for BCFtools norm."
+  val commandDescription = "ADAM Pipe API wrapper for bcftools norm."
 
   def apply(cmdLine: Array[String]) = {
     new BcftoolsNorm(Args4j[BcftoolsNormArgs](cmdLine))

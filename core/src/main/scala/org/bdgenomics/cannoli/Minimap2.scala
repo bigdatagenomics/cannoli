@@ -60,7 +60,7 @@ class Minimap2Args extends Args4jBase {
   @Args4jOption(required = false, name = "-seed", usage = "Integer seed for randomizing equally best hits. Minimap2 hashes seed and read name when choosing between equally best hits. Defaults to 42.")
   var seed: Integer = 42
 
-  @Args4jOption(required = false, name = "-minimap2_args", usage = "Additional arguments for Minimap2, must be double-quoted, e.g. -minimap2_args=\"-N 42 --splice\"")
+  @Args4jOption(required = false, name = "-minimap2_args", usage = "Additional arguments for Minimap2, must be double-quoted, e.g. -minimap2_args \"-N 42 --splice\"")
   var minimap2Args: String = null
 }
 

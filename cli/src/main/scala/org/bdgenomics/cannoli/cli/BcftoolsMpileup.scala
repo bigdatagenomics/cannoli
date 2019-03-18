@@ -23,26 +23,26 @@ import org.bdgenomics.adam.rdd.ADAMContext._
 import org.bdgenomics.adam.rdd.ADAMSaveAnyArgs
 import org.bdgenomics.adam.util.FileExtensions._
 import org.bdgenomics.cannoli.{
-  SamtoolsMpileup => SamtoolsMpileupFn,
-  SamtoolsMpileupArgs => SamtoolsMpileupFnArgs
+  BcftoolsMpileup => BcftoolsMpileupFn,
+  BcftoolsMpileupArgs => BcftoolsMpileupFnArgs
 }
 import org.bdgenomics.utils.cli._
 import org.bdgenomics.utils.misc.Logging
 import org.kohsuke.args4j.{ Argument, Option => Args4jOption }
 
-object SamtoolsMpileup extends BDGCommandCompanion {
-  val commandName = "samtoolsMpileup"
-  val commandDescription = "ADAM Pipe API wrapper for samtools mpileup."
+object BcftoolsMpileup extends BDGCommandCompanion {
+  val commandName = "bcftoolsMpileup"
+  val commandDescription = "ADAM Pipe API wrapper for bcftools mpileup."
 
   def apply(cmdLine: Array[String]) = {
-    new SamtoolsMpileup(Args4j[SamtoolsMpileupArgs](cmdLine))
+    new BcftoolsMpileup(Args4j[BcftoolsMpileupArgs](cmdLine))
   }
 }
 
 /**
- * Samtools mpileup command line arguments.
+ * Bcftools mpileup command line arguments.
  */
-class SamtoolsMpileupArgs extends SamtoolsMpileupFnArgs with ADAMSaveAnyArgs with ParquetArgs {
+class BcftoolsMpileupArgs extends BcftoolsMpileupFnArgs with ADAMSaveAnyArgs with ParquetArgs {
   @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe alignment records from (e.g. .bam, .cram, .sam). If extension is not detected, Parquet is assumed.", index = 0)
   var inputPath: String = null
 
@@ -66,15 +66,17 @@ class SamtoolsMpileupArgs extends SamtoolsMpileupFnArgs with ADAMSaveAnyArgs wit
 }
 
 /**
- * Samtools mpileup command line wrapper.
+ * Bcftools mpileup command line wrapper.
  */
-class SamtoolsMpileup(protected val args: SamtoolsMpileupArgs) extends BDGSparkCommand[SamtoolsMpileupArgs] with Logging {
-  val companion = SamtoolsMpileup
+class BcftoolsMpileup(protected val args: BcftoolsMpileupArgs) extends BDGSparkCommand[BcftoolsMpileupArgs] with Logging {
+  val companion = BcftoolsMpileup
   val stringency: ValidationStringency = ValidationStringency.valueOf(args.stringency)
 
   def run(sc: SparkContext) {
+    log.warn("inputPath " + args.inputPath + " outputPath " + args.outputPath)
+
     val alignments = sc.loadAlignments(args.inputPath, stringency = stringency)
-    val variantContexts = new SamtoolsMpileupFn(args, stringency, sc).apply(alignments)
+    val variantContexts = new BcftoolsMpileupFn(args, stringency, sc).apply(alignments)
 
     if (isVcfExt(args.outputPath)) {
       variantContexts.saveAsVcf(

@@ -43,6 +43,19 @@ object Cannoli {
     }
 
     /**
+     * Call variants from the alignments in this AlignmentRecordDataset with bcftools mpileup via Cannoli.
+     *
+     * @param args Bcftools mpileup function arguments.
+     * @param stringency Validation stringency. Defaults to ValidationStringency.LENIENT.
+     * @return VariantContextDataset.
+     */
+    def callVariantsWithBcftoolsMpileup(
+      args: BcftoolsMpileupArgs,
+      stringency: ValidationStringency = ValidationStringency.LENIENT): VariantContextDataset = {
+      new BcftoolsMpileup(args, stringency, alignments.rdd.context).apply(alignments)
+    }
+
+    /**
      * Call variants from the alignments in this AlignmentRecordDataset with samtools mpileup via Cannoli.
      *
      * @param args Samtools mpileup function arguments.
