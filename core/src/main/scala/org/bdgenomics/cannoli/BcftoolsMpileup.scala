@@ -21,11 +21,8 @@ import htsjdk.samtools.ValidationStringency
 import org.apache.spark.SparkContext
 import org.bdgenomics.adam.models.VariantContext
 import org.bdgenomics.adam.rdd.ADAMContext._
-import org.bdgenomics.adam.rdd.variant.{
-  VariantContextDataset,
-  VCFInFormatter,
-  VCFOutFormatter
-}
+import org.bdgenomics.adam.rdd.read.{ AlignmentRecordDataset, BAMInFormatter }
+import org.bdgenomics.adam.rdd.variant.{ VariantContextDataset, VCFOutFormatter }
 import org.bdgenomics.adam.sql.{ VariantContext => VariantContextProduct }
 import org.bdgenomics.cannoli.builder.CommandBuilders
 import org.bdgenomics.utils.cli._
@@ -34,13 +31,13 @@ import org.kohsuke.args4j.{ Option => Args4jOption }
 import scala.collection.JavaConversions._
 
 /**
- * Bcftools norm function arguments.
+ * Bcftools mpileup function arguments.
  */
-class BcftoolsNormArgs extends Args4jBase {
+class BcftoolsMpileupArgs extends Args4jBase {
   @Args4jOption(required = false, name = "-executable", usage = "Path to the bcftools executable. Defaults to bcftools.")
   var executable: String = "bcftools"
 
-  @Args4jOption(required = false, name = "-image", usage = "Container image to use. Defaults to quay.io/biocontainers/bcftools:1.9--ha228f0b_3.")
+  @Args4jOption(required = false, name = "-docker_image", usage = "Container image to use. Defaults to quay.io/biocontainers/bcftools:1.9--ha228f0b_3.")
   var image: String = "quay.io/biocontainers/bcftools:1.9--ha228f0b_3"
 
   @Args4jOption(required = false, name = "-sudo", usage = "Run via sudo.")
@@ -55,30 +52,38 @@ class BcftoolsNormArgs extends Args4jBase {
   @Args4jOption(required = false, name = "-use_singularity", usage = "If true, uses Singularity to launch bcftools.")
   var useSingularity: Boolean = false
 
-  @Args4jOption(required = true, name = "-reference", usage = "Reference sequence for analysis. An index file (.fai) will be created if none exists.")
+  @Args4jOption(required = true, name = "-reference", usage = "Reference sequence for analysis, faidx-indexed reference file in the FASTA format. The file can be optionally compressed by bgzip.")
   var referencePath: String = null
+
+  @Args4jOption(required = false, name = "-bcftools_args", usage = "Additional arguments for Bcftools, must be double-quoted, e.g. -bcftools_args \"--gcvf 5,15\"")
+  var bcftoolsArgs: String = null
 }
 
 /**
- * Bcftools norm wrapper as a function VariantContextDataset &rarr; VariantContextDataset,
+ * Bcftools mpileup wrapper as a function AlignmentRecordDataset &rarr; VariantContextDataset,
  * for use in cannoli-shell or notebooks.
  *
- * @param args Bcftools norm function arguments.
+ * @param args Bcftools mpileup function arguments.
  * @param stringency Validation stringency. Defaults to ValidationStringency.LENIENT.
  * @param sc Spark context.
  */
-class BcftoolsNorm(
-    val args: BcftoolsNormArgs,
+class BcftoolsMpileup(
+    val args: BcftoolsMpileupArgs,
     val stringency: ValidationStringency = ValidationStringency.LENIENT,
-    sc: SparkContext) extends CannoliFn[VariantContextDataset, VariantContextDataset](sc) with Logging {
+    sc: SparkContext) extends CannoliFn[AlignmentRecordDataset, VariantContextDataset](sc) with Logging {
 
-  override def apply(variantContexts: VariantContextDataset): VariantContextDataset = {
+  override def apply(alignments: AlignmentRecordDataset): VariantContextDataset = {
 
     val builder = CommandBuilders.create(args.useDocker, args.useSingularity)
       .setExecutable(args.executable)
-      .add("norm")
+      .add("mpileup")
+      .add("-")
       .add("--fasta-ref")
       .add(if (args.addFiles) "$0" else absolute(args.referencePath))
+      .add("--output-type")
+      .add("v")
+
+    Option(args.bcftoolsArgs).foreach(builder.add(_))
 
     if (args.addFiles) {
       builder.addFile(args.referencePath)
@@ -93,12 +98,12 @@ class BcftoolsNorm(
     }
 
     log.info("Piping {} to bcftools with command: {} files: {}",
-      variantContexts, builder.build(), builder.getFiles())
+      alignments, builder.build(), builder.getFiles())
 
-    implicit val tFormatter = VCFInFormatter
+    implicit val tFormatter = BAMInFormatter
     implicit val uFormatter = new VCFOutFormatter(sc.hadoopConfiguration, stringency)
 
-    variantContexts.pipe[VariantContext, VariantContextProduct, VariantContextDataset, VCFInFormatter](
+    alignments.pipe[VariantContext, VariantContextProduct, VariantContextDataset, BAMInFormatter](
       cmd = builder.build(),
       files = builder.getFiles()
     )
