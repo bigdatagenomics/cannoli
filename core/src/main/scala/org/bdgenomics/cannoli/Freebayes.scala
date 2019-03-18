@@ -54,7 +54,7 @@ class FreebayesArgs extends Args4jBase {
   @Args4jOption(required = false, name = "-use_singularity", usage = "If true, uses Singularity to launch Freebayes.")
   var useSingularity: Boolean = false
 
-  @Args4jOption(required = true, name = "-fasta_reference", usage = "Reference sequence for analysis. An index file (.fai) will be created if none exists.")
+  @Args4jOption(required = true, name = "-reference", usage = "Reference sequence for analysis. An index file (.fai) will be created if none exists.")
   var referencePath: String = null
 
   @Args4jOption(required = false, name = "-gvcf", usage = "Write gVCF output or equivalent genotypes which indicate coverage in uncalled regions.")
