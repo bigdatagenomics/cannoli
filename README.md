@@ -40,7 +40,8 @@ Usage: cannoli-submit [<spark-args> --] <cannoli-args>
 Choose one of the following commands:
 
 CANNOLI
-        bcftoolsNorm : ADAM Pipe API wrapper for BCFtools norm.
+     bcftoolsMpileup : ADAM Pipe API wrapper for bcftools mpileup.
+        bcftoolsNorm : ADAM Pipe API wrapper for bcftools norm.
    bedtoolsIntersect : ADAM Pipe API wrapper for Bedtools intersect.
               bowtie : ADAM Pipe API wrapper for Bowtie.
              bowtie2 : ADAM Pipe API wrapper for Bowtie 2.
@@ -71,7 +72,7 @@ $ ./bin/cannoli-submit \
     -index hg38.fa \
     -sequence_dictionary hg38.dict \
     -fragments \
-    -add_indices
+    -add_files
 ```
 
 or can be run using Docker
@@ -89,7 +90,7 @@ $ ./bin/cannoli-submit \
     -fragments \
     -use_docker \
     -image quay.io/ucsc_cgl/bwa:0.7.12--256539928ea162949d8a65ca5c79a72ef557ce7c \
-    -add_indices
+    -add_files
 ```
 
 or can be run using Singularity
@@ -107,7 +108,7 @@ $ ./bin/cannoli-submit \
     -fragments \
     -use_singularity \
     -image quay.io/ucsc_cgl/bwa:0.7.12--256539928ea162949d8a65ca5c79a72ef557ce7c \
-    -add_indices
+    -add_files
 ```
 
 
