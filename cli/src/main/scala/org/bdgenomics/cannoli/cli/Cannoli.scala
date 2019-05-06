@@ -20,8 +20,8 @@ package org.bdgenomics.cannoli.cli
 import java.util.logging.Level._
 import javax.inject.Inject
 import com.google.inject.AbstractModule
+import grizzled.slf4j.Logging
 import net.codingwell.scalaguice.ScalaModule
-import org.bdgenomics.utils.misc.Logging
 import org.bdgenomics.adam.cli.CommandGroup
 import org.bdgenomics.adam.util.ParquetLogger
 import org.bdgenomics.utils.cli._
@@ -91,7 +91,7 @@ class Cannoli @Inject() (commandGroups: List[CommandGroup]) extends Logging {
   }
 
   def apply(args: Array[String]) {
-    log.info("Cannoli invoked with args: %s".format(argsToString(args)))
+    info("Cannoli invoked with args: %s".format(argsToString(args)))
     if (args.length < 1) {
       printCommands()
     } else if (args.contains("--version") || args.contains("-version")) {

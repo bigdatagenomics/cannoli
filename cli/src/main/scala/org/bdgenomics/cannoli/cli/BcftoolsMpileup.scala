@@ -17,6 +17,7 @@
  */
 package org.bdgenomics.cannoli.cli
 
+import grizzled.slf4j.Logging
 import htsjdk.samtools.ValidationStringency
 import org.apache.spark.SparkContext
 import org.bdgenomics.adam.rdd.ADAMContext._
@@ -27,7 +28,6 @@ import org.bdgenomics.cannoli.{
   BcftoolsMpileupArgs => BcftoolsMpileupFnArgs
 }
 import org.bdgenomics.utils.cli._
-import org.bdgenomics.utils.misc.Logging
 import org.kohsuke.args4j.{ Argument, Option => Args4jOption }
 
 object BcftoolsMpileup extends BDGCommandCompanion {
@@ -73,7 +73,7 @@ class BcftoolsMpileup(protected val args: BcftoolsMpileupArgs) extends BDGSparkC
   val stringency: ValidationStringency = ValidationStringency.valueOf(args.stringency)
 
   def run(sc: SparkContext) {
-    log.warn("inputPath " + args.inputPath + " outputPath " + args.outputPath)
+    warn("inputPath " + args.inputPath + " outputPath " + args.outputPath)
 
     val alignments = sc.loadAlignments(args.inputPath, stringency = stringency)
     val variantContexts = new BcftoolsMpileupFn(args, stringency, sc).apply(alignments)

@@ -17,6 +17,7 @@
  */
 package org.bdgenomics.cannoli.cli
 
+import grizzled.slf4j.Logging
 import htsjdk.samtools.ValidationStringency
 import org.apache.spark.SparkContext
 import org.bdgenomics.adam.models.{ ReadGroup, ReadGroupDictionary }
@@ -27,7 +28,6 @@ import org.bdgenomics.adam.rdd.read.AlignmentRecordDataset
 import org.bdgenomics.cannoli.{ Bwa => BwaFn, BwaArgs => BwaFnArgs }
 import org.bdgenomics.cannoli.util.QuerynameGrouper
 import org.bdgenomics.utils.cli._
-import org.bdgenomics.utils.misc.Logging
 import org.kohsuke.args4j.{ Argument, Option => Args4jOption }
 
 object Bwa extends BDGCommandCompanion {
@@ -110,7 +110,7 @@ class Bwa(protected val args: BwaArgs) extends BDGSparkCommand[BwaArgs] with Log
     if (!args.asFragments) {
       outputMaybeWithSequences.save(args)
     } else {
-      log.info("Converting to fragments.")
+      info("Converting to fragments.")
       QuerynameGrouper(outputMaybeWithSequences)
         .saveAsParquet(args)
     }
