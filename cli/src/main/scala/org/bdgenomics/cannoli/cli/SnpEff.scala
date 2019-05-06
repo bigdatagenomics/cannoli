@@ -17,13 +17,13 @@
  */
 package org.bdgenomics.cannoli.cli
 
+import grizzled.slf4j.Logging
 import htsjdk.samtools.ValidationStringency
 import org.apache.spark.SparkContext
 import org.bdgenomics.adam.rdd.ADAMContext._
 import org.bdgenomics.adam.rdd.ADAMSaveAnyArgs
 import org.bdgenomics.cannoli.{ SnpEff => SnpEffFn, SnpEffArgs => SnpEffFnArgs }
 import org.bdgenomics.utils.cli._
-import org.bdgenomics.utils.misc.Logging
 import org.kohsuke.args4j.{ Argument, Option => Args4jOption }
 
 object SnpEff extends BDGCommandCompanion {

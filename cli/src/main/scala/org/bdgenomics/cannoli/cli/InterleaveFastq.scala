@@ -17,6 +17,7 @@
  */
 package org.bdgenomics.cannoli.cli
 
+import grizzled.slf4j.Logging
 import htsjdk.samtools.{
   SAMFileHeader,
   SAMFileWriter,
@@ -36,7 +37,6 @@ import org.apache.hadoop.fs.Path
 import org.apache.hadoop.io.compress.CompressionCodecFactory
 import org.apache.spark.SparkContext
 import org.bdgenomics.utils.cli._
-import org.bdgenomics.utils.misc.Logging
 import org.kohsuke.args4j.{ Argument, Option => Args4jOption }
 import scala.annotation.tailrec
 
