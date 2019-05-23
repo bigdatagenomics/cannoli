@@ -1,5 +1,35 @@
 # Cannoli Changelog #
 
+### Version 0.5.0 ###
+
+**Closed issues:**
+
+ - Update ADAM dependency version to 0.27.0 [\#167](https://github.com/bigdatagenomics/cannoli/issues/167)
+ - Update default docker images to latest stable versions [\#164](https://github.com/bigdatagenomics/cannoli/issues/164)
+ - Consistent use of indexPath vs referencePath [\#160](https://github.com/bigdatagenomics/cannoli/issues/160)
+ - Samtools mpileup -u is deprecated [\#158](https://github.com/bigdatagenomics/cannoli/issues/158)
+ - Add additional arguments to Minimap2 [\#154](https://github.com/bigdatagenomics/cannoli/issues/154)
+ - Add STAR aligner [\#135](https://github.com/bigdatagenomics/cannoli/issues/135)
+ - Add HISAT2 aligner [\#134](https://github.com/bigdatagenomics/cannoli/issues/134)
+ - RNA alignment [\#105](https://github.com/bigdatagenomics/cannoli/issues/105)
+ - Add SNAP aligner [\#65](https://github.com/bigdatagenomics/cannoli/issues/65)
+ - Support alt aware alignment liftover for BWA [\#38](https://github.com/bigdatagenomics/cannoli/issues/38)
+ - support for MACS2 or other peak calling [\#35](https://github.com/bigdatagenomics/cannoli/issues/35)
+
+**Merged and closed pull requests:**
+
+ - [CANNOLI-167] Update ADAM dependency version to 0.27.0 [\#168](https://github.com/bigdatagenomics/cannoli/pull/168) ([heuermh](https://github.com/heuermh))
+ - Replace utils.Logger with grizzled.slf4j.Logger [\#166](https://github.com/bigdatagenomics/cannoli/pull/166) ([heuermh](https://github.com/heuermh))
+ - [CANNOLI-164] Update default docker images to latest stable versions [\#165](https://github.com/bigdatagenomics/cannoli/pull/165) ([heuermh](https://github.com/heuermh))
+ - Update minimap2 default docker image to version 2.17 [\#163](https://github.com/bigdatagenomics/cannoli/pull/163) ([heuermh](https://github.com/heuermh))
+ - [CANNOLI-160] Rename -fasta_reference to -reference. [\#161](https://github.com/bigdatagenomics/cannoli/pull/161) ([heuermh](https://github.com/heuermh))
+ - [CANNOLI-158] Adding bcftools mpileup. [\#159](https://github.com/bigdatagenomics/cannoli/pull/159) ([heuermh](https://github.com/heuermh))
+ - Update ADAM dependency to 0.27.0-SNAPSHOT [\#156](https://github.com/bigdatagenomics/cannoli/pull/156) ([heuermh](https://github.com/heuermh))
+ - [CANNOLI-154] Add additional arguments to Minimap2 [\#155](https://github.com/bigdatagenomics/cannoli/pull/155) ([heuermh](https://github.com/heuermh))
+ - [CANNOLI-65] Adding Snap for alignment. [\#120](https://github.com/bigdatagenomics/cannoli/pull/120) ([heuermh](https://github.com/heuermh))
+ - Added MACS2 to cannoli [\#64](https://github.com/bigdatagenomics/cannoli/pull/64) ([gunjanbaid](https://github.com/gunjanbaid))
+
+
 ### Version 0.4.0 ###
 
 **Closed issues:**
