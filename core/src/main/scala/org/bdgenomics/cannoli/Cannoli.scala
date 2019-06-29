@@ -115,6 +115,16 @@ object Cannoli {
     }
 
     /**
+     * Align the reads in this FragmentDataset with GEM-Mapper via Cannoli.
+     *
+     * @param args GEM-Mapper function arguments.
+     * @return AlignmentRecordDataset.
+     */
+    def alignWithGem(args: GemArgs): AlignmentRecordDataset = {
+      new Gem(args, fragments.rdd.context).apply(fragments)
+    }
+
+    /**
      * Align the reads in this FragmentDataset with minimap2 via Cannoli.
      *
      * @param args Minimap2 function arguments.

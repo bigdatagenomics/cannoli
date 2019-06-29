@@ -35,6 +35,7 @@ object Cannoli {
     Bowtie2,
     Bwa,
     Freebayes,
+    Gem,
     Minimap2,
     SamtoolsMpileup,
     SnpEff,
