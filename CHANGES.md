@@ -1,5 +1,18 @@
 # Cannoli Changelog #
 
+### Version 0.6.0 ###
+
+**Closed issues:**
+
+ - Update ADAM dependency version to 0.28.0 [\#172](https://github.com/bigdatagenomics/cannoli/issues/172)
+ - Support Gem mapper in Cannoli [\#170](https://github.com/bigdatagenomics/cannoli/issues/170)
+
+**Merged and closed pull requests:**
+
+ - [CANNOLI-172] Update ADAM dependency version to 0.28.0. [\#173](https://github.com/bigdatagenomics/cannoli/pull/173) ([heuermh](https://github.com/heuermh))
+ - [CANNOLI-170] Adding GEM-Mapper for alignment. [\#171](https://github.com/bigdatagenomics/cannoli/pull/171) ([heuermh](https://github.com/heuermh))
+
+
 ### Version 0.5.0 ###
 
 **Closed issues:**
