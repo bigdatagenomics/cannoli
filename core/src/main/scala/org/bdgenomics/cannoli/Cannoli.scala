@@ -133,6 +133,16 @@ object Cannoli {
     def alignWithMinimap2(args: Minimap2Args): AlignmentRecordDataset = {
       new Minimap2(args, fragments.rdd.context).apply(fragments)
     }
+
+    /**
+     * Align the reads in this FragmentDataset with STAR via Cannoli.
+     *
+     * @param args STAR function arguments.
+     * @return AlignmentRecordDataset.
+     */
+    def alignWithStar(args: StarArgs): AlignmentRecordDataset = {
+      new Star(args, fragments.rdd.context).apply(fragments)
+    }
   }
 
   implicit class CannoliVariantContextDataset(vcs: VariantContextDataset) {
