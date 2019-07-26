@@ -39,6 +39,7 @@ object Cannoli {
     Minimap2,
     SamtoolsMpileup,
     SnpEff,
+    Star,
     Vep,
     VtNormalize)),
     CommandGroup("CANNOLI TOOLS", List(InterleaveFastq,
