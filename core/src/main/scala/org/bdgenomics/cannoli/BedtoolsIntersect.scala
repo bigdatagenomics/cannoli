@@ -28,7 +28,6 @@ import org.bdgenomics.adam.sql.{ Feature => FeatureProduct }
 import org.bdgenomics.cannoli.builder.CommandBuilders
 import org.bdgenomics.formats.avro.Feature;
 import org.bdgenomics.utils.cli._
-import org.bdgenomics.utils.misc.Logging
 import org.kohsuke.args4j.{ Option => Args4jOption }
 import scala.collection.JavaConversions._
 
@@ -81,7 +80,7 @@ class BedtoolsIntersectArgs extends Args4jBase {
  */
 class BedtoolsIntersect(
     val args: BedtoolsIntersectArgs,
-    sc: SparkContext) extends CannoliFn[FeatureDataset, FeatureDataset](sc) with Logging {
+    sc: SparkContext) extends CannoliFn[FeatureDataset, FeatureDataset](sc) {
 
   override def apply(features: FeatureDataset): FeatureDataset = {
     val optA = Option(args.a)
@@ -109,8 +108,8 @@ class BedtoolsIntersect(
         .addMount(if (args.addFiles) "$root" else root(file))
     }
 
-    log.info("Piping {} to bedtools with command: {} files: {}",
-      features, builder.build(), builder.getFiles())
+    info("Piping %s to bedtools with command: %s files: %s".format(
+      features, builder.build(), builder.getFiles()))
 
     implicit val tFormatter = BEDInFormatter
     implicit val uFormatter = new BEDOutFormatter

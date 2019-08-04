@@ -18,6 +18,7 @@
 package org.bdgenomics.cannoli
 
 import java.io.FileNotFoundException
+import grizzled.slf4j.Logging
 import org.apache.hadoop.fs.{ Path, PathFilter }
 import org.apache.spark.SparkContext
 
@@ -28,7 +29,7 @@ import org.apache.spark.SparkContext
  * @tparam X Cannoli function argument type parameter.
  * @tparam Y Cannoli function result type parameter.
  */
-abstract class CannoliFn[X, Y](val sc: SparkContext) extends Function1[X, Y] {
+abstract class CannoliFn[X, Y](val sc: SparkContext) extends Function1[X, Y] with Logging {
 
   def absolute(pathName: String): String = {
     val path = new Path(pathName)
@@ -36,7 +37,7 @@ abstract class CannoliFn[X, Y](val sc: SparkContext) extends Function1[X, Y] {
     // get the underlying fs for the file
     val fs = Option(path.getFileSystem(sc.hadoopConfiguration)).getOrElse(
       throw new FileNotFoundException(
-        s"Couldn't find filesystem for ${path.toUri} with Hadoop configuration ${sc.hadoopConfiguration}"
+        s"Could not find filesystem for path ${path.toUri} with Hadoop configuration ${sc.hadoopConfiguration}"
       ))
 
     Path.getPathWithoutSchemeAndAuthority(fs.resolvePath(path)).toString
@@ -48,7 +49,7 @@ abstract class CannoliFn[X, Y](val sc: SparkContext) extends Function1[X, Y] {
     // get the underlying fs for the file
     val fs = Option(path.getFileSystem(sc.hadoopConfiguration)).getOrElse(
       throw new FileNotFoundException(
-        s"Couldn't find filesystem for ${path.toUri} with Hadoop configuration ${sc.hadoopConfiguration}"
+        s"Could not find filesystem for path ${path.toUri} with Hadoop configuration ${sc.hadoopConfiguration}"
       ))
 
     Path.getPathWithoutSchemeAndAuthority(fs.resolvePath(path).getParent()).toString
@@ -68,7 +69,7 @@ abstract class CannoliFn[X, Y](val sc: SparkContext) extends Function1[X, Y] {
     // get the underlying fs for the file
     val fs = Option(path.getFileSystem(sc.hadoopConfiguration)).getOrElse(
       throw new FileNotFoundException(
-        s"Couldn't find filesystem for ${path.toUri} with Hadoop configuration ${sc.hadoopConfiguration}"
+        s"Could not find filesystem for path ${path.toUri} with Hadoop configuration ${sc.hadoopConfiguration}"
       ))
 
     // elaborate out the path; this returns FileStatuses
@@ -76,7 +77,7 @@ abstract class CannoliFn[X, Y](val sc: SparkContext) extends Function1[X, Y] {
       val paths = fs.listStatus(path)
       if (paths.isEmpty) {
         throw new FileNotFoundException(
-          s"Couldn't find any files matching ${path.toUri}, directory is empty"
+          s"Could not find any files matching path ${path.toUri}, directory is empty"
         )
       }
       fs.listStatus(path, filter)
@@ -84,7 +85,7 @@ abstract class CannoliFn[X, Y](val sc: SparkContext) extends Function1[X, Y] {
       val paths = fs.globStatus(path)
       if (paths == null || paths.isEmpty) {
         throw new FileNotFoundException(
-          s"Couldn't find any files matching ${path.toUri}"
+          s"Could not find any files matching path ${path.toUri}"
         )
       }
       fs.globStatus(path, filter)
@@ -93,7 +94,7 @@ abstract class CannoliFn[X, Y](val sc: SparkContext) extends Function1[X, Y] {
     // the path must match PathFilter
     if (paths == null || paths.isEmpty) {
       throw new FileNotFoundException(
-        s"Couldn't find any files matching ${path.toUri} for the requested PathFilter"
+        s"Could not find any files matching path ${path.toUri} for the requested PathFilter"
       )
     }
 

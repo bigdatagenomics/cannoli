@@ -28,7 +28,6 @@ import org.bdgenomics.adam.rdd.variant.{ VariantContextDataset, VCFOutFormatter 
 import org.bdgenomics.adam.sql.{ VariantContext => VariantContextProduct }
 import org.bdgenomics.cannoli.builder.CommandBuilders
 import org.bdgenomics.utils.cli._
-import org.bdgenomics.utils.misc.Logging
 import org.kohsuke.args4j.{ Option => Args4jOption }
 import scala.collection.JavaConversions._
 
@@ -75,7 +74,7 @@ class FreebayesArgs extends Args4jBase {
 class Freebayes(
     val args: FreebayesArgs,
     val stringency: ValidationStringency = ValidationStringency.LENIENT,
-    sc: SparkContext) extends CannoliFn[AlignmentRecordDataset, VariantContextDataset](sc) with Logging {
+    sc: SparkContext) extends CannoliFn[AlignmentRecordDataset, VariantContextDataset](sc) {
 
   override def apply(alignments: AlignmentRecordDataset): VariantContextDataset = {
 
@@ -103,8 +102,8 @@ class Freebayes(
         .addMount(if (args.addFiles) "$root" else root(args.referencePath))
     }
 
-    log.info("Piping {} to freebayes with command: {} files: {}",
-      alignments, builder.build(), builder.getFiles())
+    info("Piping %s to freebayes with command: %s files: %s".format(
+      alignments, builder.build(), builder.getFiles()))
 
     val accumulator: CollectionAccumulator[VCFHeaderLine] = sc.collectionAccumulator("headerLines")
 

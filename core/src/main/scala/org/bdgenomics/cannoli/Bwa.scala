@@ -26,7 +26,6 @@ import org.bdgenomics.adam.sql.{ AlignmentRecord => AlignmentRecordProduct }
 import org.bdgenomics.cannoli.builder.CommandBuilders
 import org.bdgenomics.formats.avro.AlignmentRecord
 import org.bdgenomics.utils.cli._
-import org.bdgenomics.utils.misc.Logging
 import org.kohsuke.args4j.{ Argument, Option => Args4jOption }
 import scala.collection.JavaConversions._
 
@@ -68,7 +67,7 @@ class BwaArgs extends Args4jBase {
  */
 class Bwa(
     val args: BwaArgs,
-    sc: SparkContext) extends CannoliFn[FragmentDataset, AlignmentRecordDataset](sc) with Logging {
+    sc: SparkContext) extends CannoliFn[FragmentDataset, AlignmentRecordDataset](sc) {
 
   override def apply(fragments: FragmentDataset): AlignmentRecordDataset = {
     val sample = args.sample
@@ -133,8 +132,8 @@ class Bwa(
         .addMount(if (args.addFiles) "$root" else root(args.indexPath))
     }
 
-    log.info("Piping {} to bwa with command: {} files: {}",
-      fragments, builder.build(), builder.getFiles())
+    info("Piping %s to bwa with command: %s files: %s".format(
+      fragments, builder.build(), builder.getFiles()))
 
     implicit val tFormatter = InterleavedFASTQInFormatter
     implicit val uFormatter = new AnySAMOutFormatter
