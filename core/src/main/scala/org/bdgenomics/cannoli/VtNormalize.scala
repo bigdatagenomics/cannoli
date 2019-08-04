@@ -29,7 +29,6 @@ import org.bdgenomics.adam.rdd.variant.{
 import org.bdgenomics.adam.sql.{ VariantContext => VariantContextProduct }
 import org.bdgenomics.cannoli.builder.CommandBuilders
 import org.bdgenomics.utils.cli._
-import org.bdgenomics.utils.misc.Logging
 import org.kohsuke.args4j.{ Option => Args4jOption }
 import scala.collection.JavaConversions._
 
@@ -73,7 +72,7 @@ class VtNormalizeArgs extends Args4jBase {
 class VtNormalize(
     val args: VtNormalizeArgs,
     val stringency: ValidationStringency = ValidationStringency.LENIENT,
-    sc: SparkContext) extends CannoliFn[VariantContextDataset, VariantContextDataset](sc) with Logging {
+    sc: SparkContext) extends CannoliFn[VariantContextDataset, VariantContextDataset](sc) {
 
   override def apply(variantContexts: VariantContextDataset): VariantContextDataset = {
 
@@ -95,8 +94,8 @@ class VtNormalize(
         .addMount(if (args.addFiles) "$root" else root(args.referencePath))
     }
 
-    log.info("Piping {} to vt with command: {} files: {}",
-      variantContexts, builder.build(), builder.getFiles())
+    info("Piping %s to vt with command: %s files: %s".format(
+      variantContexts, builder.build(), builder.getFiles()))
 
     implicit val tFormatter = VCFInFormatter
     implicit val uFormatter = new VCFOutFormatter(sc.hadoopConfiguration, stringency)

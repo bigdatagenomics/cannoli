@@ -17,7 +17,6 @@
  */
 package org.bdgenomics.cannoli
 
-import grizzled.slf4j.Logging
 import org.apache.spark.SparkContext
 import org.bdgenomics.adam.rdd.ADAMContext._
 import org.bdgenomics.adam.rdd.fragment.FragmentDataset
@@ -70,7 +69,7 @@ class StarArgs extends Args4jBase {
  */
 class Star(
     val args: StarArgs,
-    sc: SparkContext) extends CannoliFn[FragmentDataset, AlignmentRecordDataset](sc) with Logging {
+    sc: SparkContext) extends CannoliFn[FragmentDataset, AlignmentRecordDataset](sc) {
 
   override def apply(fragments: FragmentDataset): AlignmentRecordDataset = {
 
@@ -111,8 +110,8 @@ class Star(
         .addMount(if (args.addFiles) "$root" else root(args.genomePath))
     }
 
-    info("Piping {} to STAR with command: {} files: {}",
-      fragments, builder.build(), builder.getFiles())
+    info("Piping %s to STAR with command: %s files: %s".format(
+      fragments, builder.build(), builder.getFiles()))
 
     implicit val tFormatter = SAMInFormatter
     implicit val uFormatter = new AnySAMOutFormatter

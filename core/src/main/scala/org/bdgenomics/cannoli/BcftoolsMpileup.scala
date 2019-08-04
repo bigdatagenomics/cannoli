@@ -26,7 +26,6 @@ import org.bdgenomics.adam.rdd.variant.{ VariantContextDataset, VCFOutFormatter 
 import org.bdgenomics.adam.sql.{ VariantContext => VariantContextProduct }
 import org.bdgenomics.cannoli.builder.CommandBuilders
 import org.bdgenomics.utils.cli._
-import org.bdgenomics.utils.misc.Logging
 import org.kohsuke.args4j.{ Option => Args4jOption }
 import scala.collection.JavaConversions._
 
@@ -70,7 +69,7 @@ class BcftoolsMpileupArgs extends Args4jBase {
 class BcftoolsMpileup(
     val args: BcftoolsMpileupArgs,
     val stringency: ValidationStringency = ValidationStringency.LENIENT,
-    sc: SparkContext) extends CannoliFn[AlignmentRecordDataset, VariantContextDataset](sc) with Logging {
+    sc: SparkContext) extends CannoliFn[AlignmentRecordDataset, VariantContextDataset](sc) {
 
   override def apply(alignments: AlignmentRecordDataset): VariantContextDataset = {
 
@@ -97,8 +96,8 @@ class BcftoolsMpileup(
         .addMount(if (args.addFiles) "$root" else root(args.referencePath))
     }
 
-    log.info("Piping {} to bcftools with command: {} files: {}",
-      alignments, builder.build(), builder.getFiles())
+    info("Piping %s to bcftools with command: %s files: %s".format(
+      alignments, builder.build(), builder.getFiles()))
 
     implicit val tFormatter = BAMInFormatter
     implicit val uFormatter = new VCFOutFormatter(sc.hadoopConfiguration, stringency)

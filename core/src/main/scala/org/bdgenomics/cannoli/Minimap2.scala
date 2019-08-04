@@ -25,7 +25,6 @@ import org.bdgenomics.adam.sql.{ AlignmentRecord => AlignmentRecordProduct }
 import org.bdgenomics.cannoli.builder.CommandBuilders
 import org.bdgenomics.formats.avro.AlignmentRecord
 import org.bdgenomics.utils.cli._
-import org.bdgenomics.utils.misc.Logging
 import org.kohsuke.args4j.{ Option => Args4jOption }
 import scala.collection.JavaConversions._
 
@@ -73,7 +72,7 @@ class Minimap2Args extends Args4jBase {
  */
 class Minimap2(
     val args: Minimap2Args,
-    sc: SparkContext) extends CannoliFn[FragmentDataset, AlignmentRecordDataset](sc) with Logging {
+    sc: SparkContext) extends CannoliFn[FragmentDataset, AlignmentRecordDataset](sc) {
 
   override def apply(fragments: FragmentDataset): AlignmentRecordDataset = {
 
@@ -100,8 +99,8 @@ class Minimap2(
         .addMount(if (args.addFiles) "$root" else root(args.indexPath))
     }
 
-    log.info("Piping {} to minimap2 with command: {} files: {}",
-      fragments, builder.build(), builder.getFiles())
+    info("Piping %s to minimap2 with command: %s files: %s".format(
+      fragments, builder.build(), builder.getFiles()))
 
     implicit val tFormatter = InterleavedFASTQInFormatter
     implicit val uFormatter = new AnySAMOutFormatter
