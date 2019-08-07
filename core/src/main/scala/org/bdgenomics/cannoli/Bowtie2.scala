@@ -17,6 +17,7 @@
  */
 package org.bdgenomics.cannoli
 
+import java.io.FileNotFoundException
 import org.apache.spark.SparkContext
 import org.bdgenomics.adam.rdd.ADAMContext._
 import org.bdgenomics.adam.rdd.fragment.{ FragmentDataset, InterleavedFASTQInFormatter }
@@ -66,6 +67,16 @@ class Bowtie2(
     sc: SparkContext) extends CannoliFn[FragmentDataset, AlignmentRecordDataset](sc) {
 
   override def apply(fragments: FragmentDataset): AlignmentRecordDataset = {
+
+    // fail fast if index basename not found
+    try {
+      absolute(args.indexPath)
+    } catch {
+      case e: FileNotFoundException => {
+        error("Basename of the index %s not found, touch an empty file at this path if it does not exist".format(args.indexPath))
+        throw e
+      }
+    }
 
     val builder = CommandBuilders.create(args.useDocker, args.useSingularity)
       .setExecutable(args.executable)
