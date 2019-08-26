@@ -174,6 +174,19 @@ object Cannoli {
     }
 
     /**
+     * Call variant contexts in this VariantContextDataset with bcftools call via Cannoli.
+     *
+     * @param args Bcftools call function arguments.
+     * @param stringency Validation stringency. Defaults to ValidationStringency.LENIENT.
+     * @return VariantContextDataset.
+     */
+    def callWithBcftools(
+      args: BcftoolsCallArgs,
+      stringency: ValidationStringency = ValidationStringency.LENIENT): VariantContextDataset = {
+      new BcftoolsCall(args, stringency, vcs.rdd.context).apply(vcs)
+    }
+
+    /**
      * Normalize the variant contexts in this VariantContextDataset with bcftools norm via Cannoli.
      *
      * @param args Bcftools norm function arguments.

@@ -28,7 +28,8 @@ import org.bdgenomics.utils.cli._
 
 object Cannoli {
 
-  val defaultCommandGroups = List(CommandGroup("CANNOLI", List(BcftoolsMpileup,
+  val defaultCommandGroups = List(CommandGroup("CANNOLI", List(BcftoolsCall,
+    BcftoolsMpileup,
     BcftoolsNorm,
     BedtoolsIntersect,
     Bowtie,
