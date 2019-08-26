@@ -43,7 +43,7 @@ class FreebayesArgs extends FreebayesFnArgs with ADAMSaveAnyArgs with ParquetArg
   @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe alignment records from (e.g. .bam, .cram, .sam). If extension is not detected, Parquet is assumed.", index = 0)
   var inputPath: String = null
 
-  @Argument(required = true, metaVar = "OUTPUT", usage = "Location to pipe genotypes to (e.g. .vcf, .vcf.gz, .vcf.bgz). If extension is not detected, Parquet is assumed.", index = 1)
+  @Argument(required = true, metaVar = "OUTPUT", usage = "Location to pipe variant contexts to (e.g. .vcf, .vcf.gz, .vcf.bgz). If extension is not detected, Parquet is assumed.", index = 1)
   var outputPath: String = null
 
   @Args4jOption(required = false, name = "-single", usage = "Saves OUTPUT as single file.")
@@ -82,7 +82,7 @@ class Freebayes(protected val args: FreebayesArgs) extends BDGSparkCommand[Freeb
         stringency
       )
     } else {
-      variantContexts.toGenotypes.saveAsParquet(args)
+      variantContexts.saveAsParquet(args)
     }
   }
 }

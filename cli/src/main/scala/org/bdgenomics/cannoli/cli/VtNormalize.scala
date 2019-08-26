@@ -22,6 +22,7 @@ import htsjdk.samtools.ValidationStringency
 import org.apache.spark.SparkContext
 import org.bdgenomics.adam.rdd.ADAMContext._
 import org.bdgenomics.adam.rdd.ADAMSaveAnyArgs
+import org.bdgenomics.adam.util.FileExtensions._
 import org.bdgenomics.cannoli.{
   VtNormalize => VtNormalizeFn,
   VtNormalizeArgs => VtNormalizeFnArgs
@@ -42,10 +43,10 @@ object VtNormalize extends BDGCommandCompanion {
  * Vt normalize command line arguments.
  */
 class VtNormalizeArgs extends VtNormalizeFnArgs with ADAMSaveAnyArgs with ParquetArgs {
-  @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe from, in VCF format.", index = 0)
+  @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe variant contexts from (e.g. .vcf, .vcf.gz, .vcf.bgz). If extension is not detected, Parquet is assumed.", index = 0)
   var inputPath: String = null
 
-  @Argument(required = true, metaVar = "OUTPUT", usage = "Location to pipe to, in VCF format.", index = 1)
+  @Argument(required = true, metaVar = "OUTPUT", usage = "Location to pipe variant contexts to (e.g. .vcf, .vcf.gz, .vcf.bgz). If extension is not detected, Parquet is assumed.", index = 1)
   var outputPath: String = null
 
   @Args4jOption(required = false, name = "-single", usage = "Saves OUTPUT as single file.")
@@ -72,8 +73,19 @@ class VtNormalize(protected val args: VtNormalizeArgs) extends BDGSparkCommand[V
   val stringency: ValidationStringency = ValidationStringency.valueOf(args.stringency)
 
   def run(sc: SparkContext) {
-    val variantContexts = sc.loadVcf(args.inputPath, stringency = stringency)
+    val variantContexts = sc.loadVariantContexts(args.inputPath)
     val pipedVariantContexts = new VtNormalizeFn(args, stringency, sc).apply(variantContexts)
-    pipedVariantContexts.saveAsVcf(args, stringency)
+
+    if (isVcfExt(args.outputPath)) {
+      pipedVariantContexts.saveAsVcf(
+        args.outputPath,
+        asSingleFile = args.asSingleFile,
+        deferMerging = args.deferMerging,
+        disableFastConcat = args.disableFastConcat,
+        stringency
+      )
+    } else {
+      pipedVariantContexts.saveAsParquet(args)
+    }
   }
 }

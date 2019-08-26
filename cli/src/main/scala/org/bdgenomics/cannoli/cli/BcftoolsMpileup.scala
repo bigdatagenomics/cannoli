@@ -46,7 +46,7 @@ class BcftoolsMpileupArgs extends BcftoolsMpileupFnArgs with ADAMSaveAnyArgs wit
   @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe alignment records from (e.g. .bam, .cram, .sam). If extension is not detected, Parquet is assumed.", index = 0)
   var inputPath: String = null
 
-  @Argument(required = true, metaVar = "OUTPUT", usage = "Location to pipe genotypes to (e.g. .vcf, .vcf.gz, .vcf.bgz). If extension is not detected, Parquet is assumed.", index = 1)
+  @Argument(required = true, metaVar = "OUTPUT", usage = "Location to pipe variant contexts to (e.g. .vcf, .vcf.gz, .vcf.bgz). If extension is not detected, Parquet is assumed.", index = 1)
   var outputPath: String = null
 
   @Args4jOption(required = false, name = "-single", usage = "Saves OUTPUT as single file.")
@@ -73,8 +73,6 @@ class BcftoolsMpileup(protected val args: BcftoolsMpileupArgs) extends BDGSparkC
   val stringency: ValidationStringency = ValidationStringency.valueOf(args.stringency)
 
   def run(sc: SparkContext) {
-    warn("inputPath " + args.inputPath + " outputPath " + args.outputPath)
-
     val alignments = sc.loadAlignments(args.inputPath, stringency = stringency)
     val variantContexts = new BcftoolsMpileupFn(args, stringency, sc).apply(alignments)
 
@@ -87,7 +85,7 @@ class BcftoolsMpileup(protected val args: BcftoolsMpileupArgs) extends BDGSparkC
         stringency
       )
     } else {
-      variantContexts.toGenotypes.saveAsParquet(args)
+      variantContexts.saveAsParquet(args)
     }
   }
 }
