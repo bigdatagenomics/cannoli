@@ -34,6 +34,7 @@ object Cannoli {
     BedtoolsIntersect,
     Bowtie,
     Bowtie2,
+    SingleEndBowtie2,
     Bwa,
     Freebayes,
     Gem,

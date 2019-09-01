@@ -20,8 +20,11 @@ package org.bdgenomics.cannoli
 import java.io.FileNotFoundException
 import org.apache.spark.SparkContext
 import org.bdgenomics.adam.rdd.ADAMContext._
-import org.bdgenomics.adam.rdd.fragment.{ FragmentDataset, InterleavedFASTQInFormatter }
-import org.bdgenomics.adam.rdd.read.{ AlignmentRecordDataset, AnySAMOutFormatter }
+import org.bdgenomics.adam.rdd.read.{
+  AlignmentRecordDataset,
+  AnySAMOutFormatter,
+  FASTQInFormatter
+}
 import org.bdgenomics.adam.sql.{ AlignmentRecord => AlignmentRecordProduct }
 import org.bdgenomics.cannoli.builder.CommandBuilders
 import org.bdgenomics.formats.avro.AlignmentRecord
@@ -30,9 +33,9 @@ import org.kohsuke.args4j.{ Option => Args4jOption }
 import scala.collection.JavaConversions._
 
 /**
- * Bowtie 2 function arguments.
+ * Single-end read Bowtie 2 function arguments.
  */
-class Bowtie2Args extends Args4jBase {
+class SingleEndBowtie2Args extends Args4jBase {
   @Args4jOption(required = false, name = "-executable", usage = "Path to the Bowtie 2 executable. Defaults to bowtie2.")
   var executable: String = "bowtie2"
 
@@ -59,17 +62,18 @@ class Bowtie2Args extends Args4jBase {
 }
 
 /**
- * Bowtie 2 wrapper as a function FragmentDataset &rarr; AlignmentRecordDataset,
+ * Single-end read Bowtie 2 wrapper as a function
+ * AlignmentRecordDataset &rarr; AlignmentRecordDataset,
  * for use in cannoli-shell or notebooks.
  *
  * @param args Bowtie 2 function arguments.
  * @param sc Spark context.
  */
-class Bowtie2(
-    val args: Bowtie2Args,
-    sc: SparkContext) extends CannoliFn[FragmentDataset, AlignmentRecordDataset](sc) {
+class SingleEndBowtie2(
+    val args: SingleEndBowtie2Args,
+    sc: SparkContext) extends CannoliFn[AlignmentRecordDataset, AlignmentRecordDataset](sc) {
 
-  override def apply(fragments: FragmentDataset): AlignmentRecordDataset = {
+  override def apply(reads: AlignmentRecordDataset): AlignmentRecordDataset = {
 
     // fail fast if index basename not found
     try {
@@ -85,7 +89,7 @@ class Bowtie2(
       .setExecutable(args.executable)
       .add("-x")
       .add(if (args.addFiles) "$0" else absolute(args.indexPath))
-      .add("--interleaved")
+      .add("-U")
       .add("-")
 
     Option(args.bowtie2Args).foreach(builder.add(_))
@@ -105,12 +109,12 @@ class Bowtie2(
     }
 
     info("Piping %s to bowtie2 with command: %s files: %s".format(
-      fragments, builder.build(), builder.getFiles()))
+      reads, builder.build(), builder.getFiles()))
 
-    implicit val tFormatter = InterleavedFASTQInFormatter
+    implicit val tFormatter = FASTQInFormatter
     implicit val uFormatter = new AnySAMOutFormatter
 
-    fragments.pipe[AlignmentRecord, AlignmentRecordProduct, AlignmentRecordDataset, InterleavedFASTQInFormatter](
+    reads.pipe[AlignmentRecord, AlignmentRecordProduct, AlignmentRecordDataset, FASTQInFormatter](
       cmd = builder.build(),
       files = builder.getFiles()
     )

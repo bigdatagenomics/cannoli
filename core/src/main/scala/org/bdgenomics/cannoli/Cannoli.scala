@@ -20,7 +20,7 @@ package org.bdgenomics.cannoli
 import htsjdk.samtools.ValidationStringency
 import org.bdgenomics.adam.rdd.feature.FeatureDataset
 import org.bdgenomics.adam.rdd.fragment.FragmentDataset
-import org.bdgenomics.adam.rdd.read.AlignmentRecordDataset
+import org.bdgenomics.adam.rdd.read.{ AlignmentRecordDataset, ReadDataset }
 import org.bdgenomics.adam.rdd.variant.VariantContextDataset
 
 /**
@@ -28,6 +28,17 @@ import org.bdgenomics.adam.rdd.variant.VariantContextDataset
  */
 object Cannoli {
   implicit class CannoliAlignmentRecordDataset(alignments: AlignmentRecordDataset) {
+
+    /**
+     * Align the unaligned single-end reads in this AlignmentRecordDataset
+     * with bowtie2 via Cannoli.
+     *
+     * @param args Bowtie2 function arguments.
+     * @return AlignmentRecordDataset.
+     */
+    def alignWithBowtie2(args: SingleEndBowtie2Args): AlignmentRecordDataset = {
+      new SingleEndBowtie2(args, alignments.rdd.context).apply(alignments)
+    }
 
     /**
      * Call variants from the alignments in this AlignmentRecordDataset with freebayes via Cannoli.
@@ -142,6 +153,21 @@ object Cannoli {
      */
     def alignWithStar(args: StarArgs): AlignmentRecordDataset = {
       new Star(args, fragments.rdd.context).apply(fragments)
+    }
+  }
+
+  implicit class CannoliReadDataset(reads: ReadDataset) {
+
+    /**
+     * Align the unaligned single-end reads in this ReadDataset
+     * with bowtie2 via Cannoli.
+     *
+     * @param args Bowtie2 function arguments.
+     * @return AlignmentRecordDataset.
+     */
+    def alignWithBowtie2(args: SingleEndBowtie2Args): AlignmentRecordDataset = {
+      val alignments = reads.toAlignments
+      new SingleEndBowtie2(args, alignments.rdd.context).apply(alignments)
     }
   }
 
