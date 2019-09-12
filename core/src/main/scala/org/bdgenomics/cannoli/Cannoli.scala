@@ -32,9 +32,9 @@ object Cannoli {
 
     /**
      * Align the unaligned single-end reads in this AlignmentRecordDataset
-     * with bowtie2 via Cannoli.
+     * with Bowtie 2 via Cannoli.
      *
-     * @param args Bowtie2 function arguments.
+     * @param args Bowtie 2 function arguments.
      * @return AlignmentRecordDataset.
      */
     def alignWithBowtie2(args: SingleEndBowtie2Args): AlignmentRecordDataset = {
@@ -42,7 +42,7 @@ object Cannoli {
     }
 
     /**
-     * Call variants from the alignments in this AlignmentRecordDataset with freebayes via Cannoli.
+     * Call variants from the alignments in this AlignmentRecordDataset with Freebayes via Cannoli.
      *
      * @param args Freebayes function arguments.
      * @param stringency Validation stringency. Defaults to ValidationStringency.LENIENT.
@@ -97,7 +97,7 @@ object Cannoli {
   implicit class CannoliFragmentDataset(fragments: FragmentDataset) {
 
     /**
-     * Align the reads in this FragmentDataset with bowtie via Cannoli.
+     * Align the paired-end reads in this FragmentDataset with Bowtie via Cannoli.
      *
      * @param args Bowtie function arguments.
      * @return AlignmentRecordDataset.
@@ -107,7 +107,7 @@ object Cannoli {
     }
 
     /**
-     * Align the reads in this FragmentDataset with bowtie2 via Cannoli.
+     * Align the paired-end reads in this FragmentDataset with Bowtie 2 via Cannoli.
      *
      * @param args Bowtie2 function arguments.
      * @return AlignmentRecordDataset.
@@ -117,7 +117,7 @@ object Cannoli {
     }
 
     /**
-     * Align the reads in this FragmentDataset with bwa via Cannoli.
+     * Align the paired-end reads in this FragmentDataset with BWA via Cannoli.
      *
      * @param args Bwa function arguments.
      * @return AlignmentRecordDataset.
@@ -127,7 +127,7 @@ object Cannoli {
     }
 
     /**
-     * Align the reads in this FragmentDataset with GEM-Mapper via Cannoli.
+     * Align the paired-end reads in this FragmentDataset with GEM-Mapper via Cannoli.
      *
      * @param args GEM-Mapper function arguments.
      * @return AlignmentRecordDataset.
@@ -137,7 +137,7 @@ object Cannoli {
     }
 
     /**
-     * Align the reads in this FragmentDataset with Magic-BLAST via Cannoli.
+     * Align the paired-end reads in this FragmentDataset with Magic-BLAST via Cannoli.
      *
      * @param args Magic-BLAST function arguments.
      * @return AlignmentRecordDataset.
@@ -147,7 +147,7 @@ object Cannoli {
     }
 
     /**
-     * Align the reads in this FragmentDataset with minimap2 via Cannoli.
+     * Align the paired-end reads in this FragmentDataset with Minimap2 via Cannoli.
      *
      * @param args Minimap2 function arguments.
      * @return AlignmentRecordDataset.
@@ -157,7 +157,7 @@ object Cannoli {
     }
 
     /**
-     * Align the reads in this FragmentDataset with STAR via Cannoli.
+     * Align the paired-end reads in this FragmentDataset with STAR via Cannoli.
      *
      * @param args STAR function arguments.
      * @return AlignmentRecordDataset.
@@ -171,9 +171,9 @@ object Cannoli {
 
     /**
      * Align the unaligned single-end reads in this ReadDataset
-     * with bowtie2 via Cannoli.
+     * with Bowtie 2 via Cannoli.
      *
-     * @param args Bowtie2 function arguments.
+     * @param args Bowtie 2 function arguments.
      * @return AlignmentRecordDataset.
      */
     def alignWithBowtie2(args: SingleEndBowtie2Args): AlignmentRecordDataset = {

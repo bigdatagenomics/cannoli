@@ -32,7 +32,7 @@ import org.kohsuke.args4j.{ Argument, Option => Args4jOption }
 
 object BcftoolsMpileup extends BDGCommandCompanion {
   val commandName = "bcftoolsMpileup"
-  val commandDescription = "ADAM Pipe API wrapper for bcftools mpileup."
+  val commandDescription = "Call variants from an alignment dataset with bcftools mpileup."
 
   def apply(cmdLine: Array[String]) = {
     new BcftoolsMpileup(Args4j[BcftoolsMpileupArgs](cmdLine))

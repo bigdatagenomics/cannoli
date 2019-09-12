@@ -32,7 +32,7 @@ import org.kohsuke.args4j.{ Argument, Option => Args4jOption }
 
 object Bwa extends BDGCommandCompanion {
   val commandName = "bwa"
-  val commandDescription = "ADAM Pipe API wrapper for BWA."
+  val commandDescription = "Align paired-end reads in a fragment dataset with BWA."
 
   def apply(cmdLine: Array[String]) = {
     new Bwa(Args4j[BwaArgs](cmdLine))
@@ -43,10 +43,10 @@ object Bwa extends BDGCommandCompanion {
  * Bwa command line arguments.
  */
 class BwaArgs extends BwaFnArgs with ADAMSaveAnyArgs with ParquetArgs {
-  @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe from, in interleaved FASTQ format.", index = 0)
+  @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe fragments from (e.g. interleaved FASTQ format, .ifq) If extension is not detected, Parquet is assumed.", index = 0)
   var inputPath: String = null
 
-  @Argument(required = true, metaVar = "OUTPUT", usage = "Location to pipe to.", index = 1)
+  @Argument(required = true, metaVar = "OUTPUT", usage = "Location to pipe alignments to (e.g. .bam, .cram, .sam). If extension is not detected, Parquet is assumed.", index = 1)
   var outputPath: String = null
 
   @Args4jOption(required = false, name = "-single", usage = "Saves OUTPUT as single file. Exclusive of -fragments.")

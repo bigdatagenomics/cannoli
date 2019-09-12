@@ -32,7 +32,7 @@ import org.kohsuke.args4j.{ Argument, Option => Args4jOption }
 
 object VtNormalize extends BDGCommandCompanion {
   val commandName = "vtNormalize"
-  val commandDescription = "ADAM Pipe API wrapper for vt normalize."
+  val commandDescription = "Normalize variant contexts with vt normalize."
 
   def apply(cmdLine: Array[String]) = {
     new VtNormalize(Args4j[VtNormalizeArgs](cmdLine))

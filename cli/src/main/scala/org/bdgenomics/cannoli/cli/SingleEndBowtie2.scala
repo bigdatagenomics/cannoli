@@ -31,7 +31,7 @@ import org.kohsuke.args4j.{ Argument, Option => Args4jOption }
 
 object SingleEndBowtie2 extends BDGCommandCompanion {
   val commandName = "singleEndBowtie2"
-  val commandDescription = "ADAM Pipe API wrapper for Bowtie 2 for single-end reads."
+  val commandDescription = "Align unaligned single-end reads in an alignment dataset with Bowtie 2."
 
   def apply(cmdLine: Array[String]) = {
     new SingleEndBowtie2(Args4j[SingleEndBowtie2Args](cmdLine))

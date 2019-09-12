@@ -28,7 +28,7 @@ import org.kohsuke.args4j.{ Argument, Option => Args4jOption }
 
 object Gem extends BDGCommandCompanion {
   val commandName = "gem"
-  val commandDescription = "ADAM Pipe API wrapper for GEM-Mapper."
+  val commandDescription = "Align paired-end reads in a fragment dataset with GEM-Mapper."
 
   def apply(cmdLine: Array[String]) = {
     new Gem(Args4j[GemArgs](cmdLine))

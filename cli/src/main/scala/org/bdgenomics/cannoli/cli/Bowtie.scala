@@ -28,7 +28,7 @@ import org.kohsuke.args4j.{ Argument, Option => Args4jOption }
 
 object Bowtie extends BDGCommandCompanion {
   val commandName = "bowtie"
-  val commandDescription = "ADAM Pipe API wrapper for Bowtie."
+  val commandDescription = "Align paired-end reads in a fragment dataset with Bowtie."
 
   def apply(cmdLine: Array[String]) = {
     new Bowtie(Args4j[BowtieArgs](cmdLine))
