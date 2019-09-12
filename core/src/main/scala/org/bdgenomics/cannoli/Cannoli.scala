@@ -21,6 +21,7 @@ import htsjdk.samtools.ValidationStringency
 import org.bdgenomics.adam.rdd.feature.FeatureDataset
 import org.bdgenomics.adam.rdd.fragment.FragmentDataset
 import org.bdgenomics.adam.rdd.read.{ AlignmentRecordDataset, ReadDataset }
+import org.bdgenomics.adam.rdd.sequence.SequenceDataset
 import org.bdgenomics.adam.rdd.variant.VariantContextDataset
 
 /**
@@ -168,6 +169,20 @@ object Cannoli {
     def alignWithBowtie2(args: SingleEndBowtie2Args): AlignmentRecordDataset = {
       val alignments = reads.toAlignments
       new SingleEndBowtie2(args, alignments.rdd.context).apply(alignments)
+    }
+  }
+
+  implicit class CannoliSequenceDataset(sequences: SequenceDataset) {
+
+    /**
+     * Align the DNA sequences in this SequenceDataset
+     * with blastn via Cannoli.
+     *
+     * @param args Blastn function arguments.
+     * @return AlignmentRecordDataset.
+     */
+    def alignWithBlastn(args: BlastnArgs): AlignmentRecordDataset = {
+      new Blastn(args, sequences.rdd.context).apply(sequences)
     }
   }
 
