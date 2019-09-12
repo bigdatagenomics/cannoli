@@ -28,7 +28,7 @@ import org.kohsuke.args4j.{ Argument, Option => Args4jOption }
 
 object Minimap2 extends BDGCommandCompanion {
   val commandName = "minimap2"
-  val commandDescription = "ADAM Pipe API wrapper for Minimap2."
+  val commandDescription = "Align paired-end reads in a fragment dataset with Minimap2."
 
   def apply(cmdLine: Array[String]) = {
     new Minimap2(Args4j[Minimap2Args](cmdLine))

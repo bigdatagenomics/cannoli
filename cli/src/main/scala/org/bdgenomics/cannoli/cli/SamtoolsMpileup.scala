@@ -32,7 +32,7 @@ import org.kohsuke.args4j.{ Argument, Option => Args4jOption }
 
 object SamtoolsMpileup extends BDGCommandCompanion {
   val commandName = "samtoolsMpileup"
-  val commandDescription = "ADAM Pipe API wrapper for samtools mpileup."
+  val commandDescription = "Call variants from an alignment dataset with samtools mpileup."
 
   def apply(cmdLine: Array[String]) = {
     new SamtoolsMpileup(Args4j[SamtoolsMpileupArgs](cmdLine))

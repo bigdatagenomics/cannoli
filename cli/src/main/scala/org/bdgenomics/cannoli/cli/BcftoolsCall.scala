@@ -32,7 +32,7 @@ import org.kohsuke.args4j.{ Argument, Option => Args4jOption }
 
 object BcftoolsCall extends BDGCommandCompanion {
   val commandName = "bcftoolsCall"
-  val commandDescription = "ADAM Pipe API wrapper for bcftools call."
+  val commandDescription = "Call variant contexts with bcftools call."
 
   def apply(cmdLine: Array[String]) = {
     new BcftoolsCall(Args4j[BcftoolsCallArgs](cmdLine))

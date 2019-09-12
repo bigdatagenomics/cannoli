@@ -29,7 +29,7 @@ import org.kohsuke.args4j.{ Argument, Option => Args4jOption }
 
 object Vep extends BDGCommandCompanion {
   val commandName = "vep"
-  val commandDescription = "ADAM Pipe API wrapper for Ensembl VEP."
+  val commandDescription = "Annotate variant contexts with Ensembl VEP."
 
   def apply(cmdLine: Array[String]) = {
     new Vep(Args4j[VepArgs](cmdLine))

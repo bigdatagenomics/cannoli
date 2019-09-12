@@ -28,7 +28,7 @@ import org.kohsuke.args4j.{ Argument, Option => Args4jOption }
 
 object MagicBlast extends BDGCommandCompanion {
   val commandName = "magicBlast"
-  val commandDescription = "ADAM Pipe API wrapper for Magic-BLAST."
+  val commandDescription = "Align paired-end reads in a fragment dataset with Magic-BLAST."
 
   def apply(cmdLine: Array[String]) = {
     new MagicBlast(Args4j[MagicBlastArgs](cmdLine))

@@ -28,7 +28,7 @@ import org.kohsuke.args4j.{ Argument, Option => Args4jOption }
 
 object Star extends BDGCommandCompanion {
   val commandName = "star"
-  val commandDescription = "ADAM Pipe API wrapper for STAR."
+  val commandDescription = "Align paired-end reads in a fragment dataset with STAR."
 
   def apply(cmdLine: Array[String]) = {
     new Star(Args4j[StarArgs](cmdLine))

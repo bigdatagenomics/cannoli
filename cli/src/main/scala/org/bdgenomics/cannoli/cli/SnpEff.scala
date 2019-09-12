@@ -29,7 +29,7 @@ import org.kohsuke.args4j.{ Argument, Option => Args4jOption }
 
 object SnpEff extends BDGCommandCompanion {
   val commandName = "snpEff"
-  val commandDescription = "ADAM Pipe API wrapper for SnpEff."
+  val commandDescription = "Annotate variant contexts with SnpEff."
 
   def apply(cmdLine: Array[String]) = {
     new SnpEff(Args4j[SnpEffArgs](cmdLine))

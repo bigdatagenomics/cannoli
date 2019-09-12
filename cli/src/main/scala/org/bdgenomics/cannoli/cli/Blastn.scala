@@ -28,7 +28,7 @@ import org.kohsuke.args4j.{ Argument, Option => Args4jOption }
 
 object Blastn extends BDGCommandCompanion {
   val commandName = "blastn"
-  val commandDescription = "ADAM Pipe API wrapper for blastn."
+  val commandDescription = "Align DNA sequences in a sequence dataset with blastn."
 
   def apply(cmdLine: Array[String]) = {
     new Blastn(Args4j[BlastnArgs](cmdLine))

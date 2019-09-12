@@ -31,7 +31,7 @@ import org.kohsuke.args4j.{ Argument, Option => Args4jOption }
 
 object BedtoolsIntersect extends BDGCommandCompanion {
   val commandName = "bedtoolsIntersect"
-  val commandDescription = "ADAM Pipe API wrapper for Bedtools intersect."
+  val commandDescription = "Intersect the features in a feature dataset with Bedtools intersect."
 
   def apply(cmdLine: Array[String]) = {
     new BedtoolsIntersect(Args4j[BedtoolsIntersectArgs](cmdLine))

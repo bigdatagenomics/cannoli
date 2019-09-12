@@ -29,7 +29,7 @@ import org.kohsuke.args4j.{ Argument, Option => Args4jOption }
 
 object Freebayes extends BDGCommandCompanion {
   val commandName = "freebayes"
-  val commandDescription = "ADAM Pipe API wrapper for Freebayes."
+  val commandDescription = "Call variants from an alignment dataset with Freebayes."
 
   def apply(cmdLine: Array[String]) = {
     new Freebayes(Args4j[FreebayesArgs](cmdLine))
