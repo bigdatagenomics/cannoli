@@ -39,6 +39,7 @@ object Cannoli {
     Bwa,
     Freebayes,
     Gem,
+    MagicBlast,
     Minimap2,
     SamtoolsMpileup,
     SnpEff,

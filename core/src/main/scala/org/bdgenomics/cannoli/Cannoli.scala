@@ -137,6 +137,16 @@ object Cannoli {
     }
 
     /**
+     * Align the reads in this FragmentDataset with Magic-BLAST via Cannoli.
+     *
+     * @param args Magic-BLAST function arguments.
+     * @return AlignmentRecordDataset.
+     */
+    def alignWithMagicBlast(args: MagicBlastArgs): AlignmentRecordDataset = {
+      new MagicBlast(args, fragments.rdd.context).apply(fragments)
+    }
+
+    /**
      * Align the reads in this FragmentDataset with minimap2 via Cannoli.
      *
      * @param args Minimap2 function arguments.
