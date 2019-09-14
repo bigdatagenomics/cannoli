@@ -32,14 +32,16 @@ $ conda install cannoli
 Cannoli is available in Homebrew via Brewsci/bio, https://github.com/brewsci/homebrew-bio
 
 ```bash
-$ brew install brewsci/bio/dsh-bio
+$ brew install brewsci/bio/cannoli
 ```
 
 Cannoli is available in Docker via BioContainers, https://biocontainers.pro
 
 ```bash
-$ docker pull quay.io/biocontainers/cannoli
+$ docker pull quay.io/biocontainers/cannoli:{tag}
 ```
+
+Find `{tag}` on the tag search page, https://quay.io/repository/biocontainers/cannoli?tab=tags
 
 
 ## Using Cannoli interactively from the shell
