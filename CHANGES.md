@@ -1,5 +1,40 @@
 # Cannoli Changelog #
 
+### Version 0.7.0 ###
+
+**Closed issues:**
+
+ - Bump ADAM dependency version to 0.29.0 [\#198](https://github.com/bigdatagenomics/cannoli/issues/198)
+ - Maven javadoc artifacts are missing scaladoc [\#194](https://github.com/bigdatagenomics/cannoli/issues/194)
+ - Note dataset type in CLI command docs [\#193](https://github.com/bigdatagenomics/cannoli/issues/193)
+ - Add blastn for aligning sequences [\#189](https://github.com/bigdatagenomics/cannoli/issues/189)
+ - Support VariantContext as Parquet [\#183](https://github.com/bigdatagenomics/cannoli/issues/183)
+ - Add bcftools call command [\#182](https://github.com/bigdatagenomics/cannoli/issues/182)
+ - Cannoli fails on missing Bowtie2 index file unnecessarily [\#177](https://github.com/bigdatagenomics/cannoli/issues/177)
+ - Read issue - Parquet/Avro schema mismatch [\#176](https://github.com/bigdatagenomics/cannoli/issues/176)
+ - Cannoli Freebayes [\#162](https://github.com/bigdatagenomics/cannoli/issues/162)
+ - How to use samtool commands  [\#157](https://github.com/bigdatagenomics/cannoli/issues/157)
+ - BWA Fails with Output directory already exists for more than 1 executor [\#137](https://github.com/bigdatagenomics/cannoli/issues/137)
+ - Add STAR aligner [\#135](https://github.com/bigdatagenomics/cannoli/issues/135)
+
+**Merged and closed pull requests:**
+
+ - [CANNOLI-198] Bump ADAM dependency version to 0.29.0 [\#199](https://github.com/bigdatagenomics/cannoli/pull/199) ([heuermh](https://github.com/heuermh))
+ - Add note about tag search for BioContainers Docker install doc [\#197](https://github.com/bigdatagenomics/cannoli/pull/197) ([heuermh](https://github.com/heuermh))
+ - [CANNOLI-194] Add scaladoc to Maven javadoc artifacts [\#196](https://github.com/bigdatagenomics/cannoli/pull/196) ([heuermh](https://github.com/heuermh))
+ - [CANNOLI-193] Note dataset type in CLI command docs. [\#195](https://github.com/bigdatagenomics/cannoli/pull/195) ([heuermh](https://github.com/heuermh))
+ - [CANNOLI-191] Add Magic-BLAST for aligning RNA-seq reads [\#192](https://github.com/bigdatagenomics/cannoli/pull/192) ([heuermh](https://github.com/heuermh))
+ - [CANNOLI-189] Add blastn for aligning sequences [\#190](https://github.com/bigdatagenomics/cannoli/pull/190) ([heuermh](https://github.com/heuermh))
+ - Bump Docker image for bcftools. [\#188](https://github.com/bigdatagenomics/cannoli/pull/188) ([heuermh](https://github.com/heuermh))
+ - [CANNOLI-186] Adding single-end read bowtie2 functions [\#187](https://github.com/bigdatagenomics/cannoli/pull/187) ([heuermh](https://github.com/heuermh))
+ - [CANNOLI-183] Support VariantContext as Parquet in cli package. [\#185](https://github.com/bigdatagenomics/cannoli/pull/185) ([heuermh](https://github.com/heuermh))
+ - [CANNOLI-182] Add bcftools call command. [\#184](https://github.com/bigdatagenomics/cannoli/pull/184) ([heuermh](https://github.com/heuermh))
+ - [CANNOLI-177] Fail fast if index basename not found [\#181](https://github.com/bigdatagenomics/cannoli/pull/181) ([heuermh](https://github.com/heuermh))
+ - Remove usage of deprecated o.b.utils.misc.Logging [\#180](https://github.com/bigdatagenomics/cannoli/pull/180) ([heuermh](https://github.com/heuermh))
+ - Bump Docker image for freebayes. [\#179](https://github.com/bigdatagenomics/cannoli/pull/179) ([heuermh](https://github.com/heuermh))
+ - [CANNOLI-135] Adding STAR for alignment. [\#178](https://github.com/bigdatagenomics/cannoli/pull/178) ([heuermh](https://github.com/heuermh))
+
+
 ### Version 0.6.0 ###
 
 **Closed issues:**
