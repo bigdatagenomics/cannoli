@@ -29,9 +29,9 @@ import org.kohsuke.args4j.{ Option => Args4jOption }
 import scala.collection.JavaConversions._
 
 /**
- * STAR-Mapper function arguments.
+ * Single-end read STAR-Mapper function arguments.
  */
-class StarArgs extends Args4jBase {
+class SingleEndStarArgs extends Args4jBase {
   @Args4jOption(required = false, name = "-executable", usage = "Path to the STAR-Mapper executable. Defaults to STAR.")
   var executable: String = "STAR"
 
@@ -61,17 +61,17 @@ class StarArgs extends Args4jBase {
 }
 
 /**
- * STAR-Mapper wrapper as a function FragmentDataset &rarr; AlignmentRecordDataset,
+ * Single-end read STAR-Mapper wrapper as a function AlignmentRecordDataset &rarr; AlignmentRecordDataset,
  * for use in cannoli-shell or notebooks.
  *
  * @param args STAR-Mapper function arguments.
  * @param sc Spark context.
  */
-class Star(
-    val args: StarArgs,
-    sc: SparkContext) extends CannoliFn[FragmentDataset, AlignmentRecordDataset](sc) {
+class SingleEndStar(
+    val args: SingleEndStarArgs,
+    sc: SparkContext) extends CannoliFn[AlignmentRecordDataset, AlignmentRecordDataset](sc) {
 
-  override def apply(fragments: FragmentDataset): AlignmentRecordDataset = {
+  override def apply(reads: AlignmentRecordDataset): AlignmentRecordDataset = {
 
     val builder = CommandBuilders.create(args.useDocker, args.useSingularity)
       .setExecutable(args.executable)
@@ -81,7 +81,7 @@ class Star(
       .add("/dev/stdin")
       .add("--readFilesType")
       .add("SAM")
-      .add("PE")
+      .add("SE")
       .add("--outStd")
       .add("BAM_Unsorted")
       .add("--outSAMtype")
@@ -111,13 +111,12 @@ class Star(
     }
 
     info("Piping %s to STAR-Mapper with command: %s files: %s".format(
-      fragments, builder.build(), builder.getFiles()))
+      reads, builder.build(), builder.getFiles()))
 
     implicit val tFormatter = SAMInFormatter
     implicit val uFormatter = new AnySAMOutFormatter
 
-    fragments
-      .toAlignments
+    reads
       .pipe[AlignmentRecord, AlignmentRecordProduct, AlignmentRecordDataset, SAMInFormatter](
         cmd = builder.build(),
         files = builder.getFiles()

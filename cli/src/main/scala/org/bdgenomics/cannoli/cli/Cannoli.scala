@@ -44,6 +44,7 @@ object Cannoli {
     SamtoolsMpileup,
     SnpEff,
     Star,
+    SingleEndStar,
     Vep,
     VtNormalize)),
     CommandGroup("CANNOLI TOOLS", List(InterleaveFastq,

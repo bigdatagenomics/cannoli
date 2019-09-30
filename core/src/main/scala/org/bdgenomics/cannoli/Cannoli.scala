@@ -42,6 +42,17 @@ object Cannoli {
     }
 
     /**
+     * Align the unaligned single-end reads in this AlignmentRecordDataset
+     * with STAR-Mapper via Cannoli.
+     *
+     * @param args STAR-Mapper function arguments.
+     * @return AlignmentRecordDataset.
+     */
+    def alignWithStar(args: SingleEndStarArgs): AlignmentRecordDataset = {
+      new SingleEndStar(args, alignments.rdd.context).apply(alignments)
+    }
+
+    /**
      * Call variants from the alignments in this AlignmentRecordDataset with Freebayes via Cannoli.
      *
      * @param args Freebayes function arguments.
@@ -179,6 +190,18 @@ object Cannoli {
     def alignWithBowtie2(args: SingleEndBowtie2Args): AlignmentRecordDataset = {
       val alignments = reads.toAlignments
       new SingleEndBowtie2(args, alignments.rdd.context).apply(alignments)
+    }
+
+    /**
+     * Align the unaligned single-end reads in this ReadDataset
+     * with STAR-Mapper via Cannoli.
+     *
+     * @param args STAR-Mapper function arguments.
+     * @return AlignmentRecordDataset.
+     */
+    def alignWithStar(args: SingleEndStarArgs): AlignmentRecordDataset = {
+      val alignments = reads.toAlignments
+      new SingleEndStar(args, alignments.rdd.context).apply(alignments)
     }
   }
 

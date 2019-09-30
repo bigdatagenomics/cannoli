@@ -22,24 +22,27 @@ import htsjdk.samtools.ValidationStringency
 import org.apache.spark.SparkContext
 import org.bdgenomics.adam.rdd.ADAMContext._
 import org.bdgenomics.adam.rdd.ADAMSaveAnyArgs
-import org.bdgenomics.cannoli.{ Star => StarFn, StarArgs => StarFnArgs }
+import org.bdgenomics.cannoli.{
+  SingleEndStar => SingleEndStarFn,
+  SingleEndStarArgs => SingleEndStarFnArgs
+}
 import org.bdgenomics.utils.cli._
 import org.kohsuke.args4j.{ Argument, Option => Args4jOption }
 
-object Star extends BDGCommandCompanion {
-  val commandName = "star"
-  val commandDescription = "Align paired-end reads in a fragment dataset with STAR-Mapper."
+object SingleEndStar extends BDGCommandCompanion {
+  val commandName = "singleEndStar"
+  val commandDescription = "Align unaligned single-end reads in an alignment dataset with STAR-Mapper."
 
   def apply(cmdLine: Array[String]) = {
-    new Star(Args4j[StarArgs](cmdLine))
+    new SingleEndStar(Args4j[SingleEndStarArgs](cmdLine))
   }
 }
 
 /**
- * STAR-Mapper command line arguments.
+ * Single-end read STAR-Mapper command line arguments.
  */
-class StarArgs extends StarFnArgs with ADAMSaveAnyArgs with ParquetArgs {
-  @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe fragments from (e.g. interleaved FASTQ format, .ifq). If extension is not detected, Parquet is assumed.", index = 0)
+class SingleEndStarArgs extends SingleEndStarFnArgs with ADAMSaveAnyArgs with ParquetArgs {
+  @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe single-end reads from (e.g. FASTQ format, .fq). If extension is not detected, Parquet is assumed.", index = 0)
   var inputPath: String = null
 
   @Argument(required = true, metaVar = "OUTPUT", usage = "Location to pipe alignments to (e.g. .bam, .cram, .sam). If extension is not detected, Parquet is assumed.", index = 1)
@@ -62,15 +65,15 @@ class StarArgs extends StarFnArgs with ADAMSaveAnyArgs with ParquetArgs {
 }
 
 /**
- * STAR-Mapper command line wrapper.
+ * Single-end read STAR-Mapper command line wrapper.
  */
-class Star(protected val args: StarArgs) extends BDGSparkCommand[StarArgs] with Logging {
-  val companion = Star
+class SingleEndStar(protected val args: SingleEndStarArgs) extends BDGSparkCommand[SingleEndStarArgs] with Logging {
+  val companion = SingleEndStar
   val stringency: ValidationStringency = ValidationStringency.valueOf(args.stringency)
 
   def run(sc: SparkContext) {
-    val fragments = sc.loadFragments(args.inputPath, stringency = stringency)
-    val alignments = new StarFn(args, sc).apply(fragments)
+    val reads = sc.loadAlignments(args.inputPath, stringency = stringency)
+    val alignments = new SingleEndStarFn(args, sc).apply(reads)
     alignments.save(args)
   }
 }
