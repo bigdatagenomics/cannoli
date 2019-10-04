@@ -42,6 +42,7 @@ object Cannoli {
     Gem,
     MagicBlast,
     Minimap2,
+    SambambaMarkdup,
     SamtoolsMpileup,
     Snap,
     SnpEff,

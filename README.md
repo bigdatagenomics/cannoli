@@ -124,6 +124,7 @@ CANNOLI
                  gem : Align paired-end reads in a fragment dataset with GEM-Mapper.
           magicBlast : Align paired-end reads in a fragment dataset with Magic-BLAST.
             minimap2 : Align paired-end reads in a fragment dataset with Minimap2.
+     sambambaMarkdup : Mark duplicate alignments in an alignment dataset with Sambamba markdup.
      samtoolsMpileup : Call variants from an alignment dataset with samtools mpileup.
                 snap : Align paired-end reads in a fragment dataset with SNAP.
               snpEff : Annotate variant contexts with SnpEff.
