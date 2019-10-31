@@ -35,8 +35,8 @@ class BowtieArgs extends Args4jBase {
   @Args4jOption(required = false, name = "-executable", usage = "Path to the Bowtie executable. Defaults to bowtie.")
   var executable: String = "bowtie"
 
-  @Args4jOption(required = false, name = "-image", usage = "Container image to use. Defaults to quay.io/biocontainers/bowtie:1.2.2--py27h2d50403_1.")
-  var image: String = "quay.io/biocontainers/bowtie:1.2.2--py27h2d50403_1"
+  @Args4jOption(required = false, name = "-image", usage = "Container image to use. Defaults to quay.io/biocontainers/bowtie:1.2.3--py37hc9558a2_0.")
+  var image: String = "quay.io/biocontainers/bowtie:1.2.3--py37hc9558a2_0"
 
   @Args4jOption(required = false, name = "-sudo", usage = "Run via sudo.")
   var sudo: Boolean = false
