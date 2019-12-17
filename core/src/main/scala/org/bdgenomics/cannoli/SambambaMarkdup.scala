@@ -19,10 +19,10 @@ package org.bdgenomics.cannoli
 
 import org.apache.spark.SparkContext
 import org.bdgenomics.adam.rdd.ADAMContext._
-import org.bdgenomics.adam.rdd.read.{ AlignmentRecordDataset, BAMInFormatter, AnySAMOutFormatter }
-import org.bdgenomics.adam.sql.{ AlignmentRecord => AlignmentRecordProduct }
+import org.bdgenomics.adam.rdd.read.{ AlignmentDataset, BAMInFormatter, AnySAMOutFormatter }
+import org.bdgenomics.adam.sql.{ Alignment => AlignmentProduct }
 import org.bdgenomics.cannoli.builder.CommandBuilders
-import org.bdgenomics.formats.avro.AlignmentRecord
+import org.bdgenomics.formats.avro.Alignment
 import org.bdgenomics.utils.cli._
 import org.kohsuke.args4j.{ Option => Args4jOption }
 import scala.collection.JavaConversions._
@@ -34,8 +34,8 @@ class SambambaMarkdupArgs extends Args4jBase {
   @Args4jOption(required = false, name = "-executable", usage = "Path to the Sambamba executable. Defaults to sambamba.")
   var executable: String = "sambamba"
 
-  @Args4jOption(required = false, name = "-image", usage = "Container image to use. Defaults to quay.io/biocontainers/sambamba:0.7.0--h89e63da_1.")
-  var image: String = "quay.io/biocontainers/sambamba:0.7.0--h89e63da_1"
+  @Args4jOption(required = false, name = "-image", usage = "Container image to use. Defaults to quay.io/biocontainers/sambamba:0.7.1--h148d290_0.")
+  var image: String = "quay.io/biocontainers/sambamba:0.7.1--h148d290_0"
 
   @Args4jOption(required = false, name = "-remove_duplicates", usage = "Remove duplicates instead of marking them.")
   var removeDuplicates: Boolean = false
@@ -51,7 +51,7 @@ class SambambaMarkdupArgs extends Args4jBase {
 }
 
 /**
- * Sambamba markdup wrapper as a function AlignmentRecordDataset &rarr; AlignmentRecordDataset,
+ * Sambamba markdup wrapper as a function AlignmentDataset &rarr; AlignmentDataset,
  * for use in cannoli-shell or notebooks.
  *
  * @param args Sambamba markdup function arguments.
@@ -59,9 +59,9 @@ class SambambaMarkdupArgs extends Args4jBase {
  */
 class SambambaMarkdup(
     val args: SambambaMarkdupArgs,
-    sc: SparkContext) extends CannoliFn[AlignmentRecordDataset, AlignmentRecordDataset](sc) {
+    sc: SparkContext) extends CannoliFn[AlignmentDataset, AlignmentDataset](sc) {
 
-  override def apply(alignments: AlignmentRecordDataset): AlignmentRecordDataset = {
+  override def apply(alignments: AlignmentDataset): AlignmentDataset = {
 
     val builder = CommandBuilders.create(args.useDocker, args.useSingularity)
       .setExecutable(args.executable)
@@ -85,7 +85,7 @@ class SambambaMarkdup(
     implicit val tFormatter = BAMInFormatter
     implicit val uFormatter = new AnySAMOutFormatter
 
-    alignments.pipe[AlignmentRecord, AlignmentRecordProduct, AlignmentRecordDataset, BAMInFormatter](
+    alignments.pipe[Alignment, AlignmentProduct, AlignmentDataset, BAMInFormatter](
       cmd = builder.build(),
       files = builder.getFiles()
     )

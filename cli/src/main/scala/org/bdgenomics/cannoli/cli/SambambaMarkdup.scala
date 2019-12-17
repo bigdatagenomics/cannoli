@@ -43,10 +43,10 @@ object SambambaMarkdup extends BDGCommandCompanion {
  * Sambamba markdup command line arguments.
  */
 class SambambaMarkdupArgs extends SambambaMarkdupFnArgs with ADAMSaveAnyArgs with ParquetArgs {
-  @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe alignment records from (e.g. .bam, .cram, .sam). If extension is not detected, Parquet is assumed.", index = 0)
+  @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe alignments from (e.g. .bam, .cram, .sam). If extension is not detected, Parquet is assumed.", index = 0)
   var inputPath: String = null
 
-  @Argument(required = true, metaVar = "OUTPUT", usage = "Location to pipe alignment records to (e.g. .bam, .cram, .sam). If extension is not detected, Parquet is assumed.", index = 1)
+  @Argument(required = true, metaVar = "OUTPUT", usage = "Location to pipe alignments to (e.g. .bam, .cram, .sam). If extension is not detected, Parquet is assumed.", index = 1)
   var outputPath: String = null
 
   @Args4jOption(required = false, name = "-single", usage = "Saves OUTPUT as single file.")

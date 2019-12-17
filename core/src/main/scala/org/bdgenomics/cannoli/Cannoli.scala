@@ -92,12 +92,12 @@ object Cannoli {
     }
 
     /**
-     * Mark duplicate alignments in this AlignmentRecordDataset with sambamba markdup via Cannoli.
+     * Mark duplicate alignments in this AlignmentDataset with sambamba markdup via Cannoli.
      *
      * @param args Sambamba markdup function argments.
-     * @return AlignmentRecordDataset.
+     * @return AlignmentDataset.
      */
-    def markDuplicatesWithSambambaMarkdup(args: SambambaMarkdupArgs): AlignmentRecordDataset = {
+    def markDuplicatesWithSambambaMarkdup(args: SambambaMarkdupArgs): AlignmentDataset = {
       new SambambaMarkdup(args, alignments.rdd.context).apply(alignments)
     }
   }
