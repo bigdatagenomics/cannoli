@@ -19,16 +19,16 @@ package org.bdgenomics.cannoli.util
 
 import org.apache.spark.rdd.RDD
 import org.bdgenomics.adam.rdd.fragment.FragmentDataset
-import org.bdgenomics.adam.rdd.read.AlignmentRecordDataset
-import org.bdgenomics.formats.avro.{ AlignmentRecord, Fragment }
+import org.bdgenomics.adam.rdd.read.AlignmentDataset
+import org.bdgenomics.formats.avro.{ Alignment, Fragment }
 
 private[cannoli] object QuerynameGrouper extends Serializable {
 
-  private[util] def apply(rdd: RDD[AlignmentRecord]): RDD[Fragment] = {
+  private[util] def apply(rdd: RDD[Alignment]): RDD[Fragment] = {
     rdd.mapPartitions(new QuerynameGroupingIterator(_))
   }
 
-  def apply(alignments: AlignmentRecordDataset): FragmentDataset = {
+  def apply(alignments: AlignmentDataset): FragmentDataset = {
     FragmentDataset(apply(alignments.rdd),
       alignments.sequences,
       alignments.readGroups,

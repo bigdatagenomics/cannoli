@@ -17,13 +17,13 @@
  */
 package org.bdgenomics.cannoli.util
 
-import org.bdgenomics.formats.avro.{ AlignmentRecord, Fragment }
+import org.bdgenomics.formats.avro.{ Alignment, Fragment }
 import scala.annotation.tailrec
 import scala.collection.JavaConversions._
 import scala.collection.mutable.ListBuffer
 
 private[util] class QuerynameGroupingIterator(
-    iter: Iterator[AlignmentRecord]) extends Iterator[Fragment] {
+    iter: Iterator[Alignment]) extends Iterator[Fragment] {
 
   private val bufferedIter = iter.buffered
 
@@ -36,7 +36,7 @@ private[util] class QuerynameGroupingIterator(
       throw new IllegalStateException("Next called on empty iterator.")
     }
 
-    val readsInFragment = ListBuffer.empty[AlignmentRecord]
+    val readsInFragment = ListBuffer.empty[Alignment]
     val readName = bufferedIter.head.getReadName
     val optInsertSize = Option(bufferedIter.head.getInsertSize)
       .map(_.toInt)

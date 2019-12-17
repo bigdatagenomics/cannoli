@@ -21,7 +21,7 @@ import htsjdk.samtools.ValidationStringency
 import org.apache.spark.SparkContext
 import org.bdgenomics.adam.models.VariantContext
 import org.bdgenomics.adam.rdd.ADAMContext._
-import org.bdgenomics.adam.rdd.read.{ AlignmentRecordDataset, BAMInFormatter }
+import org.bdgenomics.adam.rdd.read.{ AlignmentDataset, BAMInFormatter }
 import org.bdgenomics.adam.rdd.variant.{ VariantContextDataset, VCFOutFormatter }
 import org.bdgenomics.adam.sql.{ VariantContext => VariantContextProduct }
 import org.bdgenomics.cannoli.builder.CommandBuilders
@@ -59,7 +59,7 @@ class BcftoolsMpileupArgs extends Args4jBase {
 }
 
 /**
- * Bcftools mpileup wrapper as a function AlignmentRecordDataset &rarr; VariantContextDataset,
+ * Bcftools mpileup wrapper as a function AlignmentDataset &rarr; VariantContextDataset,
  * for use in cannoli-shell or notebooks.
  *
  * @param args Bcftools mpileup function arguments.
@@ -69,9 +69,9 @@ class BcftoolsMpileupArgs extends Args4jBase {
 class BcftoolsMpileup(
     val args: BcftoolsMpileupArgs,
     val stringency: ValidationStringency = ValidationStringency.LENIENT,
-    sc: SparkContext) extends CannoliFn[AlignmentRecordDataset, VariantContextDataset](sc) {
+    sc: SparkContext) extends CannoliFn[AlignmentDataset, VariantContextDataset](sc) {
 
-  override def apply(alignments: AlignmentRecordDataset): VariantContextDataset = {
+  override def apply(alignments: AlignmentDataset): VariantContextDataset = {
 
     val builder = CommandBuilders.create(args.useDocker, args.useSingularity)
       .setExecutable(args.executable)

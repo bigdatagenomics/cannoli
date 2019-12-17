@@ -20,10 +20,10 @@ package org.bdgenomics.cannoli
 import org.apache.spark.SparkContext
 import org.bdgenomics.adam.rdd.ADAMContext._
 import org.bdgenomics.adam.rdd.fragment.{ FragmentDataset, InterleavedFASTQInFormatter }
-import org.bdgenomics.adam.rdd.read.{ AlignmentRecordDataset, AnySAMOutFormatter }
-import org.bdgenomics.adam.sql.{ AlignmentRecord => AlignmentRecordProduct }
+import org.bdgenomics.adam.rdd.read.{ AlignmentDataset, AnySAMOutFormatter }
+import org.bdgenomics.adam.sql.{ Alignment => AlignmentProduct }
 import org.bdgenomics.cannoli.builder.CommandBuilders
-import org.bdgenomics.formats.avro.AlignmentRecord
+import org.bdgenomics.formats.avro.Alignment
 import org.bdgenomics.utils.cli._
 import org.kohsuke.args4j.{ Option => Args4jOption }
 import scala.collection.JavaConversions._
@@ -55,7 +55,7 @@ class BowtieArgs extends Args4jBase {
 }
 
 /**
- * Bowtie wrapper as a function FragmentDataset &rarr; AlignmentRecordDataset,
+ * Bowtie wrapper as a function FragmentDataset &rarr; AlignmentDataset,
  * for use in cannoli-shell or notebooks.
  *
  * @param args Bowtie function arguments.
@@ -63,9 +63,9 @@ class BowtieArgs extends Args4jBase {
  */
 class Bowtie(
     val args: BowtieArgs,
-    sc: SparkContext) extends CannoliFn[FragmentDataset, AlignmentRecordDataset](sc) {
+    sc: SparkContext) extends CannoliFn[FragmentDataset, AlignmentDataset](sc) {
 
-  override def apply(fragments: FragmentDataset): AlignmentRecordDataset = {
+  override def apply(fragments: FragmentDataset): AlignmentDataset = {
 
     val builder = CommandBuilders.create(args.useDocker, args.useSingularity)
       .setExecutable(args.executable)
@@ -94,7 +94,7 @@ class Bowtie(
     implicit val tFormatter = InterleavedFASTQInFormatter
     implicit val uFormatter = new AnySAMOutFormatter
 
-    fragments.pipe[AlignmentRecord, AlignmentRecordProduct, AlignmentRecordDataset, InterleavedFASTQInFormatter](
+    fragments.pipe[Alignment, AlignmentProduct, AlignmentDataset, InterleavedFASTQInFormatter](
       cmd = builder.build(),
       files = builder.getFiles()
     )

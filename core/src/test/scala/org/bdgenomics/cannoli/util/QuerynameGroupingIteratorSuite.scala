@@ -17,7 +17,7 @@
  */
 package org.bdgenomics.cannoli.util
 
-import org.bdgenomics.formats.avro.AlignmentRecord
+import org.bdgenomics.formats.avro.Alignment
 import org.scalatest.FunSuite
 import scala.collection.JavaConversions._
 
@@ -33,7 +33,7 @@ class QuerynameGroupingIteratorSuite extends FunSuite {
 
   test("if no paired reads, return fragments of single reads") {
     val iter = new QuerynameGroupingIterator(Iterator("read1", "read2", "read3")
-      .map(readName => AlignmentRecord.newBuilder
+      .map(readName => Alignment.newBuilder
         .setReadName(readName)
         .build))
     val fragments = iter.toSeq
@@ -46,23 +46,23 @@ class QuerynameGroupingIteratorSuite extends FunSuite {
   }
 
   test("return fragments on iterator with paired reads") {
-    val iter = new QuerynameGroupingIterator(Iterator(AlignmentRecord.newBuilder
+    val iter = new QuerynameGroupingIterator(Iterator(Alignment.newBuilder
       .setReadName("read1")
-      .build, AlignmentRecord.newBuilder
+      .build, Alignment.newBuilder
       .setReadName("read2")
       .setReadInFragment(0)
       .setInsertSize(100L)
-      .build, AlignmentRecord.newBuilder
+      .build, Alignment.newBuilder
       .setReadName("read2")
       .setReadInFragment(1)
       .setInsertSize(100L)
-      .build, AlignmentRecord.newBuilder
+      .build, Alignment.newBuilder
       .setReadName("read3")
       .setReadInFragment(0)
-      .build, AlignmentRecord.newBuilder
+      .build, Alignment.newBuilder
       .setReadName("read3")
       .setReadInFragment(1)
-      .build, AlignmentRecord.newBuilder
+      .build, Alignment.newBuilder
       .setReadName("read3")
       .setReadInFragment(2)
       .build))

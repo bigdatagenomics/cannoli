@@ -20,10 +20,10 @@ package org.bdgenomics.cannoli
 import org.apache.spark.SparkContext
 import org.bdgenomics.adam.rdd.ADAMContext._
 import org.bdgenomics.adam.rdd.fragment.FragmentDataset
-import org.bdgenomics.adam.rdd.read.{ AlignmentRecordDataset, AnySAMOutFormatter, SAMInFormatter }
-import org.bdgenomics.adam.sql.{ AlignmentRecord => AlignmentRecordProduct }
+import org.bdgenomics.adam.rdd.read.{ AlignmentDataset, AnySAMOutFormatter, SAMInFormatter }
+import org.bdgenomics.adam.sql.{ Alignment => AlignmentProduct }
 import org.bdgenomics.cannoli.builder.CommandBuilders
-import org.bdgenomics.formats.avro.AlignmentRecord
+import org.bdgenomics.formats.avro.Alignment
 import org.bdgenomics.utils.cli._
 import org.kohsuke.args4j.{ Option => Args4jOption }
 import scala.collection.JavaConversions._
@@ -61,7 +61,7 @@ class StarArgs extends Args4jBase {
 }
 
 /**
- * STAR-Mapper wrapper as a function FragmentDataset &rarr; AlignmentRecordDataset,
+ * STAR-Mapper wrapper as a function FragmentDataset &rarr; AlignmentDataset,
  * for use in cannoli-shell or notebooks.
  *
  * @param args STAR-Mapper function arguments.
@@ -69,9 +69,9 @@ class StarArgs extends Args4jBase {
  */
 class Star(
     val args: StarArgs,
-    sc: SparkContext) extends CannoliFn[FragmentDataset, AlignmentRecordDataset](sc) {
+    sc: SparkContext) extends CannoliFn[FragmentDataset, AlignmentDataset](sc) {
 
-  override def apply(fragments: FragmentDataset): AlignmentRecordDataset = {
+  override def apply(fragments: FragmentDataset): AlignmentDataset = {
 
     val builder = CommandBuilders.create(args.useDocker, args.useSingularity)
       .setExecutable(args.executable)
@@ -118,7 +118,7 @@ class Star(
 
     fragments
       .toAlignments
-      .pipe[AlignmentRecord, AlignmentRecordProduct, AlignmentRecordDataset, SAMInFormatter](
+      .pipe[Alignment, AlignmentProduct, AlignmentDataset, SAMInFormatter](
         cmd = builder.build(),
         files = builder.getFiles()
       )
