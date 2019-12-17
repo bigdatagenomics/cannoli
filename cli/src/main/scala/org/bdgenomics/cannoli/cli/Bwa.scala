@@ -24,7 +24,7 @@ import org.bdgenomics.adam.models.{ ReadGroup, ReadGroupDictionary }
 import org.bdgenomics.adam.rdd.ADAMContext._
 import org.bdgenomics.adam.rdd.ADAMSaveAnyArgs
 import org.bdgenomics.adam.rdd.fragment.FragmentDataset
-import org.bdgenomics.adam.rdd.read.AlignmentRecordDataset
+import org.bdgenomics.adam.rdd.read.AlignmentDataset
 import org.bdgenomics.cannoli.{ Bwa => BwaFn, BwaArgs => BwaFnArgs }
 import org.bdgenomics.cannoli.util.QuerynameGrouper
 import org.bdgenomics.utils.cli._
@@ -99,7 +99,7 @@ class Bwa(protected val args: BwaArgs) extends BDGSparkCommand[BwaArgs] with Log
 
     val sample = args.sample
 
-    val output: AlignmentRecordDataset = new BwaFn(args, sc).apply(input)
+    val output: AlignmentDataset = new BwaFn(args, sc).apply(input)
       .replaceReadGroups(ReadGroupDictionary(Seq(ReadGroup(sample, sample))))
 
     val outputMaybeWithSequences = Option(args.sequenceDictionary).fold(output)(sdPath => {

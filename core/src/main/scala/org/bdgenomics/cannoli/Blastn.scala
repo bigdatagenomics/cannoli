@@ -21,11 +21,11 @@ import java.io.FileNotFoundException
 import htsjdk.samtools.ValidationStringency
 import org.apache.spark.SparkContext
 import org.bdgenomics.adam.rdd.ADAMContext._
-import org.bdgenomics.adam.rdd.read.{ AlignmentRecordDataset, AnySAMOutFormatter }
+import org.bdgenomics.adam.rdd.read.{ AlignmentDataset, AnySAMOutFormatter }
 import org.bdgenomics.adam.rdd.sequence.{ FASTAInFormatter, SequenceDataset }
-import org.bdgenomics.adam.sql.{ AlignmentRecord => AlignmentRecordProduct }
+import org.bdgenomics.adam.sql.{ Alignment => AlignmentProduct }
 import org.bdgenomics.cannoli.builder.CommandBuilders
-import org.bdgenomics.formats.avro.AlignmentRecord
+import org.bdgenomics.formats.avro.Alignment
 import org.bdgenomics.utils.cli._
 import org.kohsuke.args4j.{ Option => Args4jOption }
 import scala.collection.JavaConversions._
@@ -84,7 +84,7 @@ class BlastnArgs extends Args4jBase {
 }
 
 /**
- * Blastn wrapper as a function SequenceDataset &rarr; AlignmentRecordDataset,
+ * Blastn wrapper as a function SequenceDataset &rarr; AlignmentDataset,
  * for use in cannoli-shell or notebooks.
  *
  * @param args Blastn function arguments.
@@ -92,9 +92,9 @@ class BlastnArgs extends Args4jBase {
  */
 class Blastn(
     val args: BlastnArgs,
-    sc: SparkContext) extends CannoliFn[SequenceDataset, AlignmentRecordDataset](sc) {
+    sc: SparkContext) extends CannoliFn[SequenceDataset, AlignmentDataset](sc) {
 
-  override def apply(sequences: SequenceDataset): AlignmentRecordDataset = {
+  override def apply(sequences: SequenceDataset): AlignmentDataset = {
 
     // fail fast if db not found
     try {
@@ -143,7 +143,7 @@ class Blastn(
     implicit val tFormatter = FASTAInFormatter
     implicit val uFormatter = new AnySAMOutFormatter(ValidationStringency.valueOf(args.stringency))
 
-    sequences.pipe[AlignmentRecord, AlignmentRecordProduct, AlignmentRecordDataset, FASTAInFormatter](
+    sequences.pipe[Alignment, AlignmentProduct, AlignmentDataset, FASTAInFormatter](
       cmd = builder.build(),
       files = builder.getFiles()
     )

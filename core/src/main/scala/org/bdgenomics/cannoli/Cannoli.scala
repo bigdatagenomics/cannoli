@@ -20,7 +20,7 @@ package org.bdgenomics.cannoli
 import htsjdk.samtools.ValidationStringency
 import org.bdgenomics.adam.rdd.feature.FeatureDataset
 import org.bdgenomics.adam.rdd.fragment.FragmentDataset
-import org.bdgenomics.adam.rdd.read.{ AlignmentRecordDataset, ReadDataset }
+import org.bdgenomics.adam.rdd.read.{ AlignmentDataset, ReadDataset }
 import org.bdgenomics.adam.rdd.sequence.SequenceDataset
 import org.bdgenomics.adam.rdd.variant.VariantContextDataset
 
@@ -28,32 +28,32 @@ import org.bdgenomics.adam.rdd.variant.VariantContextDataset
  * Implicits on Cannoli function source data sets.
  */
 object Cannoli {
-  implicit class CannoliAlignmentRecordDataset(alignments: AlignmentRecordDataset) {
+  implicit class CannoliAlignmentDataset(alignments: AlignmentDataset) {
 
     /**
-     * Align the unaligned single-end reads in this AlignmentRecordDataset
+     * Align the unaligned single-end reads in this AlignmentDataset
      * with Bowtie 2 via Cannoli.
      *
      * @param args Bowtie 2 function arguments.
-     * @return AlignmentRecordDataset.
+     * @return AlignmentDataset.
      */
-    def alignWithBowtie2(args: SingleEndBowtie2Args): AlignmentRecordDataset = {
+    def alignWithBowtie2(args: SingleEndBowtie2Args): AlignmentDataset = {
       new SingleEndBowtie2(args, alignments.rdd.context).apply(alignments)
     }
 
     /**
-     * Align the unaligned single-end reads in this AlignmentRecordDataset
+     * Align the unaligned single-end reads in this AlignmentDataset
      * with STAR-Mapper via Cannoli.
      *
      * @param args STAR-Mapper function arguments.
-     * @return AlignmentRecordDataset.
+     * @return AlignmentDataset.
      */
-    def alignWithStar(args: SingleEndStarArgs): AlignmentRecordDataset = {
+    def alignWithStar(args: SingleEndStarArgs): AlignmentDataset = {
       new SingleEndStar(args, alignments.rdd.context).apply(alignments)
     }
 
     /**
-     * Call variants from the alignments in this AlignmentRecordDataset with Freebayes via Cannoli.
+     * Call variants from the alignments in this AlignmentDataset with Freebayes via Cannoli.
      *
      * @param args Freebayes function arguments.
      * @param stringency Validation stringency. Defaults to ValidationStringency.LENIENT.
@@ -66,7 +66,7 @@ object Cannoli {
     }
 
     /**
-     * Call variants from the alignments in this AlignmentRecordDataset with bcftools mpileup via Cannoli.
+     * Call variants from the alignments in this AlignmentDataset with bcftools mpileup via Cannoli.
      *
      * @param args Bcftools mpileup function arguments.
      * @param stringency Validation stringency. Defaults to ValidationStringency.LENIENT.
@@ -79,7 +79,7 @@ object Cannoli {
     }
 
     /**
-     * Call variants from the alignments in this AlignmentRecordDataset with samtools mpileup via Cannoli.
+     * Call variants from the alignments in this AlignmentDataset with samtools mpileup via Cannoli.
      *
      * @param args Samtools mpileup function arguments.
      * @param stringency Validation stringency. Defaults to ValidationStringency.LENIENT.
@@ -111,9 +111,9 @@ object Cannoli {
      * Align the paired-end reads in this FragmentDataset with Bowtie via Cannoli.
      *
      * @param args Bowtie function arguments.
-     * @return AlignmentRecordDataset.
+     * @return AlignmentDataset.
      */
-    def alignWithBowtie(args: BowtieArgs): AlignmentRecordDataset = {
+    def alignWithBowtie(args: BowtieArgs): AlignmentDataset = {
       new Bowtie(args, fragments.rdd.context).apply(fragments)
     }
 
@@ -121,9 +121,9 @@ object Cannoli {
      * Align the paired-end reads in this FragmentDataset with Bowtie 2 via Cannoli.
      *
      * @param args Bowtie2 function arguments.
-     * @return AlignmentRecordDataset.
+     * @return AlignmentDataset.
      */
-    def alignWithBowtie2(args: Bowtie2Args): AlignmentRecordDataset = {
+    def alignWithBowtie2(args: Bowtie2Args): AlignmentDataset = {
       new Bowtie2(args, fragments.rdd.context).apply(fragments)
     }
 
@@ -131,9 +131,9 @@ object Cannoli {
      * Align the paired-end reads in this FragmentDataset with BWA via Cannoli.
      *
      * @param args Bwa function arguments.
-     * @return AlignmentRecordDataset.
+     * @return AlignmentDataset.
      */
-    def alignWithBwa(args: BwaArgs): AlignmentRecordDataset = {
+    def alignWithBwa(args: BwaArgs): AlignmentDataset = {
       new Bwa(args, fragments.rdd.context).apply(fragments)
     }
 
@@ -141,9 +141,9 @@ object Cannoli {
      * Align the paired-end reads in this FragmentDataset with GEM-Mapper via Cannoli.
      *
      * @param args GEM-Mapper function arguments.
-     * @return AlignmentRecordDataset.
+     * @return AlignmentDataset.
      */
-    def alignWithGem(args: GemArgs): AlignmentRecordDataset = {
+    def alignWithGem(args: GemArgs): AlignmentDataset = {
       new Gem(args, fragments.rdd.context).apply(fragments)
     }
 
@@ -151,9 +151,9 @@ object Cannoli {
      * Align the paired-end reads in this FragmentDataset with Magic-BLAST via Cannoli.
      *
      * @param args Magic-BLAST function arguments.
-     * @return AlignmentRecordDataset.
+     * @return AlignmentDataset.
      */
-    def alignWithMagicBlast(args: MagicBlastArgs): AlignmentRecordDataset = {
+    def alignWithMagicBlast(args: MagicBlastArgs): AlignmentDataset = {
       new MagicBlast(args, fragments.rdd.context).apply(fragments)
     }
 
@@ -161,9 +161,9 @@ object Cannoli {
      * Align the paired-end reads in this FragmentDataset with Minimap2 via Cannoli.
      *
      * @param args Minimap2 function arguments.
-     * @return AlignmentRecordDataset.
+     * @return AlignmentDataset.
      */
-    def alignWithMinimap2(args: Minimap2Args): AlignmentRecordDataset = {
+    def alignWithMinimap2(args: Minimap2Args): AlignmentDataset = {
       new Minimap2(args, fragments.rdd.context).apply(fragments)
     }
 
@@ -171,9 +171,9 @@ object Cannoli {
      * Align the paired-end reads in this FragmentDataset with STAR via Cannoli.
      *
      * @param args STAR function arguments.
-     * @return AlignmentRecordDataset.
+     * @return AlignmentDataset.
      */
-    def alignWithStar(args: StarArgs): AlignmentRecordDataset = {
+    def alignWithStar(args: StarArgs): AlignmentDataset = {
       new Star(args, fragments.rdd.context).apply(fragments)
     }
   }
@@ -185,9 +185,9 @@ object Cannoli {
      * with Bowtie 2 via Cannoli.
      *
      * @param args Bowtie 2 function arguments.
-     * @return AlignmentRecordDataset.
+     * @return AlignmentDataset.
      */
-    def alignWithBowtie2(args: SingleEndBowtie2Args): AlignmentRecordDataset = {
+    def alignWithBowtie2(args: SingleEndBowtie2Args): AlignmentDataset = {
       val alignments = reads.toAlignments
       new SingleEndBowtie2(args, alignments.rdd.context).apply(alignments)
     }
@@ -197,9 +197,9 @@ object Cannoli {
      * with STAR-Mapper via Cannoli.
      *
      * @param args STAR-Mapper function arguments.
-     * @return AlignmentRecordDataset.
+     * @return AlignmentDataset.
      */
-    def alignWithStar(args: SingleEndStarArgs): AlignmentRecordDataset = {
+    def alignWithStar(args: SingleEndStarArgs): AlignmentDataset = {
       val alignments = reads.toAlignments
       new SingleEndStar(args, alignments.rdd.context).apply(alignments)
     }
@@ -212,9 +212,9 @@ object Cannoli {
      * with blastn via Cannoli.
      *
      * @param args Blastn function arguments.
-     * @return AlignmentRecordDataset.
+     * @return AlignmentDataset.
      */
-    def alignWithBlastn(args: BlastnArgs): AlignmentRecordDataset = {
+    def alignWithBlastn(args: BlastnArgs): AlignmentDataset = {
       new Blastn(args, sequences.rdd.context).apply(sequences)
     }
   }

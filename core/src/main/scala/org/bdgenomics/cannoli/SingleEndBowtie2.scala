@@ -21,13 +21,13 @@ import java.io.FileNotFoundException
 import org.apache.spark.SparkContext
 import org.bdgenomics.adam.rdd.ADAMContext._
 import org.bdgenomics.adam.rdd.read.{
-  AlignmentRecordDataset,
+  AlignmentDataset,
   AnySAMOutFormatter,
   FASTQInFormatter
 }
-import org.bdgenomics.adam.sql.{ AlignmentRecord => AlignmentRecordProduct }
+import org.bdgenomics.adam.sql.{ Alignment => AlignmentProduct }
 import org.bdgenomics.cannoli.builder.CommandBuilders
-import org.bdgenomics.formats.avro.AlignmentRecord
+import org.bdgenomics.formats.avro.Alignment
 import org.bdgenomics.utils.cli._
 import org.kohsuke.args4j.{ Option => Args4jOption }
 import scala.collection.JavaConversions._
@@ -63,7 +63,7 @@ class SingleEndBowtie2Args extends Args4jBase {
 
 /**
  * Single-end read Bowtie 2 wrapper as a function
- * AlignmentRecordDataset &rarr; AlignmentRecordDataset,
+ * AlignmentDataset &rarr; AlignmentDataset,
  * for use in cannoli-shell or notebooks.
  *
  * @param args Bowtie 2 function arguments.
@@ -71,9 +71,9 @@ class SingleEndBowtie2Args extends Args4jBase {
  */
 class SingleEndBowtie2(
     val args: SingleEndBowtie2Args,
-    sc: SparkContext) extends CannoliFn[AlignmentRecordDataset, AlignmentRecordDataset](sc) {
+    sc: SparkContext) extends CannoliFn[AlignmentDataset, AlignmentDataset](sc) {
 
-  override def apply(reads: AlignmentRecordDataset): AlignmentRecordDataset = {
+  override def apply(reads: AlignmentDataset): AlignmentDataset = {
 
     // fail fast if index basename not found
     try {
@@ -114,7 +114,7 @@ class SingleEndBowtie2(
     implicit val tFormatter = FASTQInFormatter
     implicit val uFormatter = new AnySAMOutFormatter
 
-    reads.pipe[AlignmentRecord, AlignmentRecordProduct, AlignmentRecordDataset, FASTQInFormatter](
+    reads.pipe[Alignment, AlignmentProduct, AlignmentDataset, FASTQInFormatter](
       cmd = builder.build(),
       files = builder.getFiles()
     )
