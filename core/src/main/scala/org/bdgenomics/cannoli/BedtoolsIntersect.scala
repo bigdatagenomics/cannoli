@@ -47,8 +47,8 @@ class BedtoolsIntersectArgs extends Args4jBase {
   @Args4jOption(required = false, name = "-executable", usage = "Path to the Bedtools executable. Defaults to bedtools.")
   var executable: String = "bedtools"
 
-  @Args4jOption(required = false, name = "-image", usage = "Container image to use. Defaults to quay.io/biocontainers/bedtools:2.29.0--hc088bd4_3.")
-  var image: String = "quay.io/biocontainers/bedtools:2.29.0--hc088bd4_3"
+  @Args4jOption(required = false, name = "-image", usage = "Container image to use. Defaults to quay.io/biocontainers/bedtools:2.29.1--hc088bd4_1.")
+  var image: String = "quay.io/biocontainers/bedtools:2.29.1--hc088bd4_1"
 
   @Args4jOption(required = false, name = "-sudo", usage = "Run via sudo.")
   var sudo: Boolean = false
