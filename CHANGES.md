@@ -1,5 +1,22 @@
 # Cannoli Changelog #
 
+### Version 0.8.0 ###
+
+**Closed issues:**
+
+ - Update ADAM dependency version to 0.30.0 [\#208](https://github.com/bigdatagenomics/cannoli/issues/208)
+ - Cannoli for BWA using Singularity [\#201](https://github.com/bigdatagenomics/cannoli/issues/201)
+
+**Merged and closed pull requests:**
+
+ - Bump github-changes-maven-plugin dependency version to 1.1 [\#210](https://github.com/bigdatagenomics/cannoli/pull/210) ([heuermh](https://github.com/heuermh))
+ - [CANNOLI-208] Update ADAM dependency version to 0.30.0 [\#209](https://github.com/bigdatagenomics/cannoli/pull/209) ([heuermh](https://github.com/heuermh))
+ - Update docker image tags [\#207](https://github.com/bigdatagenomics/cannoli/pull/207) ([heuermh](https://github.com/heuermh))
+ - Update container image versions [\#205](https://github.com/bigdatagenomics/cannoli/pull/205) ([heuermh](https://github.com/heuermh))
+ - Adding single-end read STAR-Mapper functions. [\#202](https://github.com/bigdatagenomics/cannoli/pull/202) ([heuermh](https://github.com/heuermh))
+ - Update STAR container image to version 2.7.2b. [\#200](https://github.com/bigdatagenomics/cannoli/pull/200) ([heuermh](https://github.com/heuermh))
+
+
 ### Version 0.7.0 ###
 
 **Closed issues:**
