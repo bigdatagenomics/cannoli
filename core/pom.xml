@@ -36,12 +36,16 @@
     </plugins>
   </build>
 
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.bdgenomics.cannoli</groupId>
+        <artifactId>cannoli-builder-spark2_2.11</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
   <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
-    </dependency>
     <dependency>
       <groupId>org.apache.spark</groupId>
       <artifactId>spark-core_${scala.version.prefix}</artifactId>
@@ -55,6 +59,11 @@
     <dependency>
       <groupId>org.bdgenomics.adam</groupId>
       <artifactId>adam-core-spark2_${scala.version.prefix}</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.bdgenomics.cannoli</groupId>
+      <artifactId>cannoli-builder-spark2_2.11</artifactId>
       <scope>compile</scope>
     </dependency>
     <dependency>
