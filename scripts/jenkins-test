@@ -24,7 +24,14 @@ if ! [[ ${HADOOP_VERSION} ]];
 then
     echo "HADOOP_VERSION environment variable is not set."
     echo "Please set this variable before running."
-    
+    exit 1
+fi
+
+# is the scala version set?
+if ! [[ ${SCALA_VERSION} ]];
+then
+    echo "SCALA_VERSION environment variable is not set."
+    echo "Please set this variable before running."
     exit 1
 fi
 
@@ -33,12 +40,42 @@ if ! [[ ${SPARK_VERSION} ]];
 then
     echo "SPARK_VERSION environment variable is not set."
     echo "Please set this variable before running."
-    
     exit 1
 fi
 
 # print versions
-echo "Testing CANNOLI version ${VERSION} on Spark ${SPARK_VERSION} and Hadoop ${HADOOP_VERSION}"
+echo "Testing Cannoli version ${VERSION} on Spark ${SPARK_VERSION} Scala ${SCALA_VERSION} and Hadoop ${HADOOP_VERSION}"
+
+# build defaults to scala 2.11
+if [ ${SCALA_VERSION} == 2.11 ];
+then
+    # shouldn't be able to move to scala 2.11 twice
+    set +e
+    ./scripts/move_to_scala_2.11.sh
+    if [[ $? == 0 ]];
+    then
+        echo "We have already moved to Scala 2.11, so running move_to_scala_2.11.sh a second time should fail, but error code was 0 (success)."
+        exit 1
+    fi
+    set -e
+fi
+
+# are we testing for scala 2.12? if so, we need to rewrite our poms to 2.12 first
+if [ ${SCALA_VERSION} == 2.12 ];
+then
+    echo "Rewriting POM.xml files for Scala 2.12."
+    ./scripts/move_to_scala_2.12.sh
+
+    # shouldn't be able to move to scala 2.12 twice
+    set +e
+    ./scripts/move_to_scala_2.12.sh
+    if [[ $? == 0 ]];
+    then
+        echo "We have already moved to Scala 2.12, so running move_to_scala_2.12.sh a second time should fail, but error code was 0 (success)."
+        exit 1
+    fi
+    set -e
+fi
 
 # first, build the sources, run the unit tests, and generate a coverage report
 mvn clean \
@@ -72,6 +109,14 @@ set -x -v
 # we are done with maven, so clean up the maven temp dir
 find ${CANNOLI_MVN_TMP_DIR}
 rm -rf ${CANNOLI_MVN_TMP_DIR}
+
+# and move our poms back to their original values
+# this will allow us to pass our porcelain test at the end
+if [ ${SCALA_VERSION} == 2.12 ];
+then
+    echo "Rewriting POM.xml files back to Scala 2.11."
+    ./scripts/move_to_scala_2.11.sh
+fi
 
 find . -name pom.xml \
     -exec sed -i.bak \
