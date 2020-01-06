@@ -20,9 +20,11 @@ package org.bdgenomics.cannoli.cli
 import grizzled.slf4j.Logging
 import htsjdk.samtools.ValidationStringency
 import org.apache.spark.SparkContext
+import org.apache.spark.rdd.RDD
 import org.bdgenomics.adam.rdd.ADAMContext._
 import org.bdgenomics.adam.rdd.ADAMSaveAnyArgs
 import org.bdgenomics.adam.rdd.fragment.FragmentDataset
+import org.bdgenomics.formats.avro.Fragment
 import org.bdgenomics.utils.cli._
 import org.kohsuke.args4j.{ Argument, Option => Args4jOption }
 
@@ -70,7 +72,7 @@ class SampleReads(protected val args: SampleReadsArgs) extends BDGSparkCommand[S
 
     info("Sampling fraction %f with seed %d".format(args.fraction, args.seed))
     fragments
-      .transform(_.sample(withReplacement = false, args.fraction, args.seed))
+      .transform((rdd: RDD[Fragment]) => rdd.sample(withReplacement = false, args.fraction, args.seed))
       .save(args.outputPath)
   }
 }

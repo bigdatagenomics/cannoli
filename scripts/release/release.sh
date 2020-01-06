@@ -44,6 +44,30 @@ if [ $? != 0 ]; then
   exit 1
 fi
 
+git checkout master
+
+# do spark 2, scala 2.12 release
+git checkout -b maint_spark2_2.12-${release} ${branch}
+
+./scripts/move_to_scala_2.12.sh
+git commit -a -m "Modifying pom.xml files for Spark 2, Scala 2.12 release."
+
+mvn --batch-mode \
+  -P distribution \
+  -Dresume=false \
+  -Dtag=cannoli-parent-spark2_2.12-${release} \
+  -DreleaseVersion=${release} \
+  -DdevelopmentVersion=${devel} \
+  -DbranchName=cannoli-spark2_2.12-${release} \
+  release:clean \
+  release:prepare \
+  release:perform
+
+if [ $? != 0 ]; then
+  echo "Releasing Spark 2, Scala 2.12 version failed."
+  exit 1
+fi
+
 if [ $branch = "master" ]; then
   # if original branch was master, update versions on original branch
   git checkout ${branch}
