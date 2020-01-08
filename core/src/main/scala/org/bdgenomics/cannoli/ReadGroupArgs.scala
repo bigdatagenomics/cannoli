@@ -17,11 +17,10 @@
  */
 package org.bdgenomics.cannoli
 
-import org.bdgenomics.adam.models.{ ReadGroup, ReadGroupDictionary }
+import org.bdgenomics.adam.models.ReadGroup
 import org.bdgenomics.formats.avro.{ ReadGroup => ReadGroupMetadata }
 import org.bdgenomics.utils.cli._
 import org.kohsuke.args4j.{ Option => Args4jOption }
-import scala.collection.JavaConversions._
 
 /**
  * Abstract arguments that capture a read group.
