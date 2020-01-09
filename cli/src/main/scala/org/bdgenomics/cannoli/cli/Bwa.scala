@@ -20,7 +20,6 @@ package org.bdgenomics.cannoli.cli
 import grizzled.slf4j.Logging
 import htsjdk.samtools.ValidationStringency
 import org.apache.spark.SparkContext
-import org.bdgenomics.adam.models.{ ReadGroup, ReadGroupDictionary }
 import org.bdgenomics.adam.rdd.ADAMContext._
 import org.bdgenomics.adam.rdd.ADAMSaveAnyArgs
 import org.bdgenomics.adam.rdd.fragment.FragmentDataset
@@ -97,10 +96,7 @@ class Bwa(protected val args: BwaArgs) extends BDGSparkCommand[BwaArgs] with Log
       sc.loadFragments(args.inputPath, stringency = stringency)
     }
 
-    val sample = args.sample
-
     val output: AlignmentDataset = new BwaFn(args, sc).apply(input)
-      .replaceReadGroups(ReadGroupDictionary(Seq(ReadGroup(sample, sample))))
 
     val outputMaybeWithSequences = Option(args.sequenceDictionary).fold(output)(sdPath => {
       val sequences = sc.loadSequenceDictionary(sdPath)

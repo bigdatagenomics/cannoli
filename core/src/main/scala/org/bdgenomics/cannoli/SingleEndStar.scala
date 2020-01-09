@@ -19,7 +19,6 @@ package org.bdgenomics.cannoli
 
 import org.apache.spark.SparkContext
 import org.bdgenomics.adam.rdd.ADAMContext._
-import org.bdgenomics.adam.rdd.fragment.FragmentDataset
 import org.bdgenomics.adam.rdd.read.{ AlignmentDataset, AnySAMOutFormatter, SAMInFormatter }
 import org.bdgenomics.adam.sql.{ Alignment => AlignmentProduct }
 import org.bdgenomics.cannoli.builder.CommandBuilders

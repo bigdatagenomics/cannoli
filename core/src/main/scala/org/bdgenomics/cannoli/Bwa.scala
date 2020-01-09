@@ -21,22 +21,19 @@ import org.apache.hadoop.fs.{ FileSystem, Path }
 import org.apache.spark.SparkContext
 import org.bdgenomics.adam.rdd.ADAMContext._
 import org.bdgenomics.adam.rdd.fragment.{ FragmentDataset, InterleavedFASTQInFormatter }
+import org.bdgenomics.adam.models.ReadGroupDictionary
 import org.bdgenomics.adam.rdd.read.{ AlignmentDataset, AnySAMOutFormatter }
 import org.bdgenomics.adam.sql.{ Alignment => AlignmentProduct }
 import org.bdgenomics.cannoli.builder.CommandBuilders
 import org.bdgenomics.formats.avro.Alignment
-import org.bdgenomics.utils.cli._
-import org.kohsuke.args4j.{ Argument, Option => Args4jOption }
+import org.kohsuke.args4j.{ Option => Args4jOption }
 import scala.collection.JavaConversions._
 
 /**
  * Bwa function arguments.
  */
-class BwaArgs extends Args4jBase {
-  @Argument(required = true, metaVar = "SAMPLE", usage = "Sample ID.", index = 2)
-  var sample: String = null
-
-  @Args4jOption(required = true, name = "-index", usage = "Path to the BWA index to be searched, e.g. <idxbase> in bwa [options]* <idxbase>.")
+class BwaArgs extends ReadGroupArgs {
+  @Args4jOption(required = true, name = "-index", usage = "Path to the BWA index to be searched, e.g. <idxbase> in bwa [options]* <idxbase>. Required.")
   var indexPath: String = null
 
   @Args4jOption(required = false, name = "-executable", usage = "Path to the BWA executable. Defaults to bwa.")
@@ -70,7 +67,6 @@ class Bwa(
     sc: SparkContext) extends CannoliFn[FragmentDataset, AlignmentDataset](sc) {
 
   override def apply(fragments: FragmentDataset): AlignmentDataset = {
-    val sample = args.sample
 
     def getIndexPaths(fastaPath: String): Seq[String] = {
       val requiredExtensions = Seq("",
@@ -110,13 +106,15 @@ class Bwa(
       pathsWithScheme ++ optionalPathsWithScheme
     }
 
+    val readGroup = Option(args.readGroup).getOrElse(args.createReadGroup)
+
     val builder = CommandBuilders.create(args.useDocker, args.useSingularity)
       .setExecutable(args.executable)
       .add("mem")
       .add("-t")
       .add("1")
       .add("-R")
-      .add(s"@RG\\tID:${sample}\\tLB:${sample}\\tPL:ILLUMINA\\tPU:0\\tSM:${sample}")
+      .add(readGroup.toSAMReadGroupRecord().getSAMString().replace("\t", "\\t"))
       .add("-p")
       .add(if (args.addFiles) "$0" else args.indexPath)
       .add("-")
@@ -138,9 +136,11 @@ class Bwa(
     implicit val tFormatter = InterleavedFASTQInFormatter
     implicit val uFormatter = new AnySAMOutFormatter
 
-    fragments.pipe[Alignment, AlignmentProduct, AlignmentDataset, InterleavedFASTQInFormatter](
+    val alignments = fragments.pipe[Alignment, AlignmentProduct, AlignmentDataset, InterleavedFASTQInFormatter](
       cmd = builder.build(),
       files = builder.getFiles()
     )
+
+    alignments.replaceReadGroups(ReadGroupDictionary(Seq(readGroup)))
   }
 }
