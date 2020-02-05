@@ -79,6 +79,9 @@ class BlastnArgs extends Args4jBase {
   @Args4jOption(required = false, name = "-perc_identity", usage = "Percent identity.")
   var percentIdentity: java.lang.Double = null
 
+  @Args4jOption(required = false, name = "-num_threads", usage = "Number of threads to use to run blastn. Defaults to 1.")
+  var numThreads: java.lang.Integer = null
+
   @Args4jOption(required = false, name = "-stringency", usage = "Stringency level for various checks; can be SILENT, LENIENT, or STRICT. Defaults to STRICT.")
   var stringency: String = "STRICT"
 }
@@ -122,6 +125,7 @@ class Blastn(
     Option(args.reward).foreach(i => builder.add("-reward").add(i.toString))
     Option(args.maxHsps).foreach(i => builder.add("-max_hsps").add(i.toString))
     Option(args.percentIdentity).foreach(d => builder.add("-perc_identity").add(d.toString))
+    Option(args.numThreads).foreach(i => builder.add("-num_threads").add(i.toString))
 
     if (args.addFiles) {
       // add args.db for "$0"
