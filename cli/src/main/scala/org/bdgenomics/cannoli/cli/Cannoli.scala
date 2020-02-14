@@ -42,6 +42,7 @@ object Cannoli {
     MagicBlast,
     Minimap2,
     SamtoolsMpileup,
+    Snap,
     SnpEff,
     Star,
     SingleEndStar,

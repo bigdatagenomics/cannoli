@@ -124,6 +124,7 @@ CANNOLI
           magicBlast : Align paired-end reads in a fragment dataset with Magic-BLAST.
             minimap2 : Align paired-end reads in a fragment dataset with Minimap2.
      samtoolsMpileup : Call variants from an alignment dataset with samtools mpileup.
+                snap : Align paired-end reads in a fragment dataset with SNAP.
               snpEff : Annotate variant contexts with SnpEff.
                 star : Align paired-end reads in a fragment dataset with STAR-Mapper.
        singleEndStar : Align unaligned single-end reads in an alignment dataset with STAR-Mapper.

@@ -168,6 +168,16 @@ object Cannoli {
     }
 
     /**
+     * Align the paired-end reads in this FragmentDataset with SNAP via Cannoli.
+     *
+     * @param args SNAP function arguments.
+     * @return AlignmentDataset.
+     */
+    def alignWithSnap(args: SnapArgs): AlignmentDataset = {
+      new Snap(args, fragments.rdd.context).apply(fragments)
+    }
+
+    /**
      * Align the paired-end reads in this FragmentDataset with STAR via Cannoli.
      *
      * @param args STAR function arguments.
