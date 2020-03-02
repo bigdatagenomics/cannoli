@@ -30,7 +30,7 @@
     <hadoop.version>2.7.5</hadoop.version>
     <junit.version>4.12</junit.version>
     <scoverage.plugin.version>1.1.1</scoverage.plugin.version>
-    <utils.version>0.2.15</utils.version>
+    <utils.version>0.2.16</utils.version>
   </properties>
 
   <modules>
