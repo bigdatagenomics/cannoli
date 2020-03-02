@@ -1,5 +1,37 @@
 # Cannoli Changelog #
 
+### Version 0.9.0 ###
+
+**Closed issues:**
+
+ - Update ADAM dependency version to 0.31.0 [\#233](https://github.com/bigdatagenomics/cannoli/issues/233)
+ - Bowtie2 2.3.5 does not work with --interleaved option [\#228](https://github.com/bigdatagenomics/cannoli/issues/228)
+ - Add -num_threads argument to BlastnArgs [\#226](https://github.com/bigdatagenomics/cannoli/issues/226)
+ - blastn ouput FileAlreadyExistsException [\#225](https://github.com/bigdatagenomics/cannoli/issues/225)
+ - Jenkins build is not deploying Scala 2.12 snapshots [\#221](https://github.com/bigdatagenomics/cannoli/issues/221)
+ - Sam readgroup might need to be fully parametrized [\#219](https://github.com/bigdatagenomics/cannoli/issues/219)
+ - Add Jenkins support for Scala 2.12 [\#218](https://github.com/bigdatagenomics/cannoli/issues/218)
+ - Scala 2.12 / spark 2.4.4 release [\#215](https://github.com/bigdatagenomics/cannoli/issues/215)
+ - Jenkins build status icon link is broken [\#204](https://github.com/bigdatagenomics/cannoli/issues/204)
+
+**Merged and closed pull requests:**
+
+ - [CANNOLI-233] Update ADAM dependency version to 0.31.0 [\#235](https://github.com/bigdatagenomics/cannoli/pull/235) ([heuermh](https://github.com/heuermh))
+ - Update Spark dependency version to 2.4.5 [\#234](https://github.com/bigdatagenomics/cannoli/pull/234) ([heuermh](https://github.com/heuermh))
+ - Bump freebayes container image to 1.3.3 [\#232](https://github.com/bigdatagenomics/cannoli/pull/232) ([heuermh](https://github.com/heuermh))
+ - [CANNOLI-65] Add snap-aligner for alignment [\#231](https://github.com/bigdatagenomics/cannoli/pull/231) ([heuermh](https://github.com/heuermh))
+ - [CANNOLI-228] Bump Bowtie2 container image to version 2.3.5.1 [\#230](https://github.com/bigdatagenomics/cannoli/pull/230) ([heuermh](https://github.com/heuermh))
+ - [CANNOLI-226] Add -num_threads argument to BlastnArgs [\#227](https://github.com/bigdatagenomics/cannoli/pull/227) ([heuermh](https://github.com/heuermh))
+ - Update container image versions [\#223](https://github.com/bigdatagenomics/cannoli/pull/223) ([heuermh](https://github.com/heuermh))
+ - [CANNOLI-219] Allow to fully specify read groups for bwa [\#222](https://github.com/bigdatagenomics/cannoli/pull/222) ([heuermh](https://github.com/heuermh))
+ - [CANNOLI-218] Add Jenkins support for Scala 2.12 [\#220](https://github.com/bigdatagenomics/cannoli/pull/220) ([heuermh](https://github.com/heuermh))
+ - [CANNOLI-215] Add support for Scala 2.12 in build and release scripts [\#217](https://github.com/bigdatagenomics/cannoli/pull/217) ([heuermh](https://github.com/heuermh))
+ - Fix broken source paths [\#214](https://github.com/bigdatagenomics/cannoli/pull/214) ([heuermh](https://github.com/heuermh))
+ - Fix broken source paths [\#213](https://github.com/bigdatagenomics/cannoli/pull/213) ([heuermh](https://github.com/heuermh))
+ - [CANNOLI-194] Move java source from core to new builder module [\#212](https://github.com/bigdatagenomics/cannoli/pull/212) ([heuermh](https://github.com/heuermh))
+ - Remove Jenkins build status badge [\#211](https://github.com/bigdatagenomics/cannoli/pull/211) ([heuermh](https://github.com/heuermh))
+
+
 ### Version 0.8.0 ###
 
 **Closed issues:**
