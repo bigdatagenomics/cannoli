@@ -38,8 +38,8 @@ class FreebayesArgs extends Args4jBase {
   @Args4jOption(required = false, name = "-executable", usage = "Path to the Freebayes executable. Defaults to freebayes.")
   var executable: String = "freebayes"
 
-  @Args4jOption(required = false, name = "-image", usage = "Container image to use. Defaults to quay.io/biocontainers/freebayes:1.3.1--py37h56106d0_0.")
-  var image: String = "quay.io/biocontainers/freebayes:1.3.1--py37h56106d0_0"
+  @Args4jOption(required = false, name = "-image", usage = "Container image to use. Defaults to quay.io/biocontainers/freebayes:1.3.3--py37hc088bd4_0.")
+  var image: String = "quay.io/biocontainers/freebayes:1.3.3--py37hc088bd4_0"
 
   @Args4jOption(required = false, name = "-sudo", usage = "Run via sudo.")
   var sudo: Boolean = false
