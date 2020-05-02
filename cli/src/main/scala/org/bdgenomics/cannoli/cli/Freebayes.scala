@@ -75,7 +75,7 @@ class Freebayes(protected val args: FreebayesArgs) extends BDGSparkCommand[Freeb
 
     if (isVcfExt(args.outputPath)) {
       variantContexts.saveAsVcf(
-        args.inputPath,
+        args.outputPath,
         asSingleFile = args.asSingleFile,
         deferMerging = args.deferMerging,
         disableFastConcat = args.disableFastConcat,
