@@ -17,7 +17,7 @@
   <inceptionYear>2017</inceptionYear>
 
   <properties>
-    <adam.version>0.31.0</adam.version>
+    <adam.version>0.32.0-SNAPSHOT</adam.version>
     <scala.version>2.11.12</scala.version>
     <scala.version.prefix>2.11</scala.version.prefix>
     <spark.version>2.4.6</spark.version>
@@ -30,7 +30,7 @@
     <hadoop.version>2.7.5</hadoop.version>
     <junit.version>4.12</junit.version>
     <scoverage.plugin.version>1.1.1</scoverage.plugin.version>
-    <utils.version>0.2.16</utils.version>
+    <utils.version>0.3.0</utils.version>
   </properties>
 
   <modules>

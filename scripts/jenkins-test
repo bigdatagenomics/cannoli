@@ -77,10 +77,16 @@ then
     set -e
 fi
 
+# are we testing for spark 3? if so, we need to rewrite our poms to spark 3 first
+if [ ${SPARK_VERSION} == 3.0.0 ];
+then
+    echo "Rewriting POM.xml files for Spark 3."
+    ./scripts/move_to_spark_3.sh
+fi
+
 # first, build the sources, run the unit tests, and generate a coverage report
 mvn clean \
-    -Dhadoop.version=${HADOOP_VERSION} \
-    -Dspark.version=${SPARK_VERSION} 
+    -Dhadoop.version=${HADOOP_VERSION}
 
 # if this is a pull request, we need to set the coveralls pr id
 if [[ ! -z $ghprbPullId ]];
@@ -116,6 +122,11 @@ if [ ${SCALA_VERSION} == 2.12 ];
 then
     echo "Rewriting POM.xml files back to Scala 2.11."
     ./scripts/move_to_scala_2.11.sh
+fi
+if [ ${SPARK_VERSION} == 3.0.0 ];
+then
+    echo "Rewriting POM.xml files back to Spark 2."
+    ./scripts/move_to_spark_2.sh
 fi
 
 find . -name pom.xml \
