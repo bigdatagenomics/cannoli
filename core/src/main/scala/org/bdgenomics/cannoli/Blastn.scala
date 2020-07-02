@@ -37,8 +37,8 @@ class BlastnArgs extends Args4jBase {
   @Args4jOption(required = false, name = "-executable", usage = "Path to the blastn executable. Defaults to blastn.")
   var executable: String = "blastn"
 
-  @Args4jOption(required = false, name = "-image", usage = "Container image to use. Defaults to quay.io/biocontainers/blast:2.9.0--pl526h3066fca_4.")
-  var image: String = "quay.io/biocontainers/blast:2.9.0--pl526h3066fca_4"
+  @Args4jOption(required = false, name = "-image", usage = "Container image to use. Defaults to quay.io/biocontainers/blast:2.9.0--pl526he19e7b1_5.")
+  var image: String = "quay.io/biocontainers/blast:2.9.0--pl526he19e7b1_5"
 
   @Args4jOption(required = false, name = "-sudo", usage = "Run via sudo.")
   var sudo: Boolean = false
