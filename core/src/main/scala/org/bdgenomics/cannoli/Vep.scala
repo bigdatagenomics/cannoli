@@ -62,6 +62,9 @@ class VepArgs extends Args4jBase {
 
   @Args4jOption(required = true, name = "-cache", usage = "Ensembl VEP cache directory to use.")
   var cachePath: String = null
+
+  @Args4jOption(required = false, name = "-vep_args", usage = "Additional arguments for Ensembl VEP, must be double-quoted, e.g. -vep_args \"--af --distance 2000\"")
+  var vepArgs: String = null
 }
 
 /**
@@ -85,10 +88,9 @@ class Vep(
       .add("vcf")
       .add("--output_file")
       .add("STDOUT")
+      .add("--vcf")
       .add("--vcf_info_field")
       .add("ANN")
-      .add("--terms")
-      .add("so")
       .add("--no_stats")
       .add("--offline")
       .add("--dir_cache")
@@ -96,6 +98,7 @@ class Vep(
 
     Option(args.species).foreach(builder.add("--species").add(_))
     Option(args.assembly).foreach(builder.add("--assembly").add(_))
+    Option(args.vepArgs).foreach(builder.add(_))
 
     if (args.addFiles) {
       builder.addFile(args.cachePath)
