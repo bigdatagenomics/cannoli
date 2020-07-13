@@ -46,42 +46,36 @@ fi
 # print versions
 echo "Testing Cannoli version ${VERSION} on Spark ${SPARK_VERSION} Scala ${SCALA_VERSION} and Hadoop ${HADOOP_VERSION}"
 
-# build defaults to scala 2.11
+# move to Scala 2.11 if requested
 if [ ${SCALA_VERSION} == 2.11 ];
 then
-    # shouldn't be able to move to scala 2.11 twice
     set +e
     ./scripts/move_to_scala_2.11.sh
-    if [[ $? == 0 ]];
-    then
-        echo "We have already moved to Scala 2.11, so running move_to_scala_2.11.sh a second time should fail, but error code was 0 (success)."
-        exit 1
-    fi
     set -e
 fi
 
-# are we testing for scala 2.12? if so, we need to rewrite our poms to 2.12 first
+# move to Scala 2.12 if requested
 if [ ${SCALA_VERSION} == 2.12 ];
 then
-    echo "Rewriting POM.xml files for Scala 2.12."
-    ./scripts/move_to_scala_2.12.sh
-
-    # shouldn't be able to move to scala 2.12 twice
     set +e
     ./scripts/move_to_scala_2.12.sh
-    if [[ $? == 0 ]];
-    then
-        echo "We have already moved to Scala 2.12, so running move_to_scala_2.12.sh a second time should fail, but error code was 0 (success)."
-        exit 1
-    fi
     set -e
 fi
 
-# are we testing for spark 3? if so, we need to rewrite our poms to spark 3 first
+# move to Spark 2.x if requested
+if [ ${SPARK_VERSION} == 2.4.6 ];
+then
+    set +e
+    ./scripts/move_to_spark_2.sh
+    set -e
+fi
+
+# move to Spark 3.x if requested
 if [ ${SPARK_VERSION} == 3.0.0 ];
 then
-    echo "Rewriting POM.xml files for Spark 3."
+    set +e
     ./scripts/move_to_spark_3.sh
+    set -e
 fi
 
 # first, build the sources, run the unit tests, and generate a coverage report
@@ -118,15 +112,15 @@ rm -rf ${CANNOLI_MVN_TMP_DIR}
 
 # and move our poms back to their original values
 # this will allow us to pass our porcelain test at the end
-if [ ${SCALA_VERSION} == 2.12 ];
+if [ ${SCALA_VERSION} == 2.11 ];
 then
-    echo "Rewriting POM.xml files back to Scala 2.11."
-    ./scripts/move_to_scala_2.11.sh
+    echo "Rewriting POM.xml files back to Scala 2.12."
+    ./scripts/move_to_scala_2.12.sh
 fi
-if [ ${SPARK_VERSION} == 3.0.0 ];
+if [ ${SPARK_VERSION} == 2.4.6 ];
 then
-    echo "Rewriting POM.xml files back to Spark 2."
-    ./scripts/move_to_spark_2.sh
+    echo "Rewriting POM.xml files back to Spark 3."
+    ./scripts/move_to_spark_3.sh
 fi
 
 find . -name pom.xml \
