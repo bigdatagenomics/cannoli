@@ -1,5 +1,27 @@
 # Cannoli Changelog #
 
+### Version 0.10.0 ###
+
+**Closed issues:**
+
+ - Update ADAM dependency version to 0.32.0 [\#252](https://github.com/bigdatagenomics/cannoli/issues/252)
+ - Unable to find bowtie2 index from hdfs [\#246](https://github.com/bigdatagenomics/cannoli/issues/246)
+ - Update Spark dependency version to 2.4.6 [\#245](https://github.com/bigdatagenomics/cannoli/issues/245)
+ - Use biocontainers as default container image for vt [\#241](https://github.com/bigdatagenomics/cannoli/issues/241)
+ - Freebayes CLI command writes to wrong path [\#239](https://github.com/bigdatagenomics/cannoli/issues/239)
+ - Support Apache Spark 3.x in build [\#216](https://github.com/bigdatagenomics/cannoli/issues/216)
+ - running tools with Conda [\#206](https://github.com/bigdatagenomics/cannoli/issues/206)
+
+**Merged and closed pull requests:**
+
+ - [CANNOLI-252] Update ADAM dependency version to 0.32.0 [\#253](https://github.com/bigdatagenomics/cannoli/pull/253) ([heuermh](https://github.com/heuermh))
+ - Update container image versions [\#250](https://github.com/bigdatagenomics/cannoli/pull/250) ([heuermh](https://github.com/heuermh))
+ - [CANNOLI-216] Support Apache Spark 3.x in build [\#249](https://github.com/bigdatagenomics/cannoli/pull/249) ([heuermh](https://github.com/heuermh))
+ - [CANNOLI-245] Update Spark dependency version to 2.4.6 [\#247](https://github.com/bigdatagenomics/cannoli/pull/247) ([heuermh](https://github.com/heuermh))
+ - [CANNOLI-241] Use biocontainers for vt; update container image versions [\#242](https://github.com/bigdatagenomics/cannoli/pull/242) ([heuermh](https://github.com/heuermh))
+ - [CANNOLI-239] Write Freebayes CLI command VCF to output path [\#240](https://github.com/bigdatagenomics/cannoli/pull/240) ([heuermh](https://github.com/heuermh))
+
+
 ### Version 0.9.0 ###
 
 **Closed issues:**
