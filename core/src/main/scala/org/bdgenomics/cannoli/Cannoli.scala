@@ -138,6 +138,16 @@ object Cannoli {
     }
 
     /**
+     * Align the paired-end reads in this FragmentDataset with Bwa-mem2 via Cannoli.
+     *
+     * @param args BwaMem2 function arguments.
+     * @return AlignmentDataset.
+     */
+    def alignWithBwaMem2(args: BwaMem2Args): AlignmentDataset = {
+      new BwaMem2(args, fragments.rdd.context).apply(fragments)
+    }
+
+    /**
      * Align the paired-end reads in this FragmentDataset with GEM-Mapper via Cannoli.
      *
      * @param args GEM-Mapper function arguments.
