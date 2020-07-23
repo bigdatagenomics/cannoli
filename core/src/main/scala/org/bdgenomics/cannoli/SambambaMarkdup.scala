@@ -34,8 +34,8 @@ class SambambaMarkdupArgs extends Args4jBase {
   @Args4jOption(required = false, name = "-executable", usage = "Path to the Sambamba executable. Defaults to sambamba.")
   var executable: String = "sambamba"
 
-  @Args4jOption(required = false, name = "-image", usage = "Container image to use. Defaults to quay.io/biocontainers/sambamba:0.7.1--h148d290_2.")
-  var image: String = "quay.io/biocontainers/sambamba:0.7.1--h148d290_2"
+  @Args4jOption(required = false, name = "-image", usage = "Container image to use. Defaults to quay.io/biocontainers/sambamba:0.7.1--h984e79f_3.")
+  var image: String = "quay.io/biocontainers/sambamba:0.7.1--h984e79f_3"
 
   @Args4jOption(required = false, name = "-remove_duplicates", usage = "Remove duplicates instead of marking them.")
   var removeDuplicates: Boolean = false
