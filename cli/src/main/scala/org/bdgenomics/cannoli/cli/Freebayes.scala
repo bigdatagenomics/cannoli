@@ -82,7 +82,7 @@ class Freebayes(protected val args: FreebayesArgs) extends BDGSparkCommand[Freeb
         stringency
       )
     } else {
-      variantContexts.saveAsParquet(args)
+      variantContexts.toVariants().saveAsParquet(args)
     }
   }
 }
