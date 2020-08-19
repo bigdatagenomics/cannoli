@@ -1,8 +1,8 @@
 # Cannoli
 Distributed execution of bioinformatics tools on Apache Spark. Apache 2 licensed.
 
-[![Maven Central](https://img.shields.io/maven-central/v/org.bdgenomics.cannoli/cannoli-parent-spark2_2.11.svg?maxAge=600)](http://search.maven.org/#search%7Cga%7C1%7Corg.bdgenomics.cannoli)
-[![API Documentation](http://javadoc.io/badge/org.bdgenomics.cannoli/cannoli-cli-spark2_2.11.svg?color=brightgreen&label=scaladoc)](http://javadoc.io/doc/org.bdgenomics.cannoli/cannoli-core-spark2_2.11)
+[![Maven Central](https://img.shields.io/maven-central/v/org.bdgenomics.cannoli/cannoli-parent-spark3_2.12.svg?maxAge=600)](http://search.maven.org/#search%7Cga%7C1%7Corg.bdgenomics.cannoli)
+[![API Documentation](http://javadoc.io/badge/org.bdgenomics.cannoli/cannoli-cli-spark3_2.12.svg?color=brightgreen&label=scaladoc)](http://javadoc.io/doc/org.bdgenomics.cannoli/cannoli-core-spark3_2.12)
 
 ![Cannoli project logo](https://github.com/heuermh/cannoli/raw/master/images/cannoli-shells.jpg)
 
