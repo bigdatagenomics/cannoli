@@ -30,9 +30,9 @@ import org.kohsuke.args4j.{ Option => Args4jOption }
 import scala.collection.JavaConversions._
 
 /**
- * Bwa function arguments.
+ * Bwa mem function arguments.
  */
-class BwaArgs extends ReadGroupArgs {
+class BwaMemArgs extends ReadGroupArgs {
   @Args4jOption(required = true, name = "-index", usage = "Path to the BWA index to be searched, e.g. <idxbase> in bwa [options]* <idxbase>. Required.")
   var indexPath: String = null
 
@@ -48,22 +48,22 @@ class BwaArgs extends ReadGroupArgs {
   @Args4jOption(required = false, name = "-add_files", usage = "If true, use the SparkFiles mechanism to distribute files to executors.")
   var addFiles: Boolean = false
 
-  @Args4jOption(required = false, name = "-use_docker", usage = "If true, uses Docker to launch BWA.")
+  @Args4jOption(required = false, name = "-use_docker", usage = "If true, uses Docker to launch bwa mem.")
   var useDocker: Boolean = false
 
-  @Args4jOption(required = false, name = "-use_singularity", usage = "If true, uses Singularity to launch BWA.")
+  @Args4jOption(required = false, name = "-use_singularity", usage = "If true, uses Singularity to launch bwa mem.")
   var useSingularity: Boolean = false
 }
 
 /**
- * Bwa wrapper as a function FragmentDataset &rarr; AlignmentDataset,
+ * Bwa mem wrapper as a function FragmentDataset &rarr; AlignmentDataset,
  * for use in cannoli-shell or notebooks.
  *
- * @param args Bwa function arguments.
+ * @param args Bwa mem function arguments.
  * @param sc Spark context.
  */
-class Bwa(
-    val args: BwaArgs,
+class BwaMem(
+    val args: BwaMemArgs,
     sc: SparkContext) extends CannoliFn[FragmentDataset, AlignmentDataset](sc) {
 
   override def apply(fragments: FragmentDataset): AlignmentDataset = {
