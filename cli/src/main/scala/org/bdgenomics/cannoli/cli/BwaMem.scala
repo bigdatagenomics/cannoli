@@ -24,24 +24,24 @@ import org.bdgenomics.adam.rdd.ADAMContext._
 import org.bdgenomics.adam.rdd.ADAMSaveAnyArgs
 import org.bdgenomics.adam.rdd.fragment.FragmentDataset
 import org.bdgenomics.adam.rdd.read.AlignmentDataset
-import org.bdgenomics.cannoli.{ Bwa => BwaFn, BwaArgs => BwaFnArgs }
+import org.bdgenomics.cannoli.{ BwaMem => BwaMemFn, BwaMemArgs => BwaMemFnArgs }
 import org.bdgenomics.cannoli.util.QuerynameGrouper
 import org.bdgenomics.utils.cli._
 import org.kohsuke.args4j.{ Argument, Option => Args4jOption }
 
-object Bwa extends BDGCommandCompanion {
-  val commandName = "bwa"
-  val commandDescription = "Align paired-end reads in a fragment dataset with BWA."
+object BwaMem extends BDGCommandCompanion {
+  val commandName = "bwaMem"
+  val commandDescription = "Align paired-end reads in a fragment dataset with bwa mem."
 
   def apply(cmdLine: Array[String]) = {
-    new Bwa(Args4j[BwaArgs](cmdLine))
+    new BwaMem(Args4j[BwaMemArgs](cmdLine))
   }
 }
 
 /**
- * Bwa command line arguments.
+ * Bwa mem command line arguments.
  */
-class BwaArgs extends BwaFnArgs with ADAMSaveAnyArgs with ParquetArgs {
+class BwaMemArgs extends BwaMemFnArgs with ADAMSaveAnyArgs with ParquetArgs {
   @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe fragments from (e.g. interleaved FASTQ format, .ifq) If extension is not detected, Parquet is assumed.", index = 0)
   var inputPath: String = null
 
@@ -77,10 +77,10 @@ class BwaArgs extends BwaFnArgs with ADAMSaveAnyArgs with ParquetArgs {
 }
 
 /**
- * Bwa command line wrapper.
+ * Bwa mem command line wrapper.
  */
-class Bwa(protected val args: BwaArgs) extends BDGSparkCommand[BwaArgs] with Logging {
-  val companion = Bwa
+class BwaMem(protected val args: BwaMemArgs) extends BDGSparkCommand[BwaMemArgs] with Logging {
+  val companion = BwaMem
   val stringency: ValidationStringency = ValidationStringency.valueOf(args.stringency)
 
   def run(sc: SparkContext) {
@@ -96,7 +96,7 @@ class Bwa(protected val args: BwaArgs) extends BDGSparkCommand[BwaArgs] with Log
       sc.loadFragments(args.inputPath, stringency = stringency)
     }
 
-    val output: AlignmentDataset = new BwaFn(args, sc).apply(input)
+    val output: AlignmentDataset = new BwaMemFn(args, sc).apply(input)
 
     val outputMaybeWithSequences = Option(args.sequenceDictionary).fold(output)(sdPath => {
       val sequences = sc.loadSequenceDictionary(sdPath)
