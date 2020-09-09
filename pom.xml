@@ -20,7 +20,7 @@
     <adam.version>0.32.0</adam.version>
     <scala.version>2.12.8</scala.version>
     <scala.version.prefix>2.12</scala.version.prefix>
-    <spark.version>3.0.0</spark.version>
+    <spark.version>3.0.1</spark.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.build.targetEncoding>UTF-8</project.build.targetEncoding>
     <maven.enforcer.maven-version>[3.1.1,)</maven.enforcer.maven-version>
