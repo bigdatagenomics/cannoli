@@ -28,7 +28,7 @@
     <maven.compile.source>1.8</maven.compile.source>
     <maven.compile.target>1.8</maven.compile.target>
     <hadoop.version>2.7.5</hadoop.version>
-    <junit.version>4.12</junit.version>
+    <junit.version>4.13.1</junit.version>
     <scoverage.plugin.version>1.1.1</scoverage.plugin.version>
     <utils.version>0.3.0</utils.version>
   </properties>
