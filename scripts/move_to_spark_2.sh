@@ -21,5 +21,5 @@ find . -name "pom.xml" -exec sed \
     -e "/utils-/ $substitution_cmd" \
     -e "/adam-/ $substitution_cmd" \
     -e "/cannoli-/ $substitution_cmd" \
-    -e "/spark.version/ s/3\.0\.1/2\.4\.6/g" \
+    -e "/spark.version/ s/3\.0\.1/2\.4\.7/g" \
     -i.spark2.bak '{}' \;

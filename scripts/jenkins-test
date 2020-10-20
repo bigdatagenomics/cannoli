@@ -63,7 +63,7 @@ then
 fi
 
 # move to Spark 2.x if requested
-if [ ${SPARK_VERSION} == 2.4.6 ];
+if [ ${SPARK_VERSION} == 2.4.7 ];
 then
     set +e
     ./scripts/move_to_spark_2.sh
@@ -117,7 +117,7 @@ then
     echo "Rewriting POM.xml files back to Scala 2.12."
     ./scripts/move_to_scala_2.12.sh
 fi
-if [ ${SPARK_VERSION} == 2.4.6 ];
+if [ ${SPARK_VERSION} == 2.4.7 ];
 then
     echo "Rewriting POM.xml files back to Spark 3."
     ./scripts/move_to_spark_3.sh
