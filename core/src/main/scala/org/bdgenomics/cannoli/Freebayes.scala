@@ -18,9 +18,7 @@
 package org.bdgenomics.cannoli
 
 import htsjdk.samtools.ValidationStringency
-import htsjdk.variant.vcf.VCFHeaderLine
 import org.apache.spark.SparkContext
-import org.apache.spark.util.CollectionAccumulator
 import org.bdgenomics.adam.models.VariantContext
 import org.bdgenomics.adam.rdd.ADAMContext._
 import org.bdgenomics.adam.rdd.read.{ AlignmentDataset, BAMInFormatter }
@@ -61,6 +59,9 @@ class FreebayesArgs extends Args4jBase {
 
   @Args4jOption(required = false, name = "-gvcf_chunk", usage = "When writing gVCF output or equivalent genotypes emit a record for every N bases.")
   var gvcfChunk: Int = _
+
+  @Args4jOption(required = false, name = "-freebayes_args", usage = "Additional arguments for freebayes, must be double-quoted, e.g. -freebayes_args \"--min-coverage 20 --genotype-qualities\"")
+  var freebayesArgs: String = null
 }
 
 /**
@@ -78,7 +79,7 @@ class Freebayes(
 
   override def apply(alignments: AlignmentDataset): VariantContextDataset = {
 
-    var builder = CommandBuilders.create(args.useDocker, args.useSingularity)
+    val builder = CommandBuilders.create(args.useDocker, args.useSingularity)
       .setExecutable(args.executable)
       .add("--fasta-reference")
       .add(if (args.addFiles) "$0" else absolute(args.referencePath))
@@ -89,6 +90,8 @@ class Freebayes(
       builder.add("--gvcf")
       Option(args.gvcfChunk).foreach(i => builder.add("--gvcf-chunk").add(i.toString))
     }
+
+    Option(args.freebayesArgs).foreach(builder.add(_))
 
     if (args.addFiles) {
       builder.addFile(args.referencePath)
@@ -105,17 +108,14 @@ class Freebayes(
     info("Piping %s to freebayes with command: %s files: %s".format(
       alignments, builder.build(), builder.getFiles()))
 
-    val accumulator: CollectionAccumulator[VCFHeaderLine] = sc.collectionAccumulator("headerLines")
-
     implicit val tFormatter = BAMInFormatter
-    implicit val uFormatter = new VCFOutFormatter(sc.hadoopConfiguration, stringency, Some(accumulator))
+    implicit val uFormatter = new VCFOutFormatter(sc.hadoopConfiguration, stringency)
 
     val variantContexts = alignments.pipe[VariantContext, VariantContextProduct, VariantContextDataset, BAMInFormatter](
       cmd = builder.build(),
       files = builder.getFiles()
     )
 
-    val headerLines = accumulator.value.distinct
-    variantContexts.replaceHeaderLines(headerLines)
+    variantContexts.replaceHeaderLines(FreebayesHeaderLines.allHeaderLines)
   }
 }
