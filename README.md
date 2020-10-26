@@ -65,8 +65,8 @@ import org.bdgenomics.adam.rdd.ADAMContext._
 scala> import org.bdgenomics.cannoli.Cannoli._
 import org.bdgenomics.cannoli.Cannoli._
 
-scala> import org.bdgenomics.cannoli.BwaArgs
-import org.bdgenomics.cannoli.BwaArgs
+scala> import org.bdgenomics.cannoli.BwaMemArgs
+import org.bdgenomics.cannoli.BwaMemArgs
 
 scala> val args = new BwaMemArgs()
 args: org.bdgenomics.cannoli.BwaMemArgs = org.bdgenomics.cannoli.BwaMemArgs@54234569
@@ -74,8 +74,8 @@ args: org.bdgenomics.cannoli.BwaMemArgs = org.bdgenomics.cannoli.BwaMemArgs@5423
 scala> args.indexPath = "hg38.fa"
 args.indexPath: String = hg38.fa
 
-scala> args.sample = "sample"
-args.sample: String = sample
+scala> args.sampleId = "sample"
+args.sampleId: String = sample
 
 scala> val reads = sc.loadPairedFastqAsFragments("sample1.fq", "sample2.fq")
 reads: org.bdgenomics.adam.rdd.fragment.FragmentRDD = RDDBoundFragmentRDD with 0 reference
@@ -147,7 +147,7 @@ $ ./bin/cannoli-submit \
     bwaMem \
     sample.unaligned.fragments.adam \
     sample.bwa.hg38.alignments.adam \
-    sample \
+    -sample_id sample \
     -index hg38.fa \
     -sequence_dictionary hg38.dict \
     -fragments \
@@ -163,12 +163,12 @@ $ ./bin/cannoli-submit \
     bwaMem \
     sample.unaligned.fragments.adam \
     sample.bwa.hg38.alignments.adam \
-    sample \
+    -sample_id sample \
     -index hg38.fa \
     -sequence_dictionary hg38.dict \
     -fragments \
     -use_docker \
-    -image quay.io/ucsc_cgl/bwa:0.7.12--256539928ea162949d8a65ca5c79a72ef557ce7c \
+    -image quay.io/biocontainers/bwa:0.7.17--hed695b0_7 \
     -add_files
 ```
 
@@ -181,11 +181,11 @@ $ ./bin/cannoli-submit \
     bwaMem \
     sample.unaligned.fragments.adam \
     sample.bwa.hg38.alignments.adam \
-    sample \
+    -sample_id sample \
     -index hg38.fa \
     -sequence_dictionary hg38.dict \
     -fragments \
     -use_singularity \
-    -image quay.io/ucsc_cgl/bwa:0.7.12--256539928ea162949d8a65ca5c79a72ef557ce7c \
+    -image quay.io/biocontainers/bwa:0.7.17--hed695b0_7 \
     -add_files
 ```
