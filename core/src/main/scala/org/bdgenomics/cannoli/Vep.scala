@@ -89,8 +89,6 @@ class Vep(
       .add("--output_file")
       .add("STDOUT")
       .add("--vcf")
-      .add("--vcf_info_field")
-      .add("ANN")
       .add("--no_stats")
       .add("--offline")
       .add("--dir_cache")
