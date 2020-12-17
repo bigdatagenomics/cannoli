@@ -28,6 +28,10 @@ git push origin ${branch}
 # do spark 2, scala 2.11 release
 git checkout -b maint_spark2_2.11-${release} ${branch}
 
+./scripts/move_to_spark_2.sh
+./scripts/move_to_scala_2.11.sh
+git commit -a -m "Modifying pom.xml files for Spark 2, Scala 2.11 release."
+
 mvn --batch-mode \
   -P distribution \
   -Dresume=false \
@@ -49,6 +53,7 @@ git checkout master
 # do spark 2, scala 2.12 release
 git checkout -b maint_spark2_2.12-${release} ${branch}
 
+./scripts/move_to_spark_2.sh
 ./scripts/move_to_scala_2.12.sh
 git commit -a -m "Modifying pom.xml files for Spark 2, Scala 2.12 release."
 
