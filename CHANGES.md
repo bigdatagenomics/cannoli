@@ -1,5 +1,45 @@
 # Cannoli Changelog #
 
+### Version 0.11.0 ###
+
+**Closed issues:**
+
+ - Bump ADAM dependency version to 0.33.0 [\#278](https://github.com/bigdatagenomics/cannoli/issues/278)
+ - Refactor variant callers to fn[AlignmentDataset, GenotypeDataset] [\#272](https://github.com/bigdatagenomics/cannoli/issues/272)
+ - Add additional arguments for freebayes command line wrapper [\#271](https://github.com/bigdatagenomics/cannoli/issues/271)
+ - conda install cannoli issue  [\#268](https://github.com/bigdatagenomics/cannoli/issues/268)
+ - Update Spark dependency to version 3.0.1 [\#265](https://github.com/bigdatagenomics/cannoli/issues/265)
+ - Issue while saving variants as vcf. [\#260](https://github.com/bigdatagenomics/cannoli/issues/260)
+ - Exception encountered while loading parquet files generated using Cannoli CLI. [\#258](https://github.com/bigdatagenomics/cannoli/issues/258)
+ - Refactor Bwa class names to BwaMem [\#257](https://github.com/bigdatagenomics/cannoli/issues/257)
+ - Add bwa-mem2 for aligning fragments [\#255](https://github.com/bigdatagenomics/cannoli/issues/255)
+ - Default build to Spark 3/Scala 2.12 [\#248](https://github.com/bigdatagenomics/cannoli/issues/248)
+ - Can not run vep [\#244](https://github.com/bigdatagenomics/cannoli/issues/244)
+ - force evaluating accumulators before assigning them [\#243](https://github.com/bigdatagenomics/cannoli/issues/243)
+ - Trying to install/run on HPC using Singularity [\#238](https://github.com/bigdatagenomics/cannoli/issues/238)
+ - java.lang.UnsupportedOperationException: empty.max while sorting and indexing. [\#237](https://github.com/bigdatagenomics/cannoli/issues/237)
+ - IllegalArgumentException: Reference index for 'chr3' not found in sequence dictionary [\#236](https://github.com/bigdatagenomics/cannoli/issues/236)
+ - Cannoli for BWA using Singularity [\#201](https://github.com/bigdatagenomics/cannoli/issues/201)
+
+**Merged and closed pull requests:**
+
+ - [CANNOLI-278] Bump ADAM dependency version to 0.33.0 [\#279](https://github.com/bigdatagenomics/cannoli/pull/279) ([heuermh](https://github.com/heuermh))
+ - Update container image versions [\#277](https://github.com/bigdatagenomics/cannoli/pull/277) ([heuermh](https://github.com/heuermh))
+ - Update bwa mem example in readme [\#275](https://github.com/bigdatagenomics/cannoli/pull/275) ([heuermh](https://github.com/heuermh))
+ - [CANNOLI-271] Add additional command line arguments, header lines for freebayes [\#273](https://github.com/bigdatagenomics/cannoli/pull/273) ([heuermh](https://github.com/heuermh))
+ - Update Spark 2.x dependency version to 2.4.7 [\#270](https://github.com/bigdatagenomics/cannoli/pull/270) ([heuermh](https://github.com/heuermh))
+ - Bump bowtie2 container image to 2.4.2--py38h1c8e9b9_0 [\#269](https://github.com/bigdatagenomics/cannoli/pull/269) ([heuermh](https://github.com/heuermh))
+ - Bump junit from 4.12 to 4.13.1 [\#267](https://github.com/bigdatagenomics/cannoli/pull/267) ([dependabot[bot]](https://github.com/apps/dependabot))
+ - [CANNOLI-265] Update Spark dependency version to 3.0.1 [\#266](https://github.com/bigdatagenomics/cannoli/pull/266) ([heuermh](https://github.com/heuermh))
+ - [CANNOLI-257] Refactor Bwa class names to BwaMem [\#264](https://github.com/bigdatagenomics/cannoli/pull/264) ([heuermh](https://github.com/heuermh))
+ - Default doc links to Spark 3/Scala 2.12 [\#263](https://github.com/bigdatagenomics/cannoli/pull/263) ([heuermh](https://github.com/heuermh))
+ - Bump star container image to 2.7.5c--0 [\#262](https://github.com/bigdatagenomics/cannoli/pull/262) ([heuermh](https://github.com/heuermh))
+ - Bump star container image to 2.7.5b--0 [\#261](https://github.com/bigdatagenomics/cannoli/pull/261) ([heuermh](https://github.com/heuermh))
+ - [CANNOLI-255] Add bwa-mem2 for aligning fragments [\#256](https://github.com/bigdatagenomics/cannoli/pull/256) ([heuermh](https://github.com/heuermh))
+ - [CANNOLI-248] Default build to Spark 3/Scala 2.12 [\#254](https://github.com/bigdatagenomics/cannoli/pull/254) ([heuermh](https://github.com/heuermh))
+ - [CANNOLI-244] Update --terms and other options for Ensembl VEP [\#251](https://github.com/bigdatagenomics/cannoli/pull/251) ([heuermh](https://github.com/heuermh))
+
+
 ### Version 0.10.0 ###
 
 **Closed issues:**
