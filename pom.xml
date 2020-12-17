@@ -17,7 +17,7 @@
   <inceptionYear>2017</inceptionYear>
 
   <properties>
-    <adam.version>0.32.0</adam.version>
+    <adam.version>0.33.0</adam.version>
     <scala.version>2.12.8</scala.version>
     <scala.version.prefix>2.12</scala.version.prefix>
     <spark.version>3.0.1</spark.version>
