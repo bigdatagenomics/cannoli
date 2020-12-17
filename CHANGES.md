@@ -1,5 +1,16 @@
 # Cannoli Changelog #
 
+### Version 0.11.1 ###
+
+**Closed issues:**
+
+ - Release artifacts for version 0.11.0 are incorrect [\#284](https://github.com/bigdatagenomics/cannoli/issues/284)
+
+**Merged and closed pull requests:**
+
+ - [CANNOLI-284] Fix release script, default is Spark 3 Scala 2.12 profile [\#285](https://github.com/bigdatagenomics/cannoli/pull/285) ([heuermh](https://github.com/heuermh))
+
+
 ### Version 0.11.0 ###
 
 **Closed issues:**
