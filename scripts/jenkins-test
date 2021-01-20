@@ -46,38 +46,6 @@ fi
 # print versions
 echo "Testing Cannoli version ${VERSION} on Spark ${SPARK_VERSION} Scala ${SCALA_VERSION} and Hadoop ${HADOOP_VERSION}"
 
-# move to Scala 2.11 if requested
-if [ ${SCALA_VERSION} == 2.11 ];
-then
-    set +e
-    ./scripts/move_to_scala_2.11.sh
-    set -e
-fi
-
-# move to Scala 2.12 if requested
-if [ ${SCALA_VERSION} == 2.12 ];
-then
-    set +e
-    ./scripts/move_to_scala_2.12.sh
-    set -e
-fi
-
-# move to Spark 2.x if requested
-if [ ${SPARK_VERSION} == 2.4.7 ];
-then
-    set +e
-    ./scripts/move_to_spark_2.sh
-    set -e
-fi
-
-# move to Spark 3.x if requested
-if [ ${SPARK_VERSION} == 3.0.1 ];
-then
-    set +e
-    ./scripts/move_to_spark_3.sh
-    set -e
-fi
-
 # build the distribution package and the integration tests
 mvn -U \
     clean \
@@ -91,31 +59,11 @@ set -x -v
 find ${CANNOLI_MVN_TMP_DIR}
 rm -rf ${CANNOLI_MVN_TMP_DIR}
 
-# and move our poms back to their original values
-# this will allow us to pass our porcelain test at the end
-if [ ${SCALA_VERSION} == 2.11 ];
-then
-    echo "Rewriting POM.xml files back to Scala 2.12."
-    ./scripts/move_to_scala_2.12.sh
-fi
-if [ ${SPARK_VERSION} == 2.4.7 ];
-then
-    echo "Rewriting POM.xml files back to Spark 3."
-    ./scripts/move_to_spark_3.sh
-fi
-
 find . -name pom.xml \
     -exec sed -i.bak \
     -e "s:sun.io.serialization.extendedDebugInfo=true -Djava.io.tmpdir=${CANNOLI_MVN_TMP_DIR}:sun.io.serialization.extendedDebugInfo=true:g" \
     {} \;
 find . -name "*.bak" -exec rm -f {} \;
-
-if test -n "$(git status --porcelain)"
-then
-    echo "Applying move_to_xyz script marred a pom.xml file."
-    echo "Exiting..."
-    exit 1
-fi
 
 ./scripts/format-source
 if test -n "$(git status --porcelain)"
