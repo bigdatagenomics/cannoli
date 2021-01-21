@@ -38,7 +38,7 @@ object MagicBlast extends BDGCommandCompanion {
 /**
  * Magic-BLAST command line arguments.
  */
-class MagicBlastArgs extends MagicBlastFnArgs with ADAMSaveAnyArgs with ParquetArgs {
+class MagicBlastArgs extends MagicBlastFnArgs with ADAMSaveAnyArgs with CramArgs with ParquetArgs {
   @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe fragments from (e.g. interleaved FASTQ format, .ifq). If extension is not detected, Parquet is assumed.", index = 0)
   var inputPath: String = null
 
@@ -66,6 +66,7 @@ class MagicBlast(protected val args: MagicBlastArgs) extends BDGSparkCommand[Mag
   val stringency: ValidationStringency = ValidationStringency.valueOf(args.stringency)
 
   def run(sc: SparkContext) {
+    args.configureCramFormat(sc)
     val fragments = sc.loadFragments(args.inputPath, stringency = stringency)
     val alignments = new MagicBlastFn(args, sc).apply(fragments)
     alignments.save(args)

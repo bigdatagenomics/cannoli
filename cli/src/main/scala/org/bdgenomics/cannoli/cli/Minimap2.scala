@@ -38,7 +38,7 @@ object Minimap2 extends BDGCommandCompanion {
 /**
  * Minimap2 command line arguments.
  */
-class Minimap2Args extends Minimap2FnArgs with ADAMSaveAnyArgs with ParquetArgs {
+class Minimap2Args extends Minimap2FnArgs with ADAMSaveAnyArgs with CramArgs with ParquetArgs {
   @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe fragments from (e.g. interleaved FASTQ format, .ifq). If extension is not detected, Parquet is assumed.", index = 0)
   var inputPath: String = null
 
@@ -69,6 +69,7 @@ class Minimap2(protected val args: Minimap2Args) extends BDGSparkCommand[Minimap
   val stringency: ValidationStringency = ValidationStringency.valueOf(args.stringency)
 
   def run(sc: SparkContext) {
+    args.configureCramFormat(sc)
     val fragments = sc.loadFragments(args.inputPath, stringency = stringency)
     val alignments = new Minimap2Fn(args, sc).apply(fragments)
     alignments.save(args)

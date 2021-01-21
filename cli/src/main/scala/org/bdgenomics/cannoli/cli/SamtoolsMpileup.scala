@@ -42,7 +42,7 @@ object SamtoolsMpileup extends BDGCommandCompanion {
 /**
  * Samtools mpileup command line arguments.
  */
-class SamtoolsMpileupArgs extends SamtoolsMpileupFnArgs with ADAMSaveAnyArgs with ParquetArgs {
+class SamtoolsMpileupArgs extends SamtoolsMpileupFnArgs with ADAMSaveAnyArgs with CramArgs with ParquetArgs {
   @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe alignment records from (e.g. .bam, .cram, .sam). If extension is not detected, Parquet is assumed.", index = 0)
   var inputPath: String = null
 
@@ -73,6 +73,7 @@ class SamtoolsMpileup(protected val args: SamtoolsMpileupArgs) extends BDGSparkC
   val stringency: ValidationStringency = ValidationStringency.valueOf(args.stringency)
 
   def run(sc: SparkContext) {
+    args.configureCramFormat(sc)
     val alignments = sc.loadAlignments(args.inputPath, stringency = stringency)
     val variantContexts = new SamtoolsMpileupFn(args, stringency, sc).apply(alignments)
 

@@ -41,7 +41,7 @@ object BwaMem2 extends BDGCommandCompanion {
 /**
  * Bwa-mem2 command line arguments.
  */
-class BwaMem2Args extends BwaMem2FnArgs with ADAMSaveAnyArgs with ParquetArgs {
+class BwaMem2Args extends BwaMem2FnArgs with ADAMSaveAnyArgs with CramArgs with ParquetArgs {
   @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe fragments from (e.g. interleaved FASTQ format, .ifq) If extension is not detected, Parquet is assumed.", index = 0)
   var inputPath: String = null
 
@@ -88,6 +88,9 @@ class BwaMem2(protected val args: BwaMem2Args) extends BDGSparkCommand[BwaMem2Ar
       "-single and -fragments are mutually exclusive.")
     require(!(args.forceLoadIfastq && args.forceLoadParquet),
       "-force_load_ifastq and -force_load_parquet are mutually exclusive.")
+
+    args.configureCramFormat(sc)
+
     val input: FragmentDataset = if (args.forceLoadIfastq) {
       sc.loadInterleavedFastqAsFragments(args.inputPath)
     } else if (args.forceLoadParquet) {

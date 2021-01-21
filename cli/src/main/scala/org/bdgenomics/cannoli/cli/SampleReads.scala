@@ -37,7 +37,7 @@ object SampleReads extends BDGCommandCompanion {
   }
 }
 
-class SampleReadsArgs extends Args4jBase with ADAMSaveAnyArgs with ParquetArgs {
+class SampleReadsArgs extends Args4jBase with ADAMSaveAnyArgs with CramArgs with ParquetArgs {
   @Argument(required = true, metaVar = "INPUT", usage = "Location to read from, in interleaved FASTQ format.", index = 0)
   var inputPath: String = null
 
@@ -68,6 +68,7 @@ class SampleReads(protected val args: SampleReadsArgs) extends BDGSparkCommand[S
   val stringency: ValidationStringency = ValidationStringency.valueOf(args.stringency)
 
   def run(sc: SparkContext) {
+    args.configureCramFormat(sc)
     val fragments: FragmentDataset = sc.loadFragments(args.inputPath, stringency = stringency)
 
     info("Sampling fraction %f with seed %d".format(args.fraction, args.seed))

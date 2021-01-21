@@ -39,7 +39,7 @@ object Freebayes extends BDGCommandCompanion {
 /**
  * Freebayes command line arguments.
  */
-class FreebayesArgs extends FreebayesFnArgs with ADAMSaveAnyArgs with ParquetArgs {
+class FreebayesArgs extends FreebayesFnArgs with ADAMSaveAnyArgs with CramArgs with ParquetArgs {
   @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe alignment records from (e.g. .bam, .cram, .sam). If extension is not detected, Parquet is assumed.", index = 0)
   var inputPath: String = null
 
@@ -70,6 +70,7 @@ class Freebayes(protected val args: FreebayesArgs) extends BDGSparkCommand[Freeb
   val stringency: ValidationStringency = ValidationStringency.valueOf(args.stringency)
 
   def run(sc: SparkContext) {
+    args.configureCramFormat(sc)
     val alignments = sc.loadAlignments(args.inputPath, stringency = stringency)
     val variantContexts = new FreebayesFn(args, stringency, sc).apply(alignments)
 
