@@ -38,7 +38,7 @@ object Bowtie2 extends BDGCommandCompanion {
 /**
  * Bowtie 2 command line arguments.
  */
-class Bowtie2Args extends Bowtie2FnArgs with ADAMSaveAnyArgs with ParquetArgs {
+class Bowtie2Args extends Bowtie2FnArgs with ADAMSaveAnyArgs with CramArgs with ParquetArgs {
   @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe fragments from (e.g. interleaved FASTQ format, .ifq). If extension is not detected, Parquet is assumed.", index = 0)
   var inputPath: String = null
 
@@ -69,6 +69,7 @@ class Bowtie2(protected val args: Bowtie2Args) extends BDGSparkCommand[Bowtie2Ar
   val stringency: ValidationStringency = ValidationStringency.valueOf(args.stringency)
 
   def run(sc: SparkContext) {
+    args.configureCramFormat(sc)
     val fragments = sc.loadFragments(args.inputPath, stringency = stringency)
     val alignments = new Bowtie2Fn(args, sc).apply(fragments)
     alignments.save(args)

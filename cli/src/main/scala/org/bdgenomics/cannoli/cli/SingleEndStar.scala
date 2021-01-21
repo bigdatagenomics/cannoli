@@ -41,7 +41,7 @@ object SingleEndStar extends BDGCommandCompanion {
 /**
  * Single-end read STAR-Mapper command line arguments.
  */
-class SingleEndStarArgs extends SingleEndStarFnArgs with ADAMSaveAnyArgs with ParquetArgs {
+class SingleEndStarArgs extends SingleEndStarFnArgs with ADAMSaveAnyArgs with CramArgs with ParquetArgs {
   @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe single-end reads from (e.g. FASTQ format, .fq). If extension is not detected, Parquet is assumed.", index = 0)
   var inputPath: String = null
 
@@ -72,6 +72,7 @@ class SingleEndStar(protected val args: SingleEndStarArgs) extends BDGSparkComma
   val stringency: ValidationStringency = ValidationStringency.valueOf(args.stringency)
 
   def run(sc: SparkContext) {
+    args.configureCramFormat(sc)
     val reads = sc.loadAlignments(args.inputPath, stringency = stringency)
     val alignments = new SingleEndStarFn(args, sc).apply(reads)
     alignments.save(args)

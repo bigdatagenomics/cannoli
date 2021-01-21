@@ -38,7 +38,7 @@ object Star extends BDGCommandCompanion {
 /**
  * STAR-Mapper command line arguments.
  */
-class StarArgs extends StarFnArgs with ADAMSaveAnyArgs with ParquetArgs {
+class StarArgs extends StarFnArgs with ADAMSaveAnyArgs with CramArgs with ParquetArgs {
   @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe fragments from (e.g. interleaved FASTQ format, .ifq). If extension is not detected, Parquet is assumed.", index = 0)
   var inputPath: String = null
 
@@ -69,6 +69,7 @@ class Star(protected val args: StarArgs) extends BDGSparkCommand[StarArgs] with 
   val stringency: ValidationStringency = ValidationStringency.valueOf(args.stringency)
 
   def run(sc: SparkContext) {
+    args.configureCramFormat(sc)
     val fragments = sc.loadFragments(args.inputPath, stringency = stringency)
     val alignments = new StarFn(args, sc).apply(fragments)
     alignments.save(args)

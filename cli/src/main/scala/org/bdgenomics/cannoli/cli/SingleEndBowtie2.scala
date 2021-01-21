@@ -41,7 +41,7 @@ object SingleEndBowtie2 extends BDGCommandCompanion {
 /**
  * Single-end read Bowtie 2 command line arguments.
  */
-class SingleEndBowtie2Args extends SingleEndBowtie2FnArgs with ADAMSaveAnyArgs with ParquetArgs {
+class SingleEndBowtie2Args extends SingleEndBowtie2FnArgs with ADAMSaveAnyArgs with CramArgs with ParquetArgs {
   @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe single-end reads from (e.g. FASTQ format, .fq). If extension is not detected, Parquet is assumed.", index = 0)
   var inputPath: String = null
 
@@ -72,6 +72,7 @@ class SingleEndBowtie2(protected val args: SingleEndBowtie2Args) extends BDGSpar
   val stringency: ValidationStringency = ValidationStringency.valueOf(args.stringency)
 
   def run(sc: SparkContext) {
+    args.configureCramFormat(sc)
     val reads = sc.loadAlignments(args.inputPath, stringency = stringency)
     val alignments = new SingleEndBowtie2Fn(args, sc).apply(reads)
     alignments.save(args)
