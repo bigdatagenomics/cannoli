@@ -60,7 +60,7 @@ $ ./bin/cannoli-shell \
     <spark-args>
 
 scala> import org.bdgenomics.adam.rdd.ADAMContext._
-import org.bdgenomics.adam.rdd.ADAMContext._
+import org.bdgenomics.adam.ds.ADAMContext._
 
 scala> import org.bdgenomics.cannoli.Cannoli._
 import org.bdgenomics.cannoli.Cannoli._
@@ -78,11 +78,11 @@ scala> args.sampleId = "sample"
 args.sampleId: String = sample
 
 scala> val reads = sc.loadPairedFastqAsFragments("sample1.fq", "sample2.fq")
-reads: org.bdgenomics.adam.rdd.fragment.FragmentRDD = RDDBoundFragmentRDD with 0 reference
+reads: org.bdgenomics.adam.ds.fragment.FragmentRDD = RDDBoundFragmentRDD with 0 reference
 sequences, 0 read groups, and 0 processing steps
 
 scala> val alignments = reads.alignWithBwaMem(args)
-alignments: org.bdgenomics.adam.rdd.read.AlignmentRecordRDD = RDDBoundAlignmentRecordRDD with
+alignments: org.bdgenomics.adam.ds.read.AlignmentRecordRDD = RDDBoundAlignmentRecordRDD with
 0 reference sequences, 0 read groups, and 0 processing steps
 
 scala> alignments.saveAsParquet("sample.alignments.adam")
