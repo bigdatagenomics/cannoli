@@ -1,5 +1,22 @@
 # Cannoli Changelog #
 
+### Version 0.12.0 ###
+
+**Closed issues:**
+
+ - Add CRAM reference argument for loading alignments and fragments [\#287](https://github.com/bigdatagenomics/cannoli/issues/287)
+ - Default build to Hadoop 3.x [\#283](https://github.com/bigdatagenomics/cannoli/issues/283)
+ - Remove Scala 2.11.x from build and release matrix [\#282](https://github.com/bigdatagenomics/cannoli/issues/282)
+ - Remove Spark 2.x from build and release matrix [\#281](https://github.com/bigdatagenomics/cannoli/issues/281)
+ -  Bump Scala 2.12 dependency version to 2.12.10 [\#280](https://github.com/bigdatagenomics/cannoli/issues/280)
+
+**Merged and closed pull requests:**
+
+ - Update ADAM dependency version to 0.34.0 [\#289](https://github.com/bigdatagenomics/cannoli/pull/289) ([heuermh](https://github.com/heuermh))
+ - [CANNOLI-287] Add CRAM reference argument for loading alignments and fragments [\#288](https://github.com/bigdatagenomics/cannoli/pull/288) ([heuermh](https://github.com/heuermh))
+ - Update build and release matrix [\#286](https://github.com/bigdatagenomics/cannoli/pull/286) ([heuermh](https://github.com/heuermh))
+
+
 ### Version 0.11.1 ###
 
 **Closed issues:**
