@@ -20,8 +20,8 @@ package org.bdgenomics.cannoli.cli
 import grizzled.slf4j.Logging
 import org.apache.spark.SparkContext
 import org.bdgenomics.adam.projections.{ FeatureField, Projection }
-import org.bdgenomics.adam.rdd.ADAMContext._
-import org.bdgenomics.adam.rdd.ADAMSaveAnyArgs
+import org.bdgenomics.adam.ds.ADAMContext._
+import org.bdgenomics.adam.ds.ADAMSaveAnyArgs
 import org.bdgenomics.cannoli.{
   BedtoolsIntersect => BedtoolsIntersectFn,
   BedtoolsIntersectArgs => BedtoolsIntersectFnArgs

@@ -20,8 +20,8 @@ package org.bdgenomics.cannoli
 import htsjdk.samtools.ValidationStringency
 import org.apache.spark.SparkContext
 import org.bdgenomics.adam.models.VariantContext
-import org.bdgenomics.adam.rdd.ADAMContext._
-import org.bdgenomics.adam.rdd.variant.{
+import org.bdgenomics.adam.ds.ADAMContext._
+import org.bdgenomics.adam.ds.variant.{
   VariantContextDataset,
   VCFInFormatter,
   VCFOutFormatter

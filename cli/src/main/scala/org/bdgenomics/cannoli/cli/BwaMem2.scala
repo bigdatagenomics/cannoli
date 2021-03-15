@@ -20,10 +20,10 @@ package org.bdgenomics.cannoli.cli
 import grizzled.slf4j.Logging
 import htsjdk.samtools.ValidationStringency
 import org.apache.spark.SparkContext
-import org.bdgenomics.adam.rdd.ADAMContext._
-import org.bdgenomics.adam.rdd.ADAMSaveAnyArgs
-import org.bdgenomics.adam.rdd.fragment.FragmentDataset
-import org.bdgenomics.adam.rdd.read.AlignmentDataset
+import org.bdgenomics.adam.ds.ADAMContext._
+import org.bdgenomics.adam.ds.ADAMSaveAnyArgs
+import org.bdgenomics.adam.ds.fragment.FragmentDataset
+import org.bdgenomics.adam.ds.read.AlignmentDataset
 import org.bdgenomics.cannoli.{ BwaMem2 => BwaMem2Fn, BwaMem2Args => BwaMem2FnArgs }
 import org.bdgenomics.cannoli.util.QuerynameGrouper
 import org.bdgenomics.utils.cli._
@@ -101,16 +101,16 @@ class BwaMem2(protected val args: BwaMem2Args) extends BDGSparkCommand[BwaMem2Ar
 
     val output: AlignmentDataset = new BwaMem2Fn(args, sc).apply(input)
 
-    val outputMaybeWithSequences = Option(args.sequenceDictionary).fold(output)(sdPath => {
-      val sequences = sc.loadSequenceDictionary(sdPath)
-      output.replaceSequences(sequences)
+    val outputMaybeWithReferences = Option(args.sequenceDictionary).fold(output)(sdPath => {
+      val references = sc.loadSequenceDictionary(sdPath)
+      output.replaceReferences(references)
     })
 
     if (!args.asFragments) {
-      outputMaybeWithSequences.save(args)
+      outputMaybeWithReferences.save(args)
     } else {
       info("Converting to fragments.")
-      QuerynameGrouper(outputMaybeWithSequences)
+      QuerynameGrouper(outputMaybeWithReferences)
         .saveAsParquet(args)
     }
   }
