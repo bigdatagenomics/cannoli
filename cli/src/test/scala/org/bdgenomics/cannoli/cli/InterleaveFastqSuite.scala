@@ -27,7 +27,7 @@ import org.apache.hadoop.io.compress.{
   CompressionCodec,
   GzipCodec
 }
-import org.bdgenomics.adam.rdd.ADAMContext._
+import org.bdgenomics.adam.ds.ADAMContext._
 import org.bdgenomics.utils.misc.SparkFunSuite
 
 class InterleaveFastqSuite extends SparkFunSuite {

@@ -18,11 +18,11 @@
 package org.bdgenomics.cannoli
 
 import htsjdk.samtools.ValidationStringency
-import org.bdgenomics.adam.rdd.feature.FeatureDataset
-import org.bdgenomics.adam.rdd.fragment.FragmentDataset
-import org.bdgenomics.adam.rdd.read.{ AlignmentDataset, ReadDataset }
-import org.bdgenomics.adam.rdd.sequence.SequenceDataset
-import org.bdgenomics.adam.rdd.variant.VariantContextDataset
+import org.bdgenomics.adam.ds.feature.FeatureDataset
+import org.bdgenomics.adam.ds.fragment.FragmentDataset
+import org.bdgenomics.adam.ds.read.{ AlignmentDataset, ReadDataset }
+import org.bdgenomics.adam.ds.sequence.SequenceDataset
+import org.bdgenomics.adam.ds.variant.VariantContextDataset
 
 /**
  * Implicits on Cannoli function source data sets.

@@ -18,8 +18,8 @@
 package org.bdgenomics.cannoli
 
 import org.apache.spark.SparkContext
-import org.bdgenomics.adam.rdd.ADAMContext._
-import org.bdgenomics.adam.rdd.feature.{
+import org.bdgenomics.adam.ds.ADAMContext._
+import org.bdgenomics.adam.ds.feature.{
   FeatureDataset,
   BEDInFormatter,
   BEDOutFormatter

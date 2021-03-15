@@ -19,8 +19,8 @@ package org.bdgenomics.cannoli
 
 import java.io.FileNotFoundException
 import org.apache.spark.SparkContext
-import org.bdgenomics.adam.rdd.ADAMContext._
-import org.bdgenomics.adam.rdd.read.{
+import org.bdgenomics.adam.ds.ADAMContext._
+import org.bdgenomics.adam.ds.read.{
   AlignmentDataset,
   AnySAMOutFormatter,
   FASTQInFormatter

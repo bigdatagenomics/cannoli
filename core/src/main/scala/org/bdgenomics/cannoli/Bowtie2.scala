@@ -19,9 +19,9 @@ package org.bdgenomics.cannoli
 
 import java.io.FileNotFoundException
 import org.apache.spark.SparkContext
-import org.bdgenomics.adam.rdd.ADAMContext._
-import org.bdgenomics.adam.rdd.fragment.{ FragmentDataset, InterleavedFASTQInFormatter }
-import org.bdgenomics.adam.rdd.read.{ AlignmentDataset, AnySAMOutFormatter }
+import org.bdgenomics.adam.ds.ADAMContext._
+import org.bdgenomics.adam.ds.fragment.{ FragmentDataset, InterleavedFASTQInFormatter }
+import org.bdgenomics.adam.ds.read.{ AlignmentDataset, AnySAMOutFormatter }
 import org.bdgenomics.adam.sql.{ Alignment => AlignmentProduct }
 import org.bdgenomics.cannoli.builder.CommandBuilders
 import org.bdgenomics.formats.avro.Alignment

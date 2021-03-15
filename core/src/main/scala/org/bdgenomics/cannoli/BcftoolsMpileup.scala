@@ -20,9 +20,9 @@ package org.bdgenomics.cannoli
 import htsjdk.samtools.ValidationStringency
 import org.apache.spark.SparkContext
 import org.bdgenomics.adam.models.VariantContext
-import org.bdgenomics.adam.rdd.ADAMContext._
-import org.bdgenomics.adam.rdd.read.{ AlignmentDataset, BAMInFormatter }
-import org.bdgenomics.adam.rdd.variant.{ VariantContextDataset, VCFOutFormatter }
+import org.bdgenomics.adam.ds.ADAMContext._
+import org.bdgenomics.adam.ds.read.{ AlignmentDataset, BAMInFormatter }
+import org.bdgenomics.adam.ds.variant.{ VariantContextDataset, VCFOutFormatter }
 import org.bdgenomics.adam.sql.{ VariantContext => VariantContextProduct }
 import org.bdgenomics.cannoli.builder.CommandBuilders
 import org.bdgenomics.utils.cli._

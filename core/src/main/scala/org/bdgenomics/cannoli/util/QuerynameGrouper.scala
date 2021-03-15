@@ -18,8 +18,8 @@
 package org.bdgenomics.cannoli.util
 
 import org.apache.spark.rdd.RDD
-import org.bdgenomics.adam.rdd.fragment.FragmentDataset
-import org.bdgenomics.adam.rdd.read.AlignmentDataset
+import org.bdgenomics.adam.ds.fragment.FragmentDataset
+import org.bdgenomics.adam.ds.read.AlignmentDataset
 import org.bdgenomics.formats.avro.{ Alignment, Fragment }
 
 private[cannoli] object QuerynameGrouper extends Serializable {
@@ -30,7 +30,7 @@ private[cannoli] object QuerynameGrouper extends Serializable {
 
   def apply(alignments: AlignmentDataset): FragmentDataset = {
     FragmentDataset(apply(alignments.rdd),
-      alignments.sequences,
+      alignments.references,
       alignments.readGroups,
       processingSteps = Seq.empty)
   }
