@@ -59,7 +59,7 @@ genomic datasets loaded by ADAM, such as `reads.alignWithBwaMem` below.
 $ ./bin/cannoli-shell \
     <spark-args>
 
-scala> import org.bdgenomics.adam.rdd.ADAMContext._
+scala> import org.bdgenomics.adam.ds.ADAMContext._
 import org.bdgenomics.adam.ds.ADAMContext._
 
 scala> import org.bdgenomics.cannoli.Cannoli._
