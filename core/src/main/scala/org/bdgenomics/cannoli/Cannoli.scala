@@ -90,6 +90,16 @@ object Cannoli {
       stringency: ValidationStringency = ValidationStringency.LENIENT): VariantContextDataset = {
       new SamtoolsMpileup(args, stringency, alignments.rdd.context).apply(alignments)
     }
+
+    /**
+     * Mark duplicate alignments in this AlignmentDataset with sambamba markdup via Cannoli.
+     *
+     * @param args Sambamba markdup function argments.
+     * @return AlignmentDataset.
+     */
+    def markDuplicatesWithSambambaMarkdup(args: SambambaMarkdupArgs): AlignmentDataset = {
+      new SambambaMarkdup(args, alignments.rdd.context).apply(alignments)
+    }
   }
 
   implicit class CannoliFeatureDataset(features: FeatureDataset) {
