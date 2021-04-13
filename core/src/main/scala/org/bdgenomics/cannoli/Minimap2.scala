@@ -35,8 +35,8 @@ class Minimap2Args extends Args4jBase {
   @Args4jOption(required = false, name = "-executable", usage = "Path to the Minimap2 executable. Defaults to minimap2.")
   var executable: String = "minimap2"
 
-  @Args4jOption(required = false, name = "-image", usage = "Container image to use. Defaults to quay.io/biocontainers/minimap2:2.17--hed695b0_3.")
-  var image: String = "quay.io/biocontainers/minimap2:2.17--hed695b0_3"
+  @Args4jOption(required = false, name = "-image", usage = "Container image to use. Defaults to quay.io/biocontainers/minimap2:2.18--h5bf99c6_0.")
+  var image: String = "quay.io/biocontainers/minimap2:2.18--h5bf99c6_0"
 
   @Args4jOption(required = false, name = "-sudo", usage = "Run via sudo.")
   var sudo: Boolean = false
