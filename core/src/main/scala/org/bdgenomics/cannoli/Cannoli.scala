@@ -43,6 +43,17 @@ object Cannoli {
 
     /**
      * Align the unaligned single-end reads in this AlignmentDataset
+     * with Minimap2 via Cannoli.
+     *
+     * @param args Minimap2 function arguments.
+     * @return AlignmentDataset.
+     */
+    def alignWithMinimap2(args: Minimap2Args): AlignmentDataset = {
+      new SingleEndMinimap2(args, alignments.rdd.context).apply(alignments)
+    }
+
+    /**
+     * Align the unaligned single-end reads in this AlignmentDataset
      * with STAR-Mapper via Cannoli.
      *
      * @param args STAR-Mapper function arguments.
@@ -50,6 +61,17 @@ object Cannoli {
      */
     def alignWithStar(args: SingleEndStarArgs): AlignmentDataset = {
       new SingleEndStar(args, alignments.rdd.context).apply(alignments)
+    }
+
+    /**
+     * Align the unaligned single-end reads in this AlignmentDataset
+     * with Unimap via Cannoli.
+     *
+     * @param args Unimap function arguments.
+     * @return AlignmentDataset.
+     */
+    def alignWithUnimap(args: UnimapArgs): AlignmentDataset = {
+      new SingleEndUnimap(args, alignments.rdd.context).apply(alignments)
     }
 
     /**
@@ -224,6 +246,18 @@ object Cannoli {
 
     /**
      * Align the unaligned single-end reads in this ReadDataset
+     * with Minimap2 via Cannoli.
+     *
+     * @param args Minimap2 function arguments.
+     * @return AlignmentDataset.
+     */
+    def alignWithMinimap2(args: Minimap2Args): AlignmentDataset = {
+      val alignments = reads.toAlignments
+      new SingleEndMinimap2(args, alignments.rdd.context).apply(alignments)
+    }
+
+    /**
+     * Align the unaligned single-end reads in this ReadDataset
      * with STAR-Mapper via Cannoli.
      *
      * @param args STAR-Mapper function arguments.
@@ -232,6 +266,18 @@ object Cannoli {
     def alignWithStar(args: SingleEndStarArgs): AlignmentDataset = {
       val alignments = reads.toAlignments
       new SingleEndStar(args, alignments.rdd.context).apply(alignments)
+    }
+
+    /**
+     * Align the unaligned single-end reads in this ReadDataset
+     * with Unimap via Cannoli.
+     *
+     * @param args Unimap function arguments.
+     * @return AlignmentDataset.
+     */
+    def alignWithUnimap(args: UnimapArgs): AlignmentDataset = {
+      val alignments = reads.toAlignments
+      new SingleEndUnimap(args, alignments.rdd.context).apply(alignments)
     }
   }
 
@@ -246,6 +292,28 @@ object Cannoli {
      */
     def alignWithBlastn(args: BlastnArgs): AlignmentDataset = {
       new Blastn(args, sequences.rdd.context).apply(sequences)
+    }
+
+    /**
+     * Align the long reads in this SequenceDataset
+     * with Minimap2 via Cannoli.
+     *
+     * @param args Minimap2 function arguments.
+     * @return AlignmentDataset.
+     */
+    def alignWithMinimap2(args: Minimap2Args): AlignmentDataset = {
+      new LongMinimap2(args, sequences.rdd.context).apply(sequences)
+    }
+
+    /**
+     * Align the long reads in this SequenceDataset
+     * with Unimap via Cannoli.
+     *
+     * @param args Unimap function arguments.
+     * @return AlignmentDataset.
+     */
+    def alignWithUnimap(args: UnimapArgs): AlignmentDataset = {
+      new LongUnimap(args, sequences.rdd.context).apply(sequences)
     }
   }
 

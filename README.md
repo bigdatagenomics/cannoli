@@ -124,12 +124,16 @@ CANNOLI
                  gem : Align paired-end reads in a fragment dataset with GEM-Mapper.
           magicBlast : Align paired-end reads in a fragment dataset with Magic-BLAST.
             minimap2 : Align paired-end reads in a fragment dataset with Minimap2.
+        longMinimap2 : Align long reads in a sequence dataset with Minimap2.
+   singleEndMinimap2 : Align unaligned single-end reads in an alignment dataset with Minimap2.
      samtoolsMpileup : Call variants from an alignment dataset with samtools mpileup.
                 snap : Align paired-end reads in a fragment dataset with SNAP.
               snpEff : Annotate variant contexts with SnpEff.
                 star : Align paired-end reads in a fragment dataset with STAR-Mapper.
        singleEndStar : Align unaligned single-end reads in an alignment dataset with STAR-Mapper.
               unimap : Align paired-end reads in a fragment dataset with Unimap.
+          longUnimap : Align long reads in a sequence dataset with Unimap.
+     singleEndUnimap : Align unaligned single-end reads in an alignment dataset with Unimap.
                  vep : Annotate variant contexts with Ensembl VEP.
          vtNormalize : Normalize variant contexts with vt normalize.
 

@@ -22,24 +22,24 @@ import htsjdk.samtools.ValidationStringency
 import org.apache.spark.SparkContext
 import org.bdgenomics.adam.ds.ADAMContext._
 import org.bdgenomics.adam.ds.ADAMSaveAnyArgs
-import org.bdgenomics.cannoli.{ Unimap => UnimapFn, UnimapArgs => UnimapFnArgs }
+import org.bdgenomics.cannoli.{ LongUnimap => LongUnimapFn, UnimapArgs => UnimapFnArgs }
 import org.bdgenomics.utils.cli._
 import org.kohsuke.args4j.{ Argument, Option => Args4jOption }
 
-object Unimap extends BDGCommandCompanion {
-  val commandName = "unimap"
-  val commandDescription = "Align paired-end reads in a fragment dataset with Unimap."
+object LongUnimap extends BDGCommandCompanion {
+  val commandName = "longUnimap"
+  val commandDescription = "Align long reads in a sequence dataset with Unimap."
 
   def apply(cmdLine: Array[String]) = {
-    new Unimap(Args4j[UnimapArgs](cmdLine))
+    new LongUnimap(Args4j[LongUnimapArgs](cmdLine))
   }
 }
 
 /**
- * Unimap command line arguments.
+ * Long read Unimap command line arguments.
  */
-class UnimapArgs extends UnimapFnArgs with ADAMSaveAnyArgs with CramArgs with ParquetArgs {
-  @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe fragments from (e.g. interleaved FASTQ format, .ifq). If extension is not detected, Parquet is assumed.", index = 0)
+class LongUnimapArgs extends UnimapFnArgs with ADAMSaveAnyArgs with ParquetArgs {
+  @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe long reads from (e.g. FASTA format, .fa). If extension is not detected, Parquet is assumed.", index = 0)
   var inputPath: String = null
 
   @Argument(required = true, metaVar = "OUTPUT", usage = "Location to pipe alignments to (e.g. .bam, .cram, .sam). If extension is not detected, Parquet is assumed.", index = 1)
@@ -54,9 +54,6 @@ class UnimapArgs extends UnimapFnArgs with ADAMSaveAnyArgs with CramArgs with Pa
   @Args4jOption(required = false, name = "-disable_fast_concat", usage = "Disables the parallel file concatenation engine.")
   var disableFastConcat: Boolean = false
 
-  @Args4jOption(required = false, name = "-stringency", usage = "Stringency level for various checks; can be SILENT, LENIENT, or STRICT. Defaults to STRICT.")
-  var stringency: String = "STRICT"
-
   @Args4jOption(required = false, name = "-sequence_dictionary", usage = "Path to the sequence dictionary.")
   var sequenceDictionary: String = _
 
@@ -65,16 +62,14 @@ class UnimapArgs extends UnimapFnArgs with ADAMSaveAnyArgs with CramArgs with Pa
 }
 
 /**
- * Unimap command line wrapper.
+ * Long read Unimap command line wrapper.
  */
-class Unimap(protected val args: UnimapArgs) extends BDGSparkCommand[UnimapArgs] with Logging {
-  val companion = Unimap
-  val stringency: ValidationStringency = ValidationStringency.valueOf(args.stringency)
+class LongUnimap(protected val args: LongUnimapArgs) extends BDGSparkCommand[LongUnimapArgs] with Logging {
+  val companion = LongUnimap
 
   def run(sc: SparkContext) {
-    args.configureCramFormat(sc)
-    val fragments = sc.loadFragments(args.inputPath, stringency = stringency)
-    val alignments = new UnimapFn(args, sc).apply(fragments)
+    val sequences = sc.loadDnaSequences(args.inputPath)
+    val alignments = new LongUnimapFn(args, sc).apply(sequences)
     val maybeWithReferences = Option(args.sequenceDictionary).fold(alignments)(sdPath => {
       val references = sc.loadSequenceDictionary(sdPath)
       alignments.replaceReferences(references)
