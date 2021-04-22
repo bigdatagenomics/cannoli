@@ -196,6 +196,16 @@ object Cannoli {
     def alignWithStar(args: StarArgs): AlignmentDataset = {
       new Star(args, fragments.rdd.context).apply(fragments)
     }
+
+    /**
+     * Align the paired-end reads in this FragmentDataset with Unimap via Cannoli.
+     *
+     * @param args Unimap function arguments.
+     * @return AlignmentDataset.
+     */
+    def alignWithUnimap(args: UnimapArgs): AlignmentDataset = {
+      new Unimap(args, fragments.rdd.context).apply(fragments)
+    }
   }
 
   implicit class CannoliReadDataset(reads: ReadDataset) {
