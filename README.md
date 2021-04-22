@@ -129,6 +129,7 @@ CANNOLI
               snpEff : Annotate variant contexts with SnpEff.
                 star : Align paired-end reads in a fragment dataset with STAR-Mapper.
        singleEndStar : Align unaligned single-end reads in an alignment dataset with STAR-Mapper.
+              unimap : Align paired-end reads in a fragment dataset with Unimap.
                  vep : Annotate variant contexts with Ensembl VEP.
          vtNormalize : Normalize variant contexts with vt normalize.
 
