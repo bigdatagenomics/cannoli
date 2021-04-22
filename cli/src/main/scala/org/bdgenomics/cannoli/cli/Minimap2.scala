@@ -54,6 +54,9 @@ class Minimap2Args extends Minimap2FnArgs with ADAMSaveAnyArgs with CramArgs wit
   @Args4jOption(required = false, name = "-disable_fast_concat", usage = "Disables the parallel file concatenation engine.")
   var disableFastConcat: Boolean = false
 
+  @Args4jOption(required = false, name = "-sequence_dictionary", usage = "Path to the sequence dictionary.")
+  var sequenceDictionary: String = _
+
   @Args4jOption(required = false, name = "-stringency", usage = "Stringency level for various checks; can be SILENT, LENIENT, or STRICT. Defaults to STRICT.")
   var stringency: String = "STRICT"
 
@@ -72,6 +75,10 @@ class Minimap2(protected val args: Minimap2Args) extends BDGSparkCommand[Minimap
     args.configureCramFormat(sc)
     val fragments = sc.loadFragments(args.inputPath, stringency = stringency)
     val alignments = new Minimap2Fn(args, sc).apply(fragments)
-    alignments.save(args)
+    val maybeWithReferences = Option(args.sequenceDictionary).fold(alignments)(sdPath => {
+      val references = sc.loadSequenceDictionary(sdPath)
+      alignments.replaceReferences(references)
+    })
+    maybeWithReferences.save(args)
   }
 }

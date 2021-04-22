@@ -22,24 +22,24 @@ import htsjdk.samtools.ValidationStringency
 import org.apache.spark.SparkContext
 import org.bdgenomics.adam.ds.ADAMContext._
 import org.bdgenomics.adam.ds.ADAMSaveAnyArgs
-import org.bdgenomics.cannoli.{ Unimap => UnimapFn, UnimapArgs => UnimapFnArgs }
+import org.bdgenomics.cannoli.{ SingleEndMinimap2 => SingleEndMinimap2Fn, Minimap2Args => Minimap2FnArgs }
 import org.bdgenomics.utils.cli._
 import org.kohsuke.args4j.{ Argument, Option => Args4jOption }
 
-object Unimap extends BDGCommandCompanion {
-  val commandName = "unimap"
-  val commandDescription = "Align paired-end reads in a fragment dataset with Unimap."
+object SingleEndMinimap2 extends BDGCommandCompanion {
+  val commandName = "singleEndMinimap2"
+  val commandDescription = "Align unaligned single-end reads in an alignment dataset with Minimap2."
 
   def apply(cmdLine: Array[String]) = {
-    new Unimap(Args4j[UnimapArgs](cmdLine))
+    new SingleEndMinimap2(Args4j[SingleEndMinimap2Args](cmdLine))
   }
 }
 
 /**
- * Unimap command line arguments.
+ * Single-end read Minimap2 command line arguments.
  */
-class UnimapArgs extends UnimapFnArgs with ADAMSaveAnyArgs with CramArgs with ParquetArgs {
-  @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe fragments from (e.g. interleaved FASTQ format, .ifq). If extension is not detected, Parquet is assumed.", index = 0)
+class SingleEndMinimap2Args extends Minimap2FnArgs with ADAMSaveAnyArgs with CramArgs with ParquetArgs {
+  @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe single-end reads from (e.g. FASTQ format, .fq). If extension is not detected, Parquet is assumed.", index = 0)
   var inputPath: String = null
 
   @Argument(required = true, metaVar = "OUTPUT", usage = "Location to pipe alignments to (e.g. .bam, .cram, .sam). If extension is not detected, Parquet is assumed.", index = 1)
@@ -54,27 +54,27 @@ class UnimapArgs extends UnimapFnArgs with ADAMSaveAnyArgs with CramArgs with Pa
   @Args4jOption(required = false, name = "-disable_fast_concat", usage = "Disables the parallel file concatenation engine.")
   var disableFastConcat: Boolean = false
 
-  @Args4jOption(required = false, name = "-stringency", usage = "Stringency level for various checks; can be SILENT, LENIENT, or STRICT. Defaults to STRICT.")
-  var stringency: String = "STRICT"
-
   @Args4jOption(required = false, name = "-sequence_dictionary", usage = "Path to the sequence dictionary.")
   var sequenceDictionary: String = _
+
+  @Args4jOption(required = false, name = "-stringency", usage = "Stringency level for various checks; can be SILENT, LENIENT, or STRICT. Defaults to STRICT.")
+  var stringency: String = "STRICT"
 
   // must be defined due to ADAMSaveAnyArgs, but unused here
   var sortFastqOutput: Boolean = false
 }
 
 /**
- * Unimap command line wrapper.
+ * Single-end read Minimap2 command line wrapper.
  */
-class Unimap(protected val args: UnimapArgs) extends BDGSparkCommand[UnimapArgs] with Logging {
-  val companion = Unimap
+class SingleEndMinimap2(protected val args: SingleEndMinimap2Args) extends BDGSparkCommand[SingleEndMinimap2Args] with Logging {
+  val companion = SingleEndMinimap2
   val stringency: ValidationStringency = ValidationStringency.valueOf(args.stringency)
 
   def run(sc: SparkContext) {
     args.configureCramFormat(sc)
-    val fragments = sc.loadFragments(args.inputPath, stringency = stringency)
-    val alignments = new UnimapFn(args, sc).apply(fragments)
+    val reads = sc.loadAlignments(args.inputPath, stringency = stringency)
+    val alignments = new SingleEndMinimap2Fn(args, sc).apply(reads)
     val maybeWithReferences = Option(args.sequenceDictionary).fold(alignments)(sdPath => {
       val references = sc.loadSequenceDictionary(sdPath)
       alignments.replaceReferences(references)
