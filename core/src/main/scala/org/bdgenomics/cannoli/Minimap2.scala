@@ -31,7 +31,7 @@ import scala.collection.JavaConversions._
 /**
  * Minimap2 function arguments.
  */
-class Minimap2Args extends Args4jBase {
+class Minimap2Args extends ReadGroupArgs {
   @Args4jOption(required = false, name = "-executable", usage = "Path to the Minimap2 executable. Defaults to minimap2.")
   var executable: String = "minimap2"
 
@@ -76,6 +76,8 @@ class Minimap2(
 
   override def apply(fragments: FragmentDataset): AlignmentDataset = {
 
+    val readGroup = Option(args.readGroup).getOrElse(args.createReadGroup)
+
     val builder = CommandBuilders.create(args.useDocker, args.useSingularity)
       .setExecutable(args.executable)
       .add("-a")
@@ -83,6 +85,8 @@ class Minimap2(
       .add(args.preset)
       .add("--seed")
       .add(args.seed.toString)
+      .add("-R")
+      .add(readGroup.toSAMReadGroupRecord().getSAMString().replace("\t", "\\t"))
 
     Option(args.minimap2Args).foreach(builder.add(_))
 
