@@ -1,5 +1,32 @@
 # Cannoli Changelog #
 
+### Version 0.13.0 ###
+
+**Closed issues:**
+
+ - Add support for single end (.fq) and long reads (.fa) for minimap2/unimap [\#306](https://github.com/bigdatagenomics/cannoli/issues/306)
+ - Migrate CI off Jenkins [\#297](https://github.com/bigdatagenomics/cannoli/issues/297)
+ - Set build status on GitHub commit [deprecated] changed build result to FAILURE [\#293](https://github.com/bigdatagenomics/cannoli/issues/293)
+
+**Merged and closed pull requests:**
+
+ - Update adam dependency version to 0.35.0 [\#308](https://github.com/bigdatagenomics/cannoli/pull/308) ([heuermh](https://github.com/heuermh))
+ - [CANNOLI-306] Add single end and long read wrappers for minimap2/unimap [\#307](https://github.com/bigdatagenomics/cannoli/pull/307) ([heuermh](https://github.com/heuermh))
+ - Add unimap for alignment [\#305](https://github.com/bigdatagenomics/cannoli/pull/305) ([heuermh](https://github.com/heuermh))
+ - Remove .m2 cache from GitHub Actions deploy snapshot workflow [\#304](https://github.com/bigdatagenomics/cannoli/pull/304) ([heuermh](https://github.com/heuermh))
+ - Fix server id for GitHub Actions deploy snapshot workflow [\#303](https://github.com/bigdatagenomics/cannoli/pull/303) ([heuermh](https://github.com/heuermh))
+ - Add GitHub Actions deploy snapshots configuration [\#302](https://github.com/bigdatagenomics/cannoli/pull/302) ([heuermh](https://github.com/heuermh))
+ - Add GitHub Actions CI configuration [\#301](https://github.com/bigdatagenomics/cannoli/pull/301) ([heuermh](https://github.com/heuermh))
+ - Add GitHub Actions CI configuration [\#300](https://github.com/bigdatagenomics/cannoli/pull/300) ([heuermh](https://github.com/heuermh))
+ - Update guava dependency version to 30.1-jre [\#299](https://github.com/bigdatagenomics/cannoli/pull/299) ([heuermh](https://github.com/heuermh))
+ - Bump minimap2 container image to 2.18--h5bf99c6_0 [\#298](https://github.com/bigdatagenomics/cannoli/pull/298) ([heuermh](https://github.com/heuermh))
+ - Bump guava from 27.0.1-jre to 29.0-jre [\#296](https://github.com/bigdatagenomics/cannoli/pull/296) ([dependabot[bot]](https://github.com/apps/dependabot))
+ - Update default container images for bcftools and samtools to 1.12 [\#295](https://github.com/bigdatagenomics/cannoli/pull/295) ([heuermh](https://github.com/heuermh))
+ - Update cannoli-shell example per ADAM 0.34.0 release [\#294](https://github.com/bigdatagenomics/cannoli/pull/294) ([heuermh](https://github.com/heuermh))
+ - Update default container images [\#291](https://github.com/bigdatagenomics/cannoli/pull/291) ([heuermh](https://github.com/heuermh))
+ - Update cannoli-shell example per ADAM 0.34.0 release [\#290](https://github.com/bigdatagenomics/cannoli/pull/290) ([heuermh](https://github.com/heuermh))
+
+
 ### Version 0.12.0 ###
 
 **Closed issues:**
