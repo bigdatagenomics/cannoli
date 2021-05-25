@@ -17,10 +17,10 @@
   <inceptionYear>2017</inceptionYear>
 
   <properties>
-    <adam.version>0.35.0</adam.version>
+    <adam.version>0.36.0-SNAPSHOT</adam.version>
     <scala.version>2.12.10</scala.version>
     <scala.version.prefix>2.12</scala.version.prefix>
-    <spark.version>3.0.2</spark.version>
+    <spark.version>3.1.1</spark.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.build.targetEncoding>UTF-8</project.build.targetEncoding>
     <maven.enforcer.maven-version>[3.1.1,)</maven.enforcer.maven-version>
