@@ -1,5 +1,30 @@
 # Cannoli Changelog #
 
+### Version 0.14.0 ###
+
+**Closed issues:**
+
+ - Update ADAM dependency version to 0.36.0 [\#321](https://github.com/bigdatagenomics/cannoli/issues/321)
+ - Update minimap2 to version 2.22 [\#319](https://github.com/bigdatagenomics/cannoli/issues/319)
+ - Update minimap2 to version 2.20 [\#313](https://github.com/bigdatagenomics/cannoli/issues/313)
+ - Update Spark dependency version to 3.1.2 [\#311](https://github.com/bigdatagenomics/cannoli/issues/311)
+ - Update Spark dependency version to 3.1.1 [\#292](https://github.com/bigdatagenomics/cannoli/issues/292)
+ - Add docs in RST format and deploy to readthedocs.io [\#91](https://github.com/bigdatagenomics/cannoli/issues/91)
+
+**Merged and closed pull requests:**
+
+ - [CANNOLI-321] Update ADAM dependency version to 0.36.0 [\#322](https://github.com/bigdatagenomics/cannoli/pull/322) ([heuermh](https://github.com/heuermh))
+ - Update minmap2 container image to version 2.22-h5bf99c6_0 [\#320](https://github.com/bigdatagenomics/cannoli/pull/320) ([heuermh](https://github.com/heuermh))
+ - Update bcftools container image to version 1.13--h3a49de5_0 [\#318](https://github.com/bigdatagenomics/cannoli/pull/318) ([heuermh](https://github.com/heuermh))
+ - Update samtools container image to version 1.13--h8c37831_0 [\#317](https://github.com/bigdatagenomics/cannoli/pull/317) ([heuermh](https://github.com/heuermh))
+ - Update minimap2 container image to version 2.21--h5bf99c6_0 [\#316](https://github.com/bigdatagenomics/cannoli/pull/316) ([heuermh](https://github.com/heuermh))
+ - Update bowtie2 container image to 2.4.4--py38h72fc82f_0 [\#315](https://github.com/bigdatagenomics/cannoli/pull/315) ([heuermh](https://github.com/heuermh))
+ - Update minimap2 container image to version 2.20--h5bf99c6_0 [\#314](https://github.com/bigdatagenomics/cannoli/pull/314) ([heuermh](https://github.com/heuermh))
+ - [CANNOLI-311] Update Spark dependency version to 3.1.2 [\#312](https://github.com/bigdatagenomics/cannoli/pull/312) ([heuermh](https://github.com/heuermh))
+ - [CANNOLI-292] Update Spark dependency version to 3.1.1 [\#310](https://github.com/bigdatagenomics/cannoli/pull/310) ([heuermh](https://github.com/heuermh))
+ - Add Sambamba markdup for marking duplicate reads [\#203](https://github.com/bigdatagenomics/cannoli/pull/203) ([heuermh](https://github.com/heuermh))
+
+
 ### Version 0.13.0 ###
 
 **Closed issues:**
