@@ -42,7 +42,7 @@ object BwaMem extends BDGCommandCompanion {
  * Bwa mem command line arguments.
  */
 class BwaMemArgs extends BwaMemFnArgs with ADAMSaveAnyArgs with CramArgs with ParquetArgs {
-  @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe fragments from (e.g. interleaved FASTQ format, .ifq) If extension is not detected, Parquet is assumed.", index = 0)
+  @Argument(required = true, metaVar = "INPUT", usage = "Location to pipe fragments from (e.g. interleaved FASTQ format, .ifq). If extension is not detected, Parquet is assumed.", index = 0)
   var inputPath: String = null
 
   @Argument(required = true, metaVar = "OUTPUT", usage = "Location to pipe alignments to (e.g. .bam, .cram, .sam). If extension is not detected, Parquet is assumed.", index = 1)
