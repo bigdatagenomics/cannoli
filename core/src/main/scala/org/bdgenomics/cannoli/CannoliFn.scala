@@ -19,7 +19,7 @@ package org.bdgenomics.cannoli
 
 import java.io.FileNotFoundException
 import grizzled.slf4j.Logging
-import org.apache.hadoop.fs.{ Path, PathFilter }
+import org.apache.hadoop.fs.{ FileSystem, Path, PathFilter }
 import org.apache.spark.SparkContext
 
 /**
@@ -100,5 +100,36 @@ abstract class CannoliFn[X, Y](val sc: SparkContext) extends Function1[X, Y] wit
 
     // map the paths returned to their paths
     paths.map(_.getPath.toString)
+  }
+
+  def indexPaths(referencePath: String,
+                 requiredExtensions: Seq[String],
+                 optionalExtensions: Seq[String]): Seq[String] = {
+
+    // oddly, the hadoop fs apis don't seem to have a way to do this?
+    def canonicalizePath(fs: FileSystem, path: Path): String = {
+      val fsUri = fs.getUri()
+      new Path(fsUri.getScheme, fsUri.getAuthority,
+        Path.getPathWithoutSchemeAndAuthority(path).toString).toString
+    }
+
+    def optionalPath(ext: String): Option[String] = {
+      val path = new Path(referencePath + ext)
+      val fs = path.getFileSystem(sc.hadoopConfiguration)
+      if (fs.exists(path)) {
+        Some(canonicalizePath(fs, path))
+      } else {
+        None
+      }
+    }
+
+    val pathsWithScheme = requiredExtensions.map(ext => {
+      optionalPath(ext).getOrElse({
+        throw new IllegalStateException(
+          "Required index file %s%s does not exist.".format(referencePath, ext))
+      })
+    })
+    val optionalPathsWithScheme = optionalExtensions.flatMap(optionalPath)
+    pathsWithScheme ++ optionalPathsWithScheme
   }
 }

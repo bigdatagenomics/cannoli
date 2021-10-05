@@ -37,6 +37,7 @@ object Cannoli {
     Bowtie2,
     SingleEndBowtie2,
     BwaMem,
+    SingleEndBwaMem,
     BwaMem2,
     Freebayes,
     Gem,
