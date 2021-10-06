@@ -39,6 +39,7 @@ object Cannoli {
     BwaMem,
     SingleEndBwaMem,
     BwaMem2,
+    SingleEndBwaMem2,
     Freebayes,
     Gem,
     MagicBlast,
