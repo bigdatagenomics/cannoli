@@ -54,6 +54,17 @@ object Cannoli {
 
     /**
      * Align the unaligned single-end reads in this AlignmentDataset
+     * with Bwa-mem2 via Cannoli.
+     *
+     * @param args Bwa-mem2 function arguments.
+     * @return AlignmentDataset.
+     */
+    def alignWithBwaMem2(args: BwaMem2Args): AlignmentDataset = {
+      new SingleEndBwaMem2(args, alignments.rdd.context).apply(alignments)
+    }
+
+    /**
+     * Align the unaligned single-end reads in this AlignmentDataset
      * with Minimap2 via Cannoli.
      *
      * @param args Minimap2 function arguments.
@@ -265,6 +276,18 @@ object Cannoli {
     def alignWithBwaMem(args: BwaMemArgs): AlignmentDataset = {
       val alignments = reads.toAlignments
       new SingleEndBwaMem(args, alignments.rdd.context).apply(alignments)
+    }
+
+    /**
+     * Align the unaligned single-end reads in this ReadDataset
+     * with Bwa-mem2 via Cannoli.
+     *
+     * @param args Bwa-mem2 function arguments.
+     * @return AlignmentDataset.
+     */
+    def alignWithBwaMem2(args: BwaMem2Args): AlignmentDataset = {
+      val alignments = reads.toAlignments
+      new SingleEndBwaMem2(args, alignments.rdd.context).apply(alignments)
     }
 
     /**

@@ -121,6 +121,7 @@ CANNOLI
               bwaMem : Align paired-end reads in a fragment dataset with bwa mem.
      singleEndBwaMem : Align unaligned single-end reads in an alignment dataset with bwa mem.
              bwaMem2 : Align paired-end reads in a fragment dataset with Bwa-mem2.
+    singleEndBwaMem2 : Align unaligned single-end reads in an alignment dataset with Bwa-mem2.
            freebayes : Call variants from an alignment dataset with Freebayes.
                  gem : Align paired-end reads in a fragment dataset with GEM-Mapper.
           magicBlast : Align paired-end reads in a fragment dataset with Magic-BLAST.

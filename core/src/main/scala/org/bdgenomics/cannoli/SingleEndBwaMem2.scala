@@ -19,53 +19,29 @@ package org.bdgenomics.cannoli
 
 import org.apache.spark.SparkContext
 import org.bdgenomics.adam.ds.ADAMContext._
-import org.bdgenomics.adam.ds.fragment.{ FragmentDataset, InterleavedFASTQInFormatter }
-import org.bdgenomics.adam.ds.read.{ AlignmentDataset, AnySAMOutFormatter }
+import org.bdgenomics.adam.ds.read.{
+  AlignmentDataset,
+  AnySAMOutFormatter,
+  FASTQInFormatter
+}
 import org.bdgenomics.adam.models.ReadGroupDictionary
 import org.bdgenomics.adam.sql.{ Alignment => AlignmentProduct }
 import org.bdgenomics.cannoli.builder.CommandBuilders
 import org.bdgenomics.formats.avro.Alignment
-import org.kohsuke.args4j.{ Option => Args4jOption }
 import scala.collection.JavaConversions._
 
 /**
- * Bwa-mem2 function arguments.
- */
-class BwaMem2Args extends ReadGroupArgs {
-  @Args4jOption(required = true, name = "-index", usage = "Path to the Bwa-mem2 index to be searched, e.g. <idxbase> in bwa-mem2 [options]* <idxbase>. Required.")
-  var indexPath: String = null
-
-  @Args4jOption(required = false, name = "-executable", usage = "Path to the Bwa-mem2 executable. Defaults to bwa-mem2.")
-  var executable: String = "bwa-mem2"
-
-  @Args4jOption(required = false, name = "-image", usage = "Container image to use. Defaults to quay.io/biocontainers/bwa-mem2:2.2.1--he513fc3_0.")
-  var image: String = "quay.io/biocontainers/bwa-mem2:2.2.1--he513fc3_0"
-
-  @Args4jOption(required = false, name = "-sudo", usage = "Run via sudo.")
-  var sudo: Boolean = false
-
-  @Args4jOption(required = false, name = "-add_files", usage = "If true, use the SparkFiles mechanism to distribute files to executors.")
-  var addFiles: Boolean = false
-
-  @Args4jOption(required = false, name = "-use_docker", usage = "If true, uses Docker to launch Bwa-mem2.")
-  var useDocker: Boolean = false
-
-  @Args4jOption(required = false, name = "-use_singularity", usage = "If true, uses Singularity to launch Bwa-mem2.")
-  var useSingularity: Boolean = false
-}
-
-/**
- * Bwa-mem2 wrapper as a function FragmentDataset &rarr; AlignmentDataset,
+ * Bwa-mem2 wrapper as a function AlignmentDataset &rarr; AlignmentDataset,
  * for use in cannoli-shell or notebooks.
  *
  * @param args Bwa-mem2 function arguments.
  * @param sc Spark context.
  */
-class BwaMem2(
+class SingleEndBwaMem2(
     val args: BwaMem2Args,
-    sc: SparkContext) extends CannoliFn[FragmentDataset, AlignmentDataset](sc) {
+    sc: SparkContext) extends CannoliFn[AlignmentDataset, AlignmentDataset](sc) {
 
-  override def apply(fragments: FragmentDataset): AlignmentDataset = {
+  override def apply(reads: AlignmentDataset): AlignmentDataset = {
 
     val requiredExtensions = Seq("",
       ".amb",
@@ -86,7 +62,6 @@ class BwaMem2(
       .add("1")
       .add("-R")
       .add(readGroup.toSAMReadGroupRecord().getSAMString().replace("\t", "\\t"))
-      .add("-p")
       .add(if (args.addFiles) "$0" else args.indexPath)
       .add("-")
 
@@ -102,12 +77,12 @@ class BwaMem2(
     }
 
     info("Piping %s to bwa-mem2 with command: %s files: %s".format(
-      fragments, builder.build(), builder.getFiles()))
+      reads, builder.build(), builder.getFiles()))
 
-    implicit val tFormatter = InterleavedFASTQInFormatter
+    implicit val tFormatter = FASTQInFormatter
     implicit val uFormatter = new AnySAMOutFormatter
 
-    val alignments = fragments.pipe[Alignment, AlignmentProduct, AlignmentDataset, InterleavedFASTQInFormatter](
+    val alignments = reads.pipe[Alignment, AlignmentProduct, AlignmentDataset, FASTQInFormatter](
       cmd = builder.build(),
       files = builder.getFiles()
     )
