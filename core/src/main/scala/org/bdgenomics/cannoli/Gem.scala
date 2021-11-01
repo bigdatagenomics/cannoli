@@ -35,8 +35,8 @@ class GemArgs extends Args4jBase {
   @Args4jOption(required = false, name = "-executable", usage = "Path to the GEM-Mapper executable. Defaults to gem-mapper.")
   var executable: String = "gem-mapper"
 
-  @Args4jOption(required = false, name = "-image", usage = "Container image to use. Defaults to quay.io/biocontainers/gem3-mapper:3.6.1--h2f06484_8.")
-  var image: String = "quay.io/biocontainers/gem3-mapper:3.6.1--h2f06484_8"
+  @Args4jOption(required = false, name = "-image", usage = "Container image to use. Defaults to quay.io/biocontainers/gem3-mapper:3.6.1--h36cd882_9.")
+  var image: String = "quay.io/biocontainers/gem3-mapper:3.6.1--h36cd882_9"
 
   @Args4jOption(required = false, name = "-sudo", usage = "Run via sudo.")
   var sudo: Boolean = false
