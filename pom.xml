@@ -17,10 +17,10 @@
   <inceptionYear>2017</inceptionYear>
 
   <properties>
-    <adam.version>0.36.0</adam.version>
-    <scala.version>2.12.10</scala.version>
+    <adam.version>0.37.0</adam.version>
+    <scala.version>2.12.15</scala.version>
     <scala.version.prefix>2.12</scala.version.prefix>
-    <spark.version>3.1.2</spark.version>
+    <spark.version>3.2.0</spark.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.build.targetEncoding>UTF-8</project.build.targetEncoding>
     <maven.enforcer.maven-version>[3.1.1,)</maven.enforcer.maven-version>
@@ -30,7 +30,7 @@
     <hadoop.version>3.2.1</hadoop.version>
     <junit.version>4.13.2</junit.version>
     <scoverage.plugin.version>1.1.1</scoverage.plugin.version>
-    <utils.version>0.3.0</utils.version>
+    <utils.version>0.4.0</utils.version>
   </properties>
 
   <modules>
@@ -54,14 +54,6 @@
     <tag>HEAD</tag>
   </scm>
   <developers>
-    <developer>
-      <id>fnothaft</id>
-      <name>Frank Austin Nothaft</name>
-      <email>fnothaft@berkeley.edu</email>
-      <url>http://www.fnothaft.net</url>
-      <organization>U.C. Berkeley, Department of Electrical Engineering and  Computer Science</organization>
-      <organizationUrl>http://www.cs.berkeley.edu/</organizationUrl>
-    </developer>
     <developer>
       <id>heuermh</id>
       <name>Michael L Heuer</name>
@@ -352,7 +344,7 @@
      <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
-        <version>30.1-jre</version>
+        <version>30.1.1-jre</version>
      </dependency>
      <dependency>
         <groupId>junit</groupId>
