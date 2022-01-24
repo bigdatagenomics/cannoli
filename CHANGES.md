@@ -1,5 +1,31 @@
 # Cannoli Changelog #
 
+### Version 0.15.0 ###
+
+**Closed issues:**
+
+ - Update ADAM dependency version to 0.37.0 [\#340](https://github.com/bigdatagenomics/cannoli/issues/340)
+ - Migrate Github Actions JDK from 'adopt' to 'temurin' [\#337](https://github.com/bigdatagenomics/cannoli/issues/337)
+
+**Merged and closed pull requests:**
+
+ - Update default container image versions [\#342](https://github.com/bigdatagenomics/cannoli/pull/342) ([heuermh](https://github.com/heuermh))
+ - Update ADAM dependency version to 0.37.0 [\#341](https://github.com/bigdatagenomics/cannoli/pull/341) ([heuermh](https://github.com/heuermh))
+ - Update bowtie2 container image to 2.4.4--py38he5f0661_1 [\#339](https://github.com/bigdatagenomics/cannoli/pull/339) ([heuermh](https://github.com/heuermh))
+ - Migrate Github Actions JDK from 'adopt' to 'temurin' [\#338](https://github.com/bigdatagenomics/cannoli/pull/338) ([heuermh](https://github.com/heuermh))
+ - Update vt container image to 0.57721--h41af197_4 [\#336](https://github.com/bigdatagenomics/cannoli/pull/336) ([heuermh](https://github.com/heuermh))
+ - Update star container image to 2.7.9a--h9ee0642_0 [\#335](https://github.com/bigdatagenomics/cannoli/pull/335) ([heuermh](https://github.com/heuermh))
+ - Update bowtie container image to 1.3.1--py39h176da8b_0 [\#334](https://github.com/bigdatagenomics/cannoli/pull/334) ([heuermh](https://github.com/heuermh))
+ - Update gem3-mapper container image to 3.6.1--h36cd882_9 [\#333](https://github.com/bigdatagenomics/cannoli/pull/333) ([heuermh](https://github.com/heuermh))
+ - Update snpeff container image to 5.0--hdfd78af_1 [\#332](https://github.com/bigdatagenomics/cannoli/pull/332) ([heuermh](https://github.com/heuermh))
+ - Update bcftools container image to 1.14--h88f3f91_0 [\#331](https://github.com/bigdatagenomics/cannoli/pull/331) ([heuermh](https://github.com/heuermh))
+ - Update samtools container image to 1.14--hb421002_0 [\#330](https://github.com/bigdatagenomics/cannoli/pull/330) ([heuermh](https://github.com/heuermh))
+ - Update github-changes-maven-plugin version to 1.2 [\#329](https://github.com/bigdatagenomics/cannoli/pull/329) ([heuermh](https://github.com/heuermh))
+ - Update maven plugin dependency versions [\#328](https://github.com/bigdatagenomics/cannoli/pull/328) ([heuermh](https://github.com/heuermh))
+ - Add single end bwa-mem2 for aligning reads [\#327](https://github.com/bigdatagenomics/cannoli/pull/327) ([heuermh](https://github.com/heuermh))
+ - [CANNOLI-324] Add single end bwa mem for aligning reads [\#325](https://github.com/bigdatagenomics/cannoli/pull/325) ([heuermh](https://github.com/heuermh))
+
+
 ### Version 0.14.0 ###
 
 **Closed issues:**
