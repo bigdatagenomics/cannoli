@@ -36,8 +36,8 @@ class SamtoolsMpileupArgs extends Args4jBase {
   @Args4jOption(required = false, name = "-executable", usage = "Path to the samtools executable. Defaults to samtools.")
   var executable: String = "samtools"
 
-  @Args4jOption(required = false, name = "-docker_image", usage = "Container image to use. Defaults to quay.io/biocontainers/samtools:1.14--hb421002_0.")
-  var image: String = "quay.io/biocontainers/samtools:1.14--hb421002_0"
+  @Args4jOption(required = false, name = "-docker_image", usage = "Container image to use. Defaults to quay.io/biocontainers/samtools:1.15--h1170115_1.")
+  var image: String = "quay.io/biocontainers/samtools:1.15--h1170115_1"
 
   @Args4jOption(required = false, name = "-sudo", usage = "Run via sudo.")
   var sudo: Boolean = false
