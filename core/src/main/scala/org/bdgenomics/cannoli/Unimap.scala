@@ -36,8 +36,8 @@ class UnimapArgs extends ReadGroupArgs {
   @Args4jOption(required = false, name = "-executable", usage = "Path to the Unimap executable. Defaults to unimap.")
   var executable: String = "unimap"
 
-  @Args4jOption(required = false, name = "-image", usage = "Container image to use. Defaults to quay.io/biocontainers/unimap:0.1--h5bf99c6_1.")
-  var image: String = "quay.io/biocontainers/unimap:0.1--h5bf99c6_1"
+  @Args4jOption(required = false, name = "-image", usage = "Container image to use. Defaults to quay.io/biocontainers/unimap:0.1--h7132678_2.")
+  var image: String = "quay.io/biocontainers/unimap:0.1--h7132678_2"
 
   @Args4jOption(required = false, name = "-sudo", usage = "Run via sudo.")
   var sudo: Boolean = false
