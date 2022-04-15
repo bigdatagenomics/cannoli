@@ -38,8 +38,8 @@ class BwaMemArgs extends ReadGroupArgs {
   @Args4jOption(required = false, name = "-executable", usage = "Path to the BWA executable. Defaults to bwa.")
   var executable: String = "bwa"
 
-  @Args4jOption(required = false, name = "-image", usage = "Container image to use. Defaults to quay.io/biocontainers/bwa:0.7.17--h5bf99c6_8.")
-  var image: String = "quay.io/biocontainers/bwa:0.7.17--h5bf99c6_8"
+  @Args4jOption(required = false, name = "-image", usage = "Container image to use. Defaults to quay.io/biocontainers/bwa:0.7.17--h7132678_9.")
+  var image: String = "quay.io/biocontainers/bwa:0.7.17--h7132678_9"
 
   @Args4jOption(required = false, name = "-sudo", usage = "Run via sudo.")
   var sudo: Boolean = false

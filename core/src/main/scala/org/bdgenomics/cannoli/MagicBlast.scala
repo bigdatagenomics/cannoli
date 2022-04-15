@@ -37,8 +37,8 @@ class MagicBlastArgs extends Args4jBase {
   @Args4jOption(required = false, name = "-executable", usage = "Path to the Magic-BLAST executable. Defaults to magicblast.")
   var executable: String = "magicblast"
 
-  @Args4jOption(required = false, name = "-image", usage = "Container image to use. Defaults to quay.io/biocontainers/magicblast:1.6.0--h95f258a_0.")
-  var image: String = "quay.io/biocontainers/magicblast:1.6.0--h95f258a_0"
+  @Args4jOption(required = false, name = "-image", usage = "Container image to use. Defaults to quay.io/biocontainers/magicblast:1.6.0--hf1761c0_1.")
+  var image: String = "quay.io/biocontainers/magicblast:1.6.0--hf1761c0_1"
 
   @Args4jOption(required = false, name = "-sudo", usage = "Run via sudo.")
   var sudo: Boolean = false
