@@ -175,7 +175,7 @@ $ ./bin/cannoli-submit \
     -sequence_dictionary hg38.dict \
     -fragments \
     -use_docker \
-    -image quay.io/biocontainers/bwa:0.7.17--hed695b0_7 \
+    -image quay.io/biocontainers/bwa:0.7.17--h5bf99c6_8 \
     -add_files
 ```
 
@@ -193,6 +193,6 @@ $ ./bin/cannoli-submit \
     -sequence_dictionary hg38.dict \
     -fragments \
     -use_singularity \
-    -image quay.io/biocontainers/bwa:0.7.17--hed695b0_7 \
+    -image https://depot.galaxyproject.org/singularity/bwa:0.7.17--h5bf99c6_8 \
     -add_files
 ```
