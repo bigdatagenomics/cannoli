@@ -1,5 +1,23 @@
 # Cannoli Changelog #
 
+### Version 1.0 ###
+
+**Closed issues:**
+
+ - Update ADAM dependency version to 1.0 [\#349](https://github.com/bigdatagenomics/cannoli/issues/349)
+ - Find bwa singularity image for README example [\#347](https://github.com/bigdatagenomics/cannoli/issues/347)
+ - Consider refactoring for single end, paired end, long reads [\#326](https://github.com/bigdatagenomics/cannoli/issues/326)
+
+**Merged and closed pull requests:**
+
+ - Update ADAM dependency version to 1.0, spark to 3.2.1, hadoop to 3.3.3 [\#350](https://github.com/bigdatagenomics/cannoli/pull/350) ([heuermh](https://github.com/heuermh))
+ - Use bwa singularity image for README example [\#348](https://github.com/bigdatagenomics/cannoli/pull/348) ([heuermh](https://github.com/heuermh))
+ - Update default container image versions [\#346](https://github.com/bigdatagenomics/cannoli/pull/346) ([heuermh](https://github.com/heuermh))
+ - Update blast container image to 2.12.0--hf3cf87c_4 [\#345](https://github.com/bigdatagenomics/cannoli/pull/345) ([heuermh](https://github.com/heuermh))
+ - Update minimap2 container image to 2.24--h7132678_1 [\#344](https://github.com/bigdatagenomics/cannoli/pull/344) ([heuermh](https://github.com/heuermh))
+ - Update bcftools and samtools container images [\#343](https://github.com/bigdatagenomics/cannoli/pull/343) ([heuermh](https://github.com/heuermh))
+
+
 ### Version 0.15.0 ###
 
 **Closed issues:**
