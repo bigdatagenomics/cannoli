@@ -17,20 +17,20 @@
   <inceptionYear>2017</inceptionYear>
 
   <properties>
-    <adam.version>0.37.0</adam.version>
+    <adam.version>1.0</adam.version>
     <scala.version>2.12.15</scala.version>
     <scala.version.prefix>2.12</scala.version.prefix>
-    <spark.version>3.2.0</spark.version>
+    <spark.version>3.2.1</spark.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.build.targetEncoding>UTF-8</project.build.targetEncoding>
     <maven.enforcer.maven-version>[3.1.1,)</maven.enforcer.maven-version>
     <maven.enforcer.jdk-version>[1.8,)</maven.enforcer.jdk-version>
     <maven.compile.source>1.8</maven.compile.source>
     <maven.compile.target>1.8</maven.compile.target>
-    <hadoop.version>3.2.1</hadoop.version>
+    <hadoop.version>3.3.3</hadoop.version>
     <junit.version>4.13.2</junit.version>
     <scoverage.plugin.version>1.1.1</scoverage.plugin.version>
-    <utils.version>0.4.0</utils.version>
+    <utils.version>1.0</utils.version>
   </properties>
 
   <modules>
