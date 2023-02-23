@@ -39,8 +39,8 @@ class VepArgs extends Args4jBase {
   @Args4jOption(required = false, name = "-executable", usage = "Path to the Ensembl VEP executable. Defaults to vep.")
   var executable: String = "vep"
 
-  @Args4jOption(required = false, name = "-image", usage = "Container image to use. Defaults to quay.io/biocontainers/ensembl-vep:106.0--pl5321h4a94de4_0.")
-  var image: String = "quay.io/biocontainers/ensembl-vep:106.0--pl5321h4a94de4_0"
+  @Args4jOption(required = false, name = "-image", usage = "Container image to use. Defaults to quay.io/biocontainers/ensembl-vep:108.2--pl5321h4a94de4_0.")
+  var image: String = "quay.io/biocontainers/ensembl-vep:108.2--pl5321h4a94de4_0"
 
   @Args4jOption(required = false, name = "-sudo", usage = "Run via sudo.")
   var sudo: Boolean = false
