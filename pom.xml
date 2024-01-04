@@ -17,10 +17,10 @@
   <inceptionYear>2017</inceptionYear>
 
   <properties>
-    <adam.version>1.1-SNAPSHOT</adam.version>
-    <scala.version>2.12.15</scala.version>
+    <adam.version>1.0.1</adam.version>
+    <scala.version>2.12.18</scala.version>
     <scala.version.prefix>2.12</scala.version.prefix>
-    <spark.version>3.3.2</spark.version>
+    <spark.version>3.3.4</spark.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.build.targetEncoding>UTF-8</project.build.targetEncoding>
     <maven.enforcer.maven-version>[3.1.1,)</maven.enforcer.maven-version>
@@ -30,7 +30,7 @@
     <hadoop.version>3.3.4</hadoop.version>
     <junit.version>4.13.2</junit.version>
     <scoverage.plugin.version>1.1.1</scoverage.plugin.version>
-    <utils.version>1.0</utils.version>
+    <utils.version>1.0.1</utils.version>
   </properties>
 
   <modules>
@@ -107,7 +107,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-gpg-plugin</artifactId>
-          <version>3.0.1</version>
+          <version>3.1.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -343,7 +343,7 @@
      <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
-        <version>31.1-jre</version>
+        <version>33.0.0-jre</version>
      </dependency>
      <dependency>
         <groupId>junit</groupId>
@@ -568,7 +568,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-gpg-plugin</artifactId>
-            <version>3.0.1</version>
+            <version>3.1.0</version>
             <executions>
               <execution>
                 <id>sign-artifacts</id>
