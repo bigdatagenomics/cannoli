@@ -1,5 +1,23 @@
 # Cannoli Changelog #
 
+### Version 1.0.1 ###
+
+**Closed issues:**
+
+ - Update Spark dependency version to 3.3.2 [\#357](https://github.com/bigdatagenomics/cannoli/issues/357)
+ - Update Spark dependency version to 3.3.1 [\#354](https://github.com/bigdatagenomics/cannoli/issues/354)
+ - Interest in multisample freebayes calling [\#352](https://github.com/bigdatagenomics/cannoli/issues/352)
+ - Update Spark dependency version to 3.3.0 [\#351](https://github.com/bigdatagenomics/cannoli/issues/351)
+
+**Merged and closed pull requests:**
+
+ - Update ADAM dependency version to 1.0.1, Spark to 3.3.4, guava to 33.0.0-jre [\#363](https://github.com/bigdatagenomics/cannoli/pull/363) ([heuermh](https://github.com/heuermh))
+ - Update container images for blast, bowtie, bowtie2, freebayes, etc. [\#359](https://github.com/bigdatagenomics/cannoli/pull/359) ([heuermh](https://github.com/heuermh))
+ - Update Spark dependency version to 3.3.2 [\#358](https://github.com/bigdatagenomics/cannoli/pull/358) ([heuermh](https://github.com/heuermh))
+ - Update Spark dependency version to 3.3.1 [\#356](https://github.com/bigdatagenomics/cannoli/pull/356) ([heuermh](https://github.com/heuermh))
+ - Update bowtie2 container image to 2.5.0--py310h8d7afc0_0 [\#355](https://github.com/bigdatagenomics/cannoli/pull/355) ([heuermh](https://github.com/heuermh))
+
+
 ### Version 1.0 ###
 
 **Closed issues:**
