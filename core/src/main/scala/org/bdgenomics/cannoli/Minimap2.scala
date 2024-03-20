@@ -36,8 +36,8 @@ class Minimap2Args extends ReadGroupArgs {
   @Args4jOption(required = false, name = "-executable", usage = "Path to the Minimap2 executable. Defaults to minimap2.")
   var executable: String = "minimap2"
 
-  @Args4jOption(required = false, name = "-image", usage = "Container image to use. Defaults to quay.io/biocontainers/minimap2:2.25--h7132678_0.")
-  var image: String = "quay.io/biocontainers/minimap2:2.25--h7132678_0"
+  @Args4jOption(required = false, name = "-image", usage = "Container image to use. Defaults to quay.io/biocontainers/minimap2:2.27--he4a0461_1.")
+  var image: String = "quay.io/biocontainers/minimap2:2.27--he4a0461_1"
 
   @Args4jOption(required = false, name = "-sudo", usage = "Run via sudo.")
   var sudo: Boolean = false
