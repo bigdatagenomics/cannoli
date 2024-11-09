@@ -35,8 +35,8 @@ class StarArgs extends Args4jBase {
   @Args4jOption(required = false, name = "-executable", usage = "Path to the STAR-Mapper executable. Defaults to STAR.")
   var executable: String = "STAR"
 
-  @Args4jOption(required = false, name = "-image", usage = "Container image to use. Defaults to quay.io/biocontainers/star:2.7.10b--h9ee0642_0.")
-  var image: String = "quay.io/biocontainers/star:2.7.10b--h9ee0642_0"
+  @Args4jOption(required = false, name = "-image", usage = "Container image to use. Defaults to quay.io/biocontainers/star:2.7.11b--h43eeafb_2.")
+  var image: String = "quay.io/biocontainers/star:2.7.11b--h43eeafb_2"
 
   @Args4jOption(required = false, name = "-sudo", usage = "Run via sudo.")
   var sudo: Boolean = false

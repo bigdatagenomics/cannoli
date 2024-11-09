@@ -39,8 +39,8 @@ class SnpEffArgs extends Args4jBase {
   @Args4jOption(required = false, name = "-executable", usage = "Path to the SnpEff executable. Defaults to snpEff.")
   var executable: String = "snpEff"
 
-  @Args4jOption(required = false, name = "-image", usage = "Container image to use. Defaults to quay.io/biocontainers/snpeff:5.1d--hdfd78af_0.")
-  var image: String = "quay.io/biocontainers/snpeff:5.1d--hdfd78af_0"
+  @Args4jOption(required = false, name = "-image", usage = "Container image to use. Defaults to quay.io/biocontainers/snpeff:5.2--hdfd78af_1.")
+  var image: String = "quay.io/biocontainers/snpeff:5.2--hdfd78af_1"
 
   @Args4jOption(required = false, name = "-sudo", usage = "Run via sudo.")
   var sudo: Boolean = false
